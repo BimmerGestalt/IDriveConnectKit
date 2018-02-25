@@ -1,0 +1,66 @@
+import de.undercouch.gradle.tasks.download.Download
+import de.undercouch.gradle.tasks.download.Verify
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        //classpath group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+        //classpath group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.2.6'
+    }
+}
+
+plugins {
+    id "de.undercouch.download" version "2.1.0"
+}
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+
+sourceSets {
+    main.java.srcDirs += 'build/generated'
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+task downloadEtchCompiler(type: Download) {
+    src 'http://archive.apache.org/dist/etch/1.4.0/apache-etch-1.4.0-windows-x86-bin.zip'
+    dest file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip")
+    onlyIfNewer true
+}
+task verifyEtchCompiler(type: Verify, dependsOn: downloadEtchCompiler) {
+    src file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip")
+    algorithm "SHA-512"
+    checksum "915128A2E6E6FA83F4A576EBAC4DA5A250EC6F3BEB11C76404664B5067CFD94703531219" +
+             "6CAB6BB6EF96EEB765E39A87E11E774A59257E7932F2D3761CAE0354"
+}
+task extractEtchCompiler(type: Copy, dependsOn: verifyEtchCompiler) {
+    from zipTree(file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip"))
+    into "${buildDir}/etch"
+}
+task compileEtch(type: JavaExec, dependsOn: extractEtchCompiler) {
+    main "org.apache.etch.compiler.EtchMain"
+    classpath files(
+            "${buildDir}/etch/apache-etch-1.4.0/lib/apache-etch-compiler-1.4.0.jar",
+            "${buildDir}/etch/apache-etch-1.4.0/lib/apache-etch-java-compiler-1.4.0.jar",
+            "${buildDir}/etch/apache-etch-1.4.0/lib/velocity-1.7-dep.jar"
+    )
+    workingDir 'etch'
+    args('--binding', 'java', '--output-dir', "${buildDir}/generated", 'BMWRemoting.etch')
+}
+task enableEtchRuntime(type: Copy, dependsOn: extractEtchCompiler) {
+    from "${buildDir}/etch/apache-etch-1.4.0/binding-java/lib"
+    include '*.jar'
+    into file("libs/")
+}
+
+build.dependsOn compileEtch
+build.dependsOn enableEtchRuntime
+build.mustRunAfter compileEtch
+build.mustRunAfter enableEtchRuntime

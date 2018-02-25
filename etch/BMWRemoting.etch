@@ -1,0 +1,233 @@
+module de.bmw.idrive;
+
+service BMWRemoting {
+	enum AMEvent (AM_APP_START);
+	enum AVButtonEvent (
+		AV_EVENT_SKIP_DOWN,
+		AV_EVENT_SKIP_UP,
+		AV_EVENT_SKIP_LONG_UP,
+		AV_EVENT_SKIP_LONG_DOWN,
+		AV_EVENT_SKIP_LONG_STOP
+	);
+	enum AVConnectionType (
+		AV_CONNECTION_TYPE_ENTERTAINMENT,
+		AV_CONNECTION_TYPE_INTERRUPT,
+		AV_CONNECTION_TYPE_FINGERPRINT
+	);
+	enum AVPlayerState (
+		AV_PLAYERSTATE_PLAY,
+		AV_PLAYERSTATE_PAUSE,
+		AV_PLAYERSTATE_STOP
+	);
+	enum ButtonState (
+		BT_STATE_NONE,
+		BT_STATE_SHORT,
+		BT_STATE_LONG,
+		BT_STATE_ABORT,
+		BT_STATE_PROXIMITY
+	);
+	enum LockEvent (LOCK_ACQUIRED, LOCK_LOST);
+	enum LogLevel (
+		ALL,
+		ERROR,
+		WARN,
+		INFO,
+		DEBUG
+	);
+	enum MapEvent (
+		MAP_READY,
+		MAP_IMPORT_READY,
+		MAP_IMPORT_ABORT,
+		MAP_IMPORT_DONE,
+		MAP_DELETE_DONE
+	);
+	enum MapMode (
+		MAP_MODE_ALL_LOCATIONS_WITH_CCP,
+		MAP_MODE_ALL_LOCATIONS_WITHOUT_CCP,
+		MAP_MODE_HIGHLIGHTED_LOCATION
+	);
+	enum PersistentResourceType (
+		TEXTDB,
+		IMAGEDB
+	);
+	enum PIAEvent (
+		PIA_READY,
+		PIA_IMPORT_REQUEST,
+		PIA_IMPORT_DONE,
+		PIA_IMPORT_FAILED,
+		PIA_REQUEST_RESULT,
+		PIA_EXPORT,
+		PIA_STOPPED
+	);
+	enum PlaybackState (
+		PB_STATE_STOP,
+		PB_STATE_PAUSE,
+		PB_STATE_PLAY
+	);
+	enum PlaylistCommand (
+		PLAYLIST_NONE,
+		PLAYLIST_UPDATE,
+		PLAYLIST_SELECT
+	);
+	enum RHMIResourceType (
+		DESCRIPTION,
+		TEXTDB,
+		IMAGEDB,
+		TEXTID,
+		IMAGEID,
+		PREINSTTEXTID,
+		PREINSTIMAGEID,
+		IMAGEDATA,
+		IBADB,
+		FLOATDATA,
+		WIDGETDB,
+		ASSETDB
+	);
+	enum RHMIVersion (
+		RHMI_VERSION_ID5,
+		RHMI_VERSION_ID6_LIGHT,
+		RHMI_VERSION_ID6
+	);
+	enum RotaryTilt (
+		TILT_CENTER,
+		TILT_N_S,
+		TILT_N_L,
+		TILT_E_S,
+		TILT_E_L,
+		TILT_S_S,
+		TILT_S_L,
+		TILT_W_S,
+		TILT_W_L
+	);
+	enum SkipState (
+		SKIP_NONE,
+		SKIP_DOWN,
+		SKIP_DOWN_LONG,
+		SKIP_UP,
+		SKIP_UP_LONG
+	);
+	enum VDSDiagnosticsType (JOB, DTC);
+	enum VoicePriorityType (VOICE_SESSION_PRIORITY_LOW, VOICE_SESSION_PRIORITY_HIGH);
+	enum VoiceSessionStateType (
+		VOICE_SESSION_STATE_ESTABLISHED,
+		VOICE_SESSION_STATE_TERMINATED,
+		VOICE_SESSION_STATE_REJECTED
+	);
+	enum VolumeState (VOL_NONE, VOL_DOWN, VOL_UP);
+	enum VRSEvent (VRS_SESSION_ESTABLISH, VRS_EXPORT, VRS_EXPORT_DONE, VRS_EXPORT_ABORT);
+	
+	struct RHMIDataTable (object[][]data, boolean virtualTableEnable, int fromRow, int numRows, int totalRows, int fromColumn, int numColumns, int totalColumns);
+	struct RHMIMetaData (string id, VersionInfo version, string name, string vendor);
+	struct RHMIResourceData (RHMIResourceType type, byte[] data);
+	struct RHMIResourceIdentifier (RHMIResourceType type, int id);
+	struct VersionInfo (int major, int minor, int revision);
+	
+	
+	exception IllegalArgumentException (int errorId, string errorMsg);
+	exception IllegalStateException (int errorId, string errorMsg);
+	exception SecurityException (int errorId, string errorMsg);
+	exception ServiceException (int errorId, string errorMsg);
+	
+	
+	byte[] sas_certificate (byte[] data) throws IllegalArgumentException, SecurityException;
+	void sas_crl (byte[] data) throws IllegalArgumentException, SecurityException;
+	string sas_permission (byte[] data) throws IllegalArgumentException, SecurityException;
+	void sas_login (byte[] data) throws IllegalArgumentException, IllegalStateException, SecurityException;
+	void sas_logout (byte[] data) throws IllegalArgumentException, SecurityException;
+
+	Map info_getSystemInfo (string component) throws IllegalArgumentException, ServiceException, SecurityException;
+	VersionInfo ver_getVersion () throws IllegalArgumentException, ServiceException, SecurityException;
+
+	// car data service
+	int cds_create () throws IllegalArgumentException, ServiceException, SecurityException;
+	VersionInfo cds_getVersion () throws IllegalArgumentException, ServiceException, SecurityException;
+	void cds_addPropertyChangedEventHandler (int handle, string propertyName, string ident, int intervalLimit) throws IllegalArgumentException, ServiceException, SecurityException;
+	void cds_removePropertyChangedEventHandler (int handle, string propertyName, string ident) throws IllegalArgumentException, ServiceException, SecurityException;
+	@AsyncReceiver(QUEUED)
+	void cds_getPropertyAsync (int handle, string ident, string propertyName) throws IllegalArgumentException, ServiceException, SecurityException;
+	@AsyncReceiver(QUEUED)
+	void cds_setPropertyAsync (int handle, string ident, string propertyName, string propertyValue) throws IllegalArgumentException, ServiceException, SecurityException;
+	@AsyncReceiver(QUEUED)
+	void cds_setPropertyBinaryAsync (int handle, string ident, string propertyName, string propertyValue, byte[] propertyBinaryValue) throws IllegalArgumentException, ServiceException, SecurityException;
+	void cds_dispose (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
+	@Direction(CLIENT)
+	@AsyncReceiver( QUEUED )
+	@Oneway
+	void cds_onPropertyChangedEvent (int handle, string ident, string propertyName, string propertyValue);
+
+	// app manager
+	int am_create (string deviceId, byte[] bluetoothAddress) throws IllegalArgumentException, ServiceException, SecurityException;
+	void am_addAppEventHandler (int handle, string ident) throws IllegalArgumentException, ServiceException, SecurityException;
+	void am_showLoadingHint (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
+	void am_showLoadedSuccessHint (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
+	void am_showLoadedFailHint (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
+	void am_registerApp (int handle, string appId, Map values) throws IllegalArgumentException, ServiceException, SecurityException;
+	void am_removeAppEventHandler (int handle, string ident) throws IllegalArgumentException, ServiceException, SecurityException;
+	void am_dispose (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
+	@Direction(CLIENT)
+	@AsyncReceiver( QUEUED )
+	@Oneway
+	void am_onAppEvent (int handle, string ident, int appId, AMEvent event);
+
+	// remote human-machine interface
+	Map rhmi_getCapabilities (string component, int handle) throws IllegalArgumentException, ServiceException, SecurityException;
+	// create the app, returns a handle
+	// classic version:
+	//int rhmi_create (string vendor, VersionInfo version, string id, string name) throws IllegalArgumentException, ServiceException, SecurityException;
+	// new version:
+	int rhmi_create (string token, RHMIMetaData metaData) throws IllegalArgumentException, ServiceException, SecurityException;
+	int rhmi_create_version (string token, RHMIVersion rhmiVersion, RHMIMetaData metaData) throws IllegalArgumentException, ServiceException, SecurityException;
+	void rhmi_initialize (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
+
+	// the RHMI State (app page)
+	int rhmi_getState (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
+	void rhmi_setState (int handle, int state) throws IllegalArgumentException, ServiceException, SecurityException;
+
+	// the hash is MD5 of the zip file
+	boolean rhmi_checkResource (byte[] hash, int handle, int size, string name, RHMIResourceType type) throws IllegalArgumentException, ServiceException, SecurityException;
+	void rhmi_setResource (int handle, byte[] data, RHMIResourceType type) throws IllegalArgumentException, ServiceException, SecurityException;
+
+	// hook up user interactions
+	void rhmi_addActionEventHandler (int handle, string ident, int actionId) throws IllegalArgumentException, ServiceException, SecurityException;
+	void rhmi_addHmiEventHandler (int handle, string ident, int componentId, int eventId) throws IllegalArgumentException, ServiceException, SecurityException;
+	@Direction(CLIENT)
+	@AsyncReceiver( QUEUED )
+	@Oneway
+	void rhmi_onActionEvent (int handle, string ident, int actionId, Map args);
+	@Direction(CLIENT)
+	@AsyncReceiver( QUEUED )
+	@Oneway
+	void rhmi_onHmiEvent (int handle, string ident, int componentId, int eventId, Map args);
+	void rhmi_ackActionEvent (int handle, int actionId, int confirmId, boolean success) throws IllegalArgumentException, ServiceException, SecurityException;
+	void rhmi_removeActionEventHandler (int handle, string ident, int actionId) throws IllegalArgumentException, ServiceException, SecurityException;
+	void rhmi_removeHmiEventHandler (int handle, string ident, int componentId, int eventId) throws IllegalArgumentException, ServiceException, SecurityException;
+	
+	// dynamic updates
+	void rhmi_setData (int handle, int modelId, object value) throws IllegalArgumentException, ServiceException, SecurityException;
+	void rhmi_setProperty (int handle, int componentId, int propertyId, Map values) throws IllegalArgumentException, ServiceException, SecurityException;
+	void rhmi_triggerEvent(int handle, int eventId, Map args);
+
+	// AV multimedia interactions
+	int av_create (int instanceID, string id) throws IllegalArgumentException, ServiceException, SecurityException;
+	void av_requestConnection (int handle, AVConnectionType connectionType) throws IllegalArgumentException, ServiceException, SecurityException;
+	@Direction(CLIENT)
+	@AsyncReceiver( QUEUED )
+	void av_connectionGranted (int handle, AVConnectionType connectionType);
+	@Direction(CLIENT)
+	@AsyncReceiver( QUEUED )
+	void av_connectionDenied (int handle, AVConnectionType connectionType) throws IllegalArgumentException, ServiceException, SecurityException;
+	@Direction(CLIENT)
+	@AsyncReceiver( QUEUED )
+	void av_connectionDeactivated (int handle, AVConnectionType connectionType) throws IllegalArgumentException, ServiceException, SecurityException;
+	@Direction(CLIENT)
+	@AsyncReceiver( QUEUED )
+	void av_closeConnection (int handle, AVConnectionType connectionType) throws IllegalArgumentException, ServiceException, SecurityException;
+	void av_dispose (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
+	// state management
+	void av_requestPlayerState (int handle, AVConnectionType connectionType, AVPlayerState playerState) throws IllegalArgumentException, ServiceException, SecurityException;
+	void av_playerStateChanged (int handle, AVConnectionType connectionType, AVPlayerState playerState) throws IllegalArgumentException, ServiceException, SecurityException;
+
+	@Direction(CLIENT)
+	@AsyncReceiver( QUEUED )
+	void av_multimediaButtonEvent (int handle, AVButtonEvent event) throws IllegalArgumentException, ServiceException, SecurityException;
+}
