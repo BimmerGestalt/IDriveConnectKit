@@ -2,11 +2,13 @@ import de.undercouch.gradle.tasks.download.Download
 import de.undercouch.gradle.tasks.download.Verify
 
 buildscript {
+    ext.kotlin_version = '1.2.30'
     repositories {
         google()
         jcenter()
     }
     dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         //classpath group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
         //classpath group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.2.6'
     }
@@ -16,14 +18,32 @@ plugins {
     id "de.undercouch.download" version "2.1.0"
 }
 apply plugin: 'java-library'
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 }
-
 
 sourceSets {
     main.java.srcDirs += 'build/generated'
+    test.java.srcDirs += 'src/test/java'
 }
 
 sourceCompatibility = "1.7"
@@ -60,7 +80,7 @@ task enableEtchRuntime(type: Copy, dependsOn: extractEtchCompiler) {
     into file("libs/")
 }
 
-build.dependsOn compileEtch
-build.dependsOn enableEtchRuntime
-build.mustRunAfter compileEtch
-build.mustRunAfter enableEtchRuntime
+compileJava.dependsOn compileEtch
+compileJava.dependsOn enableEtchRuntime
+compileJava.mustRunAfter compileEtch
+compileJava.mustRunAfter enableEtchRuntime

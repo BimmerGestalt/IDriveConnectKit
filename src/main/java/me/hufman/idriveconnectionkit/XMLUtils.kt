@@ -1,4 +1,4 @@
-package me.hufman.IDriveConnectionKit
+package me.hufman.idriveconnectionkit
 
 import org.w3c.dom.Document
 import org.w3c.dom.NamedNodeMap
@@ -32,6 +32,9 @@ object XMLUtils {
 
 	fun getAttributes(element: Node): Map<String, String> {
 		val attributes = HashMap<String, String>()
+		if (element.attributes == null) {
+			return attributes
+		}
 		for (i in 0 until element.attributes.length) {
 			val attr = element.attributes.item(i)
 			attributes[attr.nodeName] = attr.nodeValue
@@ -53,6 +56,9 @@ object XMLUtils {
 		return convertNodeList(nodes).filter { it.nodeType == Node.ELEMENT_NODE }
 	}
 
+	fun loadXML(xml: String): Document {
+		return loadXML(xml.toByteArray())
+	}
 	fun loadXML(xml: ByteArray): Document {
 		val builderFactory = DocumentBuilderFactory.newInstance()
 		val builder: DocumentBuilder
@@ -72,4 +78,26 @@ object XMLUtils {
 
 	}
 
+	fun unmarshalAttributes(obj: Any, attrs: Map<String, String>) {
+		/** Given a map of attributes, apply any that fit to an object */
+		attrs.filter { entry ->
+			val classType = obj.javaClass
+			val setterName = "set" + entry.key.substring(0, 1).toUpperCase() + entry.key.substring(1)
+			classType.declaredFields.any {
+				it.name == entry.key
+			} && classType.declaredMethods.any {
+				it.name == setterName
+			}
+		}.forEach { key,value ->
+			val classType = obj.javaClass
+			val field = classType.getDeclaredField(key)
+			val setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1)
+			when(field.type) {
+				Integer::class.javaPrimitiveType -> classType.getDeclaredMethod(setterName, Integer::class.javaPrimitiveType).invoke(obj, value.toInt())
+				Boolean::class.javaPrimitiveType -> classType.getDeclaredMethod(setterName, Boolean::class.javaPrimitiveType).invoke(obj, value.toBoolean())
+				String::class.java -> classType.getDeclaredMethod(setterName, String::class.java).invoke(obj, value)
+				else -> field.set(obj, value)
+			}
+		}
+	}
 }
