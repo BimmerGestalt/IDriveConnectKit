@@ -81,6 +81,11 @@ object XMLUtils {
 	fun unmarshalAttributes(obj: Any, attrs: Map<String, String>) {
 		/** Given a map of attributes, apply any that fit to an object */
 		attrs.filter { entry ->
+			// we don't change the id after creating the object
+			// and the value setter actually talks to the car, so let's not set it
+			// the value always starts at 0 anyways
+			entry.key != "id" && entry.key != "value"
+		}.filter { entry ->
 			val classType = obj.javaClass
 			val setterName = "set" + entry.key.substring(0, 1).toUpperCase() + entry.key.substring(1)
 			classType.declaredFields.any {

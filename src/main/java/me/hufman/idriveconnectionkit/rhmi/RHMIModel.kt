@@ -11,8 +11,7 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 		fun loadFromXML(app: RHMIApplication, node: Node): RHMIModel? {
 			val attrs = XMLUtils.getAttributes(node)
 
-			if (attrs["id"] == null) return null
-			val id = attrs["id"]!!.toInt()
+			val id = attrs["id"]?.toInt() ?: return null
 
 			if (node.nodeName == "formatDataModel") {
 				val submodels = XMLUtils.childNodes(XMLUtils.getChildNodeNamed(node, "models")).map { submodelNode ->
@@ -50,13 +49,16 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 	}
 	class RaBoolModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
 		var value: Boolean = false
+			set(value) { app.setModel(id, value); field = value }
 	}
 	class RaDataModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
 		var modelType: String = ""
 		var value: String = ""
+			set(value) { app.setModel(id, value); field = value }
 	}
 	open class RaIntModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
 		var value: Int = 0
+			set(value) { app.setModel(id, value); field = value }
 	}
 	class RaGaugeModel(override val app: RHMIApplication, override val id: Int): RaIntModel(app, id) {
 		var modelType: String = ""
@@ -71,10 +73,15 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 	}
 
 	class RaImageModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
-		fun setValue(value: ByteArray) {
-			val data = BMWRemoting.RHMIResourceData(BMWRemoting.RHMIResourceType.IMAGEDATA, value)
-			app.setModel(this.id, data)
-		}
+		var value: ByteArray?
+			get() = null
+			set(value) {
+				if (value != null) {
+					val data = BMWRemoting.RHMIResourceData(BMWRemoting.RHMIResourceType.IMAGEDATA, value)
+					app.setModel(this.id, data)
+				}
+			}
+
 	}
 
 	class RaListModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
@@ -108,10 +115,16 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 				realData[index] = row
 			}
 		}
-		fun setValue(data: RHMIList) {
-			setValue(data, 0, data.height, data.height)
-		}
-		fun setValue(data: RHMIList, startIndex: Int, numRows: Int, totalRows: Int) {
+
+		var value: RHMIList?
+			get() = null
+			set(value) {
+				if (value != null) {
+					setValue(value, 0, value.height, value.height)
+				}
+			}
+
+		fun setValue(data: RaListModel.RHMIList, startIndex: Int, numRows: Int, totalRows: Int) {
 			val table = BMWRemoting.RHMIDataTable(data.getWindow(startIndex, numRows), false, startIndex, numRows, totalRows, 0, data.width, data.width)
 			app.setModel(this.id, table)
 		}

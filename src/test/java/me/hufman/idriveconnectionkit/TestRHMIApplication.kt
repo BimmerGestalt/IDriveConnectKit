@@ -15,9 +15,14 @@ class TestRHMIApplication {
 		assertTrue(model is RHMIModel.MockModel)
 		assertEquals(10, model.id)
 		val imageModel = model.asImageIdModel()
-		assertTrue(imageModel is RHMIModel)
 		assertTrue(imageModel is RHMIModel.ImageIdModel)
 		assertEquals(10, imageModel.id)
 		assertEquals(0, imageModel.imageId)
+		val intModel = model.asRaIntModel()
+		assertTrue(intModel is RHMIModel.RaIntModel)
+		assertEquals(0, intModel.value)
+		assertEquals(null, app.modelData[model.id])
+		intModel.value = 50
+		assertEquals(50, app.modelData[model.id])
 	}
 }
