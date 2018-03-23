@@ -1,14 +1,25 @@
 package me.hufman.idriveconnectionkit
 
 import de.bmw.idrive.BMWRemoting
-import me.hufman.idriveconnectionkit.XMLUtils
+import me.hufman.idriveconnectionkit.rhmi.RHMIAction
 import me.hufman.idriveconnectionkit.rhmi.RHMIModel
 import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import org.junit.Assert.*
 import org.junit.Test
 
 class TestXMLParsing {
-	val xml = "<models>" +
+	val xml = "<pluginApp>" +
+			"<actions>" +
+			"<raAction id=\"2\"/>" +
+			"<combinedAction id=\"3\" sync=\"true\" actionType=\"spellWord\">" +
+			"    <actions>" +
+			"        <raAction id=\"4\"/>" +
+			"        <hmiAction id=\"5\" targetModel=\"6\"/>" +
+			"    </actions>" +
+			"</combinedAction>" +
+			"<linkAction id=\"7\" actionType=\"call\" linkModel=\"12\"/>" +
+			"</actions>" +
+			"<models>" +
 			"<imageIdModel id=\"4\" imageId=\"15\"/>" +
 			"<textIdModel id=\"5\" textId=\"70\"/>" +
 			"<raBoolModel id=\"50\"/>" +
@@ -23,16 +34,51 @@ class TestXMLParsing {
 			"        <raDataModel id=\"12\"/>\n" +
 			"    </models>\n" +
 			"</formatDataModel>" +
-			"</models>"
+			"</models>" +
+			"</pluginApp>"
 	var app = RHMIApplicationMock()
 	val root = XMLUtils.loadXML(xml).childNodes.item(0)
+	val actions = root.childNodes.item(0)
+	val models = root.childNodes.item(1)
 
-	fun setUpBeforeClass() {
-		assertNotNull(root)
+	@Test fun raAction() {
+		val action = RHMIAction.loadFromXML(app, actions.childNodes.item(0))
+		assertNotNull(action)
+		assertTrue(action is RHMIAction.RAAction)
+		assertEquals(2, action?.id)
 	}
 
+	@Test fun combinedAction() {
+		val action = RHMIAction.loadFromXML(app, actions.childNodes.item(1))
+		assertNotNull(action)
+		assertTrue(action is RHMIAction.CombinedAction)
+		val combinedAction = action as RHMIAction.CombinedAction
+		assertEquals(3, action?.id)
+		assertEquals("spellWord", combinedAction.actionType)
+		assertNotNull(combinedAction.raAction)
+		assertTrue(combinedAction.raAction is RHMIAction.RAAction)
+		assertEquals(4, combinedAction.raAction?.id)
+		assertNotNull(combinedAction.hmiAction)
+		assertTrue(combinedAction.hmiAction is RHMIAction.HMIAction)
+		assertEquals(5, combinedAction.hmiAction?.id)
+		assertEquals(6, combinedAction.hmiAction?.targetModel)
+		assertNotNull(combinedAction.hmiAction?.getTargetModel())
+		assertEquals(6, combinedAction.hmiAction?.getTargetModel()?.id)
+	}
+
+	@Test fun linkAction() {
+		val action = RHMIAction.loadFromXML(app, actions.childNodes.item(2))
+		assertNotNull(action)
+		assertTrue(action is RHMIAction.LinkAction)
+		assertEquals(7, action?.id)
+		val linkAction = action as RHMIAction.LinkAction
+		assertEquals("call", linkAction.actionType)
+		assertEquals(12, linkAction.linkModel)
+		assertNotNull(linkAction.getLinkModel())
+		assertEquals(12, linkAction.getLinkModel()?.id)
+	}
 	@Test fun imageIdModel() {
-		val model = RHMIModel.loadFromXML(app, root.childNodes.item(0))
+		val model = RHMIModel.loadFromXML(app, models.childNodes.item(0))
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.ImageIdModel)
 		assertEquals(4, model?.id)
@@ -40,7 +86,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun textIdModel() {
-		val model = RHMIModel.loadFromXML(app, root.childNodes.item(1))
+		val model = RHMIModel.loadFromXML(app, models.childNodes.item(1))
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.TextIdModel)
 		assertEquals(5, model?.id)
@@ -48,7 +94,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun raBoolModel() {
-		val model = RHMIModel.loadFromXML(app, root.childNodes.item(2))
+		val model = RHMIModel.loadFromXML(app, models.childNodes.item(2))
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaBoolModel)
 		assertEquals(50, model?.id)
@@ -59,7 +105,7 @@ class TestXMLParsing {
 		assertEquals(true, app.modelData[model?.id])
 	}
 	@Test fun raDataModel() {
-		val model = RHMIModel.loadFromXML(app, root.childNodes.item(3))
+		val model = RHMIModel.loadFromXML(app, models.childNodes.item(3))
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaDataModel)
 		assertEquals(null, app.modelData[model?.id])
@@ -71,7 +117,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun raImageModel() {
-		val model = RHMIModel.loadFromXML(app, root.childNodes.item(4))
+		val model = RHMIModel.loadFromXML(app, models.childNodes.item(4))
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaImageModel)
 		assertEquals(null, app.modelData[model?.id])
@@ -86,7 +132,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun raIntModel() {
-		val model = RHMIModel.loadFromXML(app, root.childNodes.item(5))
+		val model = RHMIModel.loadFromXML(app, models.childNodes.item(5))
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaIntModel)
 		assertEquals(null, app.modelData[model?.id])
@@ -98,7 +144,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun raListModel() {
-		val model = RHMIModel.loadFromXML(app, root.childNodes.item(6))
+		val model = RHMIModel.loadFromXML(app, models.childNodes.item(6))
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaListModel)
 		assertEquals(null, app.modelData[model?.id])
@@ -114,7 +160,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun raGaugeModel() {
-		val model = RHMIModel.loadFromXML(app, root.childNodes.item(7))
+		val model = RHMIModel.loadFromXML(app, models.childNodes.item(7))
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaGaugeModel)
 		assertEquals(null, app.modelData[model?.id])
@@ -130,7 +176,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun formatDataModel() {
-		val model = RHMIModel.loadFromXML(app, root.childNodes.item(8))
+		val model = RHMIModel.loadFromXML(app, models.childNodes.item(8))
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.FormatDataModel)
 		assertEquals(10, model?.id)

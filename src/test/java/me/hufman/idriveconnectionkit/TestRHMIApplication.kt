@@ -2,13 +2,13 @@ package me.hufman.idriveconnectionkit
 
 import junit.framework.TestCase.*
 import me.hufman.idriveconnectionkit.XMLUtils
+import me.hufman.idriveconnectionkit.rhmi.RHMIAction
 import me.hufman.idriveconnectionkit.rhmi.RHMIModel
 import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import org.junit.Test
 
 class TestRHMIApplication {
-	@Test
-	fun mockModels() {
+	@Test fun mockModels() {
 		val app = RHMIApplicationMock()
 		val model = app.models[10]
 		assertTrue(model is RHMIModel)
@@ -24,5 +24,12 @@ class TestRHMIApplication {
 		assertEquals(null, app.modelData[model.id])
 		intModel.value = 50
 		assertEquals(50, app.modelData[model.id])
+	}
+
+	@Test fun mockActions() {
+		val app = RHMIApplicationMock()
+		val action = RHMIAction.HMIAction(app, 2)
+		action.getTargetModel()
+
 	}
 }

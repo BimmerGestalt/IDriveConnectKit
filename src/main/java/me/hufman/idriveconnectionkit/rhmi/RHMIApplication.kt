@@ -9,6 +9,7 @@ import java.util.HashMap
 
 interface RHMIApplication {
 	val models: HashMap<Int, RHMIModel>
+	val actions: HashMap<Int, RHMIAction>
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
 	fun setModel(modelId: Int, value: Any)
@@ -23,6 +24,7 @@ interface RHMIApplication {
 class RHMIApplicationEtch private constructor(val remoteServer: BMWRemotingServer, val rhmiHandle: Int) : RHMIApplication {
 
 	override val models = HashMap<Int, RHMIModel>()
+	override val actions = HashMap<Int, RHMIAction>()
 
 	companion object {
 		fun parseUiDescription(remoteServer: BMWRemotingServer, handle: Int, description: ByteArray): RHMIApplication {
@@ -38,6 +40,11 @@ class RHMIApplicationEtch private constructor(val remoteServer: BMWRemotingServe
 				val model = RHMIModel.loadFromXML(this, it)
 				if (model != null)
 					models[model.id] = model
+			}
+			XMLUtils.childNodes(XMLUtils.getChildNodeNamed(it, "actions")).forEach {
+				val action = RHMIAction.loadFromXML(this, it)
+				if (action != null)
+					actions[action.id] = action
 			}
 		}
 	}
