@@ -6,6 +6,7 @@ import me.hufman.idriveconnectionkit.rhmi.RHMIModel
 import java.util.HashMap
 
 class RHMIApplicationMock : RHMIApplication {
+	/** Automatically instantiates elements of the application layout */
 	override val models = MockModelMap(this)
 	override val actions = MockActionMap(this)
 

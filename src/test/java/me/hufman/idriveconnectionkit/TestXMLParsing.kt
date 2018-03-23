@@ -2,10 +2,12 @@ package me.hufman.idriveconnectionkit
 
 import de.bmw.idrive.BMWRemoting
 import me.hufman.idriveconnectionkit.rhmi.RHMIAction
+import me.hufman.idriveconnectionkit.rhmi.RHMIApplicationConcrete
 import me.hufman.idriveconnectionkit.rhmi.RHMIModel
 import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import org.junit.Assert.*
 import org.junit.Test
+import java.text.Normalizer
 
 class TestXMLParsing {
 	val xml = "<pluginApp>" +
@@ -40,6 +42,31 @@ class TestXMLParsing {
 	val root = XMLUtils.loadXML(xml).childNodes.item(0)
 	val actions = root.childNodes.item(0)
 	val models = root.childNodes.item(1)
+
+	@Test fun entireDescription() {
+		val app = RHMIApplicationConcrete()
+		app.loadFromXML(xml)
+		assertEquals(5, app.actions.size)
+		assertEquals(11, app.models.size)
+
+		assertTrue(app.actions[2] is RHMIAction.RAAction)
+		assertTrue(app.actions[3] is RHMIAction.CombinedAction)
+		assertTrue(app.actions[4] is RHMIAction.RAAction)
+		assertTrue(app.actions[5] is RHMIAction.HMIAction)
+		assertTrue(app.actions[7] is RHMIAction.LinkAction)
+
+		assertTrue(app.models[4] is RHMIModel.ImageIdModel)
+		assertTrue(app.models[5] is RHMIModel.TextIdModel)
+		assertTrue(app.models[50] is RHMIModel.RaBoolModel)
+		assertTrue(app.models[6] is RHMIModel.RaDataModel)
+		assertTrue(app.models[62] is RHMIModel.RaImageModel)
+		assertTrue(app.models[60] is RHMIModel.RaIntModel)
+		assertTrue(app.models[7] is RHMIModel.RaListModel)
+		assertTrue(app.models[8] is RHMIModel.RaGaugeModel)
+		assertTrue(app.models[10] is RHMIModel.FormatDataModel)
+		assertTrue(app.models[11] is RHMIModel.TextIdModel)
+		assertTrue(app.models[12] is RHMIModel.RaDataModel)
+	}
 
 	@Test fun raAction() {
 		val action = RHMIAction.loadFromXML(app, actions.childNodes.item(0))
