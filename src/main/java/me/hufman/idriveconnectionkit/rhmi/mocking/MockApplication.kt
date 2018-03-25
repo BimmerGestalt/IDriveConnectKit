@@ -11,13 +11,18 @@ class RHMIApplicationMock : RHMIApplication {
 	override val components = MockComponentMap(this)
 
 	val modelData = HashMap<Int, Any>()
+	val propertyData = HashMap<Int, HashMap<Int, Any>>()
+
 
 	override fun setModel(modelId: Int, value: Any) {
 		modelData[modelId] = value
 	}
 
 	override fun setProperty(componentId: Int, propertyId: Int, value: Any) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		if (!propertyData.containsKey(componentId)) {
+			propertyData[componentId] = HashMap()
+		}
+		propertyData[componentId]!!.set(propertyId, value)
 	}
 
 	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any>) {

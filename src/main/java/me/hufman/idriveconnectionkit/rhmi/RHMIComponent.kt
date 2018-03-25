@@ -5,6 +5,13 @@ import org.w3c.dom.Node
 
 abstract class RHMIComponent private constructor(open val app: RHMIApplication, open val id: Int) {
 
+	enum class Property(val propertyId: Int) {
+		ENABLED(1),
+		SELECTABLE(2),
+		VISIBLE(3),
+		LIST_COLUMNWIDTH(6)
+	}
+
 	companion object {
 		fun loadFromXML(app: RHMIApplication, node: Node): RHMIComponent? {
 			val attrs = XMLUtils.getAttributes(node)
@@ -29,6 +36,22 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 			}
 			return component
 		}
+	}
+
+	fun setProperty(property: Property, value: Any) {
+		this.setProperty(property.propertyId, value)
+	}
+	fun setProperty(propertyId: Int, value: Any) {
+		app.setProperty(id, propertyId, value)
+	}
+	fun setVisible(visible: Boolean) {
+		this.setProperty(Property.VISIBLE, visible)
+	}
+	fun setSelectable(selectable: Boolean) {
+		this.setProperty(Property.SELECTABLE, selectable)
+	}
+	fun setEnabled(enabled: Boolean) {
+		this.setProperty(Property.ENABLED, enabled)
 	}
 
 	class Separator(override val app: RHMIApplication, override val id: Int): RHMIComponent(app, id)

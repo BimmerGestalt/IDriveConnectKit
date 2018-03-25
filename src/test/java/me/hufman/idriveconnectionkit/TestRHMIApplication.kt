@@ -7,6 +7,10 @@ import me.hufman.idriveconnectionkit.rhmi.RHMIComponent
 import me.hufman.idriveconnectionkit.rhmi.RHMIModel
 import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import org.junit.Test
+import java.util.HashMap
+
+// Allow nested nullable access
+operator fun <K, V> Map<K, V>?.get(key: K) = this?.get(key)
 
 class TestRHMIApplication {
 	@Test fun mockModels() {
@@ -45,5 +49,18 @@ class TestRHMIApplication {
 		assertEquals(10, button.id)
 		button.tooltipModel = 51
 		assertEquals(51, button.getTooltipModel()?.id)
+
+		assertEquals(null, app.propertyData[button.id][RHMIComponent.Property.VISIBLE.propertyId])
+		button.setVisible(true)
+		assertEquals(true, app.propertyData[button.id][RHMIComponent.Property.VISIBLE.propertyId])
+
+		button.setEnabled(false)
+		assertEquals(false, app.propertyData[button.id][RHMIComponent.Property.ENABLED.propertyId])
+
+		button.setSelectable(false)
+		assertEquals(false, app.propertyData[button.id][RHMIComponent.Property.SELECTABLE.propertyId])
+
+		button.setProperty(RHMIComponent.Property.LIST_COLUMNWIDTH, "0,100,*")
+		assertEquals("0,100,*", app.propertyData[button.id][RHMIComponent.Property.LIST_COLUMNWIDTH.propertyId])
 	}
 }
