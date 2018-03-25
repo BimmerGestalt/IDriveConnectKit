@@ -86,21 +86,37 @@ object XMLUtils {
 			// the value always starts at 0 anyways
 			entry.key != "id" && entry.key != "value"
 		}.filter { entry ->
+			/** Check for a field with this attribute's name
+			 * either in this object or in the parent object
+			 * and look for a setter
+			 */
 			val classType = obj.javaClass
 			val setterName = "set" + entry.key.substring(0, 1).toUpperCase() + entry.key.substring(1)
-			classType.declaredFields.any {
-				it.name == entry.key
-			} && classType.declaredMethods.any {
+			(
+				classType.declaredFields.any {
+					it.name == entry.key
+				} ||
+						classType.superclass.declaredFields.any {
+							it.name == entry.key
+						}
+			) &&
+			classType.methods.any {
 				it.name == setterName
 			}
 		}.forEach { key,value ->
+			/** Look at the (possibly parent's) field's data type, to parse the string attribute as
+			 * and then find the matching setter and set it
+			 */
 			val classType = obj.javaClass
-			val field = classType.getDeclaredField(key)
+			val field = if (classType.declaredFields.any {
+					it.name == key
+				}) classType.getDeclaredField(key)
+				else classType.superclass.getDeclaredField(key)
 			val setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1)
 			when(field.type) {
-				Integer::class.javaPrimitiveType -> classType.getDeclaredMethod(setterName, Integer::class.javaPrimitiveType).invoke(obj, value.toInt())
-				Boolean::class.javaPrimitiveType -> classType.getDeclaredMethod(setterName, Boolean::class.javaPrimitiveType).invoke(obj, value.toBoolean())
-				String::class.java -> classType.getDeclaredMethod(setterName, String::class.java).invoke(obj, value)
+				Integer::class.javaPrimitiveType -> classType.getMethod(setterName, Integer::class.javaPrimitiveType).invoke(obj, value.toInt())
+				Boolean::class.javaPrimitiveType -> classType.getMethod(setterName, Boolean::class.javaPrimitiveType).invoke(obj, value.toBoolean())
+				String::class.java -> classType.getMethod(setterName, String::class.java).invoke(obj, value)
 				else -> field.set(obj, value)
 			}
 		}
