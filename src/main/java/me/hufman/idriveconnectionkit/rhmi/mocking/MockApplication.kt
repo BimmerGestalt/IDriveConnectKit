@@ -1,15 +1,13 @@
 package me.hufman.idriveconnectionkit.rhmi.mocking
 
-import me.hufman.idriveconnectionkit.rhmi.RHMIAction
-import me.hufman.idriveconnectionkit.rhmi.RHMIApplication
-import me.hufman.idriveconnectionkit.rhmi.RHMIComponent
-import me.hufman.idriveconnectionkit.rhmi.RHMIModel
+import me.hufman.idriveconnectionkit.rhmi.*
 import java.util.HashMap
 
 class RHMIApplicationMock : RHMIApplication {
 	/** Automatically instantiates elements of the application layout */
 	override val models = MockModelMap(this)
 	override val actions = MockActionMap(this)
+	override val states = MockStateMap(this)
 	override val components = MockComponentMap(this)
 
 	val modelData = HashMap<Int, Any>()
@@ -35,6 +33,11 @@ class MockModelMap(val app: RHMIApplication) : HashMap<Int, RHMIModel>() {
 class MockActionMap(val app: RHMIApplication) : HashMap<Int, RHMIAction>() {
 	override fun get(key:Int):RHMIAction.MockAction {
 		return RHMIAction.MockAction(app, key)
+	}
+}
+class MockStateMap(val app: RHMIApplication) : HashMap<Int, RHMIState>() {
+	override fun get(key:Int):RHMIState.MockState {
+		return RHMIState.MockState(app, key)
 	}
 }
 class MockComponentMap(val app: RHMIApplication) : HashMap<Int, RHMIComponent>() {

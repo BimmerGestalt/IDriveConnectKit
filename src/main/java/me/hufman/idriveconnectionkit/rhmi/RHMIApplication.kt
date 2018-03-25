@@ -10,6 +10,7 @@ import java.util.HashMap
 interface RHMIApplication {
 	val models: HashMap<Int, RHMIModel>
 	val actions: HashMap<Int, RHMIAction>
+	val states: HashMap<Int, RHMIState>
 	val components: HashMap<Int, RHMIComponent>
 
 	fun loadFromXML(description: String) {
@@ -40,16 +41,12 @@ interface RHMIApplication {
 				}
 			}
 			XMLUtils.childNodes(XMLUtils.getChildNodeNamed(pluginAppNode, "hmiStates")).forEach { stateNode ->
-				XMLUtils.childNodes(XMLUtils.getChildNodeNamed(stateNode, "toolbarComponents")).forEach { componentNode ->
-					val component = RHMIComponent.loadFromXML(this, componentNode)
-					if (component != null) {
-						components[component.id] = component
-					}
-				}
-				XMLUtils.childNodes(XMLUtils.getChildNodeNamed(stateNode, "components")).forEach { componentNode ->
-					val component = RHMIComponent.loadFromXML(this, componentNode)
-					if (component != null) {
-						components[component.id] = component
+				val state = RHMIState.loadFromXML(this, stateNode)
+				if (state != null) {
+					states[state.id] = state
+					components.putAll(state.components)
+					if (state is RHMIState.ToolbarState) {
+						components.putAll(state.toolbarComponents)
 					}
 				}
 			}
@@ -77,6 +74,7 @@ class RHMIApplicationConcrete : RHMIApplication {
 	/** Only knows about description elements that are specifically set */
 	override val models = HashMap<Int, RHMIModel>()
 	override val actions = HashMap<Int, RHMIAction>()
+	override val states = HashMap<Int, RHMIState>()
 	override val components = HashMap<Int, RHMIComponent>()
 
 	val modelData = HashMap<Int, Any>()
@@ -96,8 +94,10 @@ class RHMIApplicationConcrete : RHMIApplication {
 }
 
 class RHMIApplicationEtch constructor(val remoteServer: BMWRemotingServer, val rhmiHandle: Int) : RHMIApplication {
+	/** Represents an application layout that is backed by a Car connection */
 	override val models = HashMap<Int, RHMIModel>()
 	override val actions = HashMap<Int, RHMIAction>()
+	override val states = HashMap<Int, RHMIState>()
 	override val components = HashMap<Int, RHMIComponent>()
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)

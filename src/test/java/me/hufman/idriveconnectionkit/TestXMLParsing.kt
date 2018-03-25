@@ -1,10 +1,7 @@
 package me.hufman.idriveconnectionkit
 
 import de.bmw.idrive.BMWRemoting
-import me.hufman.idriveconnectionkit.rhmi.RHMIAction
-import me.hufman.idriveconnectionkit.rhmi.RHMIApplicationConcrete
-import me.hufman.idriveconnectionkit.rhmi.RHMIComponent
-import me.hufman.idriveconnectionkit.rhmi.RHMIModel
+import me.hufman.idriveconnectionkit.rhmi.*
 import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import org.junit.Assert.*
 import org.junit.Test
@@ -39,7 +36,9 @@ class TestXMLParsing {
 			"</formatDataModel>" +
 			"</models>" +
 			"<hmiStates>" +
-			"<hmiState id=\"40\">" +
+			"<hmiState id=\"46\" textModel=\"5\">" +
+			"</hmiState>" +
+			"<toolbarHmiState id=\"40\" textModel=\"6\">" +
 			"<toolbarComponents>" +
 			"<button id=\"41\" action=\"3\" selectAction=\"4\" tooltipModel=\"5\" imageModel=\"4\" />" +
 			"</toolbarComponents>" +
@@ -47,12 +46,14 @@ class TestXMLParsing {
 			"<button id=\"42\" action=\"3\" selectAction=\"4\" tooltipModel=\"5\" model=\"11\" />" +
 			"<separator id=\"43\" />" +
 			"<label id=\"44\" model=\"6\" />" +
-			"<list id=\"45\" model=\"7\" action=\"3\" selectAction=\"4\" />" +
+			"<list id=\"4\" model=\"7\" action=\"3\" selectAction=\"4\" />" +
 			"<checkbox id=\"46\" model=\"50\" textModel=\"5\" action=\"3\" />" +
 			"<gauge id=\"47\" textModel=\"5\" model=\"8\" action=\"3\" changeAction=\"4\" />" +
 			"<input id=\"48\" textModel=\"5\" resultModel=\"6\" suggestModel=\"6\" action=\"4\" resultAction=\"3\" suggestAction=\"3\" />" +
 			"</components>" +
-			"</hmiState>" +
+			"</toolbarHmiState>" +
+			"<popupHmiState id=\"49\" textModel=\"11\">" +
+			"</popupHmiState>" +
 			"</hmiStates>" +
 			"<entryButton id=\"49\" action=\"4\" model=\"5\" imageModel=\"4\"/>" +
 			"</pluginApp>"
@@ -60,21 +61,25 @@ class TestXMLParsing {
 	val root = XMLUtils.loadXML(xml).childNodes.item(0)
 	val actions = root.childNodes.item(0)
 	val models = root.childNodes.item(1)
-	val components = root.childNodes.item(2).childNodes.item(0).childNodes.item(1)
+	val states = root.childNodes.item(2)
+	val components = states.childNodes.item(1).childNodes.item(1)
 
 	@Test fun entireDescription() {
 		val app = RHMIApplicationConcrete()
 		app.loadFromXML(xml)
 		assertEquals(5, app.actions.size)
 		assertEquals(11, app.models.size)
+		assertEquals(3, app.states.size)
 		assertEquals(9, app.components.size)
 
+		// all parsed actions
 		assertTrue(app.actions[2] is RHMIAction.RAAction)
 		assertTrue(app.actions[3] is RHMIAction.CombinedAction)
 		assertTrue(app.actions[4] is RHMIAction.RAAction)
 		assertTrue(app.actions[5] is RHMIAction.HMIAction)
 		assertTrue(app.actions[7] is RHMIAction.LinkAction)
 
+		// all parsed models
 		assertTrue(app.models[4] is RHMIModel.ImageIdModel)
 		assertTrue(app.models[5] is RHMIModel.TextIdModel)
 		assertTrue(app.models[50] is RHMIModel.RaBoolModel)
@@ -87,14 +92,31 @@ class TestXMLParsing {
 		assertTrue(app.models[11] is RHMIModel.TextIdModel)
 		assertTrue(app.models[12] is RHMIModel.RaDataModel)
 
+		// all parsed states
+		assertTrue(app.states[46] is RHMIState.PlainState)
+		assertTrue(app.states[40] is RHMIState.ToolbarState)
+		assertTrue(app.states[49] is RHMIState.PopupState)
+
+		// all parsed components
 		assertTrue(app.components[41] is RHMIComponent.ToolbarButton)
 		assertTrue(app.components[42] is RHMIComponent.Button)
 		assertTrue(app.components[43] is RHMIComponent.Separator)
 		assertTrue(app.components[44] is RHMIComponent.Label)
-		assertTrue(app.components[45] is RHMIComponent.List)
+		assertTrue(app.components[4] is RHMIComponent.List)
 		assertTrue(app.components[46] is RHMIComponent.Checkbox)
 		assertTrue(app.components[47] is RHMIComponent.Gauge)
 		assertTrue(app.components[48] is RHMIComponent.Input)
+
+		// check the ordered list
+		val toolbarState = app.states[40] as RHMIState.ToolbarState
+		assertTrue(toolbarState.toolbarComponentsList[0] is RHMIComponent.ToolbarButton)
+		assertTrue(toolbarState.componentsList[0] is RHMIComponent.Button)
+		assertTrue(toolbarState.componentsList[1] is RHMIComponent.Separator)
+		assertTrue(toolbarState.componentsList[2] is RHMIComponent.Label)
+		assertTrue(toolbarState.componentsList[3] is RHMIComponent.List)
+		assertTrue(toolbarState.componentsList[4] is RHMIComponent.Checkbox)
+		assertTrue(toolbarState.componentsList[5] is RHMIComponent.Gauge)
+		assertTrue(toolbarState.componentsList[6] is RHMIComponent.Input)
 	}
 
 	@Test fun raAction() {
@@ -245,6 +267,39 @@ class TestXMLParsing {
 		assertEquals(12, submodels[1].id)
 	}
 
+	@Test fun plainState() {
+		val state = RHMIState.loadFromXML(app, states.childNodes.item(0))
+		assertNotNull(state)
+		assertTrue(state is RHMIState.PlainState)
+		assertEquals(46, state?.id)
+		assertEquals(0, state?.components?.size)
+		assertEquals(0, state?.componentsList?.size)
+		assertEquals(5, state?.textModel)
+		assertEquals(5, state?.getTextModel()?.id)
+	}
+	@Test fun toolbarState() {
+		val state = RHMIState.loadFromXML(app, states.childNodes.item(1))
+		assertNotNull(state)
+		assertTrue(state is RHMIState.ToolbarState)
+		assertEquals(40, state?.id)
+		assertEquals(1, state?.asToolbarState()?.toolbarComponents?.size)
+		assertEquals(1, state?.asToolbarState()?.toolbarComponentsList?.size)
+		assertEquals(7, state?.components?.size)
+		assertEquals(7, state?.componentsList?.size)
+		assertEquals(6, state?.textModel)
+		assertEquals(6, state?.getTextModel()?.id)
+	}
+	@Test fun popupState() {
+		val state = RHMIState.loadFromXML(app, states.childNodes.item(2))
+		assertNotNull(state)
+		assertTrue(state is RHMIState.PopupState)
+		assertEquals(49, state?.id)
+		assertEquals(0, state?.components?.size)
+		assertEquals(0, state?.componentsList?.size)
+		assertEquals(11, state?.textModel)
+		assertEquals(11, state?.getTextModel()?.id)
+	}
+
 	@Test fun entryButton() {
 		val componentNode = root.childNodes.item(3)
 		val component = RHMIComponent.loadFromXML(app, componentNode)
@@ -261,7 +316,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun toolbarButton() {
-		val componentNode = root.childNodes.item(2).childNodes.item(0).childNodes.item(0).childNodes.item(0)
+		val componentNode = root.childNodes.item(2).childNodes.item(1).childNodes.item(0).childNodes.item(0)
 		val component = RHMIComponent.loadFromXML(app, componentNode)
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.ToolbarButton)
@@ -311,7 +366,7 @@ class TestXMLParsing {
 		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(3))
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.List)
-		assertEquals(45, component?.id)
+		assertEquals(4, component?.id)
 		assertEquals(7, component?.asList()?.model)
 		assertEquals(7, component?.asList()?.getModel()?.id)
 		assertEquals(3, component?.asList()?.action)
