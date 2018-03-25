@@ -197,34 +197,34 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 	}
 
 	class MockComponent(override val app: RHMIApplication, override val id: Int): RHMIComponent(app, id) {
-		override fun asSeparator(): Separator? {
+		override fun asSeparator(): Separator {
 			return Separator(app, id)
 		}
-		override fun asImage(): Image? {
+		override fun asImage(): Image {
 			return Image(app, id)
 		}
-		override fun asLabel(): Label? {
+		override fun asLabel(): Label {
 			return Label(app, id)
 		}
-		override fun asList(): List? {
+		override fun asList(): List {
 			return List(app, id)
 		}
-		override fun asEntryButton(): EntryButton? {
+		override fun asEntryButton(): EntryButton {
 			return EntryButton(app, id)
 		}
-		override fun asToolbarButton(): ToolbarButton? {
+		override fun asToolbarButton(): ToolbarButton {
 			return ToolbarButton(app, id)
 		}
-		override fun asButton(): Button? {
+		override fun asButton(): Button {
 			return Button(app, id)
 		}
-		override fun asCheckbox(): Checkbox? {
+		override fun asCheckbox(): Checkbox {
 			return Checkbox(app, id)
 		}
-		override fun asGauge(): Gauge? {
+		override fun asGauge(): Gauge {
 			return Gauge(app, id)
 		}
-		override fun asInput(): Input? {
+		override fun asInput(): Input {
 			return Input(app, id)
 		}
 	}
