@@ -30,6 +30,5 @@ class TestRHMIApplication {
 		val app = RHMIApplicationMock()
 		val action = RHMIAction.HMIAction(app, 2)
 		action.getTargetModel()
-
 	}
 }
