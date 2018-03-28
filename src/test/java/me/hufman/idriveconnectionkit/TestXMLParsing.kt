@@ -50,6 +50,7 @@ class TestXMLParsing {
 			"<checkbox id=\"46\" model=\"50\" textModel=\"5\" action=\"3\" />" +
 			"<gauge id=\"47\" textModel=\"5\" model=\"8\" action=\"3\" changeAction=\"4\" />" +
 			"<input id=\"48\" textModel=\"5\" resultModel=\"6\" suggestModel=\"6\" action=\"4\" resultAction=\"3\" suggestAction=\"3\" />" +
+			"<image id=\"50\" model=\"62\"/>" +
 			"</components>" +
 			"</toolbarHmiState>" +
 			"<popupHmiState id=\"49\" textModel=\"11\">" +
@@ -70,7 +71,7 @@ class TestXMLParsing {
 		assertEquals(5, app.actions.size)
 		assertEquals(11, app.models.size)
 		assertEquals(3, app.states.size)
-		assertEquals(9, app.components.size)
+		assertEquals(10, app.components.size)
 
 		// all parsed actions
 		assertTrue(app.actions[2] is RHMIAction.RAAction)
@@ -276,6 +277,9 @@ class TestXMLParsing {
 		assertEquals(0, state?.componentsList?.size)
 		assertEquals(5, state?.textModel)
 		assertEquals(5, state?.getTextModel()?.id)
+
+		state?.getTextModel()?.asRaDataModel()?.value = "Test"
+		assertEquals("Test", app.modelData[5])
 	}
 	@Test fun toolbarState() {
 		val state = RHMIState.loadFromXML(app, states.childNodes.item(1))
@@ -284,10 +288,13 @@ class TestXMLParsing {
 		assertEquals(40, state?.id)
 		assertEquals(1, state?.asToolbarState()?.toolbarComponents?.size)
 		assertEquals(1, state?.asToolbarState()?.toolbarComponentsList?.size)
-		assertEquals(7, state?.components?.size)
-		assertEquals(7, state?.componentsList?.size)
+		assertEquals(8, state?.components?.size)
+		assertEquals(8, state?.componentsList?.size)
 		assertEquals(6, state?.textModel)
 		assertEquals(6, state?.getTextModel()?.id)
+
+		state?.getTextModel()?.asRaDataModel()?.value = "Test"
+		assertEquals("Test", app.modelData[6])
 	}
 	@Test fun popupState() {
 		val state = RHMIState.loadFromXML(app, states.childNodes.item(2))
@@ -298,6 +305,9 @@ class TestXMLParsing {
 		assertEquals(0, state?.componentsList?.size)
 		assertEquals(11, state?.textModel)
 		assertEquals(11, state?.getTextModel()?.id)
+
+		state?.getTextModel()?.asRaDataModel()?.value = "Test"
+		assertEquals("Test", app.modelData[11])
 	}
 
 	@Test fun entryButton() {
@@ -313,6 +323,11 @@ class TestXMLParsing {
 		assertEquals(5, button.getModel()?.id)
 		assertEquals(4, button.imageModel)
 		assertEquals(4, button.getImageModel()?.id)
+
+		component?.asEntryButton()?.getImageModel()?.asRaImageModel()?.value = byteArrayOf(10, 12)
+		assertArrayEquals(byteArrayOf(10, 12), (app.modelData[4] as BMWRemoting.RHMIResourceData).data)
+		component?.asEntryButton()?.getModel()?.asRaDataModel()?.value = "Test"
+		assertEquals("Test", app.modelData[5])
 	}
 
 	@Test fun toolbarButton() {
@@ -330,6 +345,11 @@ class TestXMLParsing {
 		assertEquals(5, button.getTooltipModel()?.id)
 		assertEquals(4, button.imageModel)
 		assertEquals(4, button.getImageModel()?.id)
+
+		component?.asToolbarButton()?.getImageModel()?.asRaImageModel()?.value = byteArrayOf(10, 12)
+		assertArrayEquals(byteArrayOf(10, 12), (app.modelData[4] as BMWRemoting.RHMIResourceData).data)
+		component?.asToolbarButton()?.getTooltipModel()?.asRaDataModel()?.value = "Test"
+		assertEquals("Test", app.modelData[5])
 	}
 
 	@Test fun button() {
@@ -346,6 +366,11 @@ class TestXMLParsing {
 		assertEquals(5, button.getTooltipModel()?.id)
 		assertEquals(11, button.model)
 		assertEquals(11, button.getModel()?.id)
+
+		component?.asButton()?.getModel()?.asRaDataModel()?.value = "Hi"
+		assertEquals("Hi", app.modelData[11])
+		component?.asButton()?.getTooltipModel()?.asRaDataModel()?.value = "Test"
+		assertEquals("Test", app.modelData[5])
 	}
 
 	@Test fun separator() {
@@ -361,6 +386,9 @@ class TestXMLParsing {
 		assertEquals(44, component?.id)
 		assertEquals(6, component?.asLabel()?.model)
 		assertEquals(6, component?.asLabel()?.getModel()?.id)
+
+		component?.asLabel()?.getModel()?.asRaDataModel()?.value = "Test"
+		assertEquals("Test", app.modelData[6])
 	}
 	@Test fun list() {
 		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(3))
@@ -373,6 +401,12 @@ class TestXMLParsing {
 		assertEquals(3, component?.asList()?.getAction()?.id)
 		assertEquals(4, component?.asList()?.selectAction)
 		assertEquals(4, component?.asList()?.getSelectAction()?.id)
+
+		val sentList = RHMIModel.RaListModel.RHMIListConcrete(3)
+		sentList.addRow(arrayOf(true, 4, "Yes"))
+		val expectedList = arrayOf(arrayOf(true, 4, "Yes"))
+		component?.asList()?.getModel()?.value = sentList
+		assertArrayEquals(expectedList, (app.modelData[7] as BMWRemoting.RHMIDataTable).data)
 	}
 	@Test fun checkbox() {
 		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(4))
@@ -385,6 +419,11 @@ class TestXMLParsing {
 		assertEquals(5, component?.asCheckbox()?.getTextModel()?.id)
 		assertEquals(3, component?.asCheckbox()?.action)
 		assertEquals(3, component?.asCheckbox()?.getAction()?.id)
+
+		component?.asCheckbox()?.getModel()?.asRaBoolModel()?.value = true
+		assertEquals(true, app.modelData[50])
+		component?.asCheckbox()?.getTextModel()?.asRaDataModel()?.value = "Test"
+		assertEquals("Test", app.modelData[5])
 	}
 	@Test fun gauge() {
 		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(5))
@@ -399,6 +438,11 @@ class TestXMLParsing {
 		assertEquals(3, component?.asGauge()?.getAction()?.id)
 		assertEquals(4, component?.asGauge()?.changeAction)
 		assertEquals(4, component?.asGauge()?.getChangeAction()?.id)
+
+		component?.asGauge()?.getModel()?.value = 5
+		assertEquals(5, app.modelData[8])
+		component?.asGauge()?.getTextModel()?.asRaDataModel()?.value = "Test"
+		assertEquals("Test", app.modelData[5])
 	}
 	@Test fun input() {
 		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(6))
@@ -417,6 +461,25 @@ class TestXMLParsing {
 		assertEquals(3, component?.asInput()?.getResultAction()?.id)
 		assertEquals(3, component?.asInput()?.suggestAction)
 		assertEquals(3, component?.asInput()?.getSuggestAction()?.id)
+
+		component?.asInput()?.getTextModel()?.asRaDataModel()?.value = "Test"
+		assertEquals("Test", app.modelData[5])
+		val sentList = RHMIModel.RaListModel.RHMIListConcrete(3)
+		sentList.addRow(arrayOf(true, 4, "Yes"))
+		val expectedList = arrayOf(arrayOf(true, 4, "Yes"))
+		component?.asInput()?.getSuggestModel()?.value = sentList
+		assertArrayEquals(expectedList, (app.modelData[6] as BMWRemoting.RHMIDataTable).data)
 	}
 
+	@Test fun image() {
+		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(7))
+		assertNotNull(component)
+		assertTrue(component is RHMIComponent.Image)
+		assertEquals(50, component?.id)
+		assertEquals(62, component?.asImage()?.model)
+		assertEquals(62, component?.asImage()?.getModel()?.id)
+
+		component?.asImage()?.getModel()?.asRaImageModel()?.value = byteArrayOf(10, 12)
+		assertArrayEquals(byteArrayOf(10, 12), (app.modelData[62] as BMWRemoting.RHMIResourceData).data)
+	}
 }
