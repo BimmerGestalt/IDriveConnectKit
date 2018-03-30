@@ -1,7 +1,10 @@
 package me.hufman.idriveconnectionkit.rhmi
 
 import de.bmw.idrive.BMWRemoting
-import me.hufman.idriveconnectionkit.XMLUtils
+import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
+import me.hufman.idriveconnectionkit.xmlutils.getAttributesMap
+import me.hufman.idriveconnectionkit.xmlutils.getChildElements
+import me.hufman.idriveconnectionkit.xmlutils.getChildNamed
 import org.w3c.dom.Node
 
 
@@ -9,14 +12,14 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 
 	companion object {
 		fun loadFromXML(app: RHMIApplication, node: Node): RHMIModel? {
-			val attrs = XMLUtils.getAttributes(node)
+			val attrs = node.getAttributesMap()
 
 			val id = attrs["id"]?.toInt() ?: return null
 
 			if (node.nodeName == "formatDataModel") {
-				val submodels = XMLUtils.childNodes(XMLUtils.getChildNodeNamed(node, "models")).map { submodelNode ->
+				val submodels = node.getChildNamed("models").getChildElements().mapNotNull { submodelNode ->
 					loadFromXML(app, submodelNode)
-				}.filterNotNull()
+				}
 				val model = FormatDataModel(app, id, submodels)
 				XMLUtils.unmarshalAttributes(model, attrs)
 				return model

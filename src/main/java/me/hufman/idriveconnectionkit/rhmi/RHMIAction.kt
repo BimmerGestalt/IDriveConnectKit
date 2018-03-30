@@ -1,6 +1,9 @@
 package me.hufman.idriveconnectionkit.rhmi
 
-import me.hufman.idriveconnectionkit.XMLUtils
+import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
+import me.hufman.idriveconnectionkit.xmlutils.getAttributesMap
+import me.hufman.idriveconnectionkit.xmlutils.getChildElements
+import me.hufman.idriveconnectionkit.xmlutils.getChildNamed
 import org.w3c.dom.Node
 
 
@@ -8,14 +11,14 @@ abstract class RHMIAction private constructor(open val app: RHMIApplication, ope
 
 	companion object {
 		fun loadFromXML(app: RHMIApplication, node: Node): RHMIAction? {
-			val attrs = XMLUtils.getAttributes(node)
+			val attrs = node.getAttributesMap()
 
 			val id = attrs["id"]?.toInt() ?: return null
 
 			if (node.nodeName == "combinedAction") {
-				val subactions = XMLUtils.childNodes(XMLUtils.getChildNodeNamed(node, "actions")).map { subactionNode ->
+				val subactions = node.getChildNamed("actions").getChildElements().mapNotNull { subactionNode ->
 					loadFromXML(app, subactionNode)
-				}.filterNotNull()
+				}
 				val raAction = subactions.firstOrNull { it is RAAction } as RAAction?
 				val hmiAction = subactions.firstOrNull { it is HMIAction } as HMIAction?
 				val action = CombinedAction(app, id, raAction, hmiAction)

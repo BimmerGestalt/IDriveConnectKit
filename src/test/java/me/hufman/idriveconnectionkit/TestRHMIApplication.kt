@@ -1,13 +1,11 @@
 package me.hufman.idriveconnectionkit
 
 import junit.framework.TestCase.*
-import me.hufman.idriveconnectionkit.XMLUtils
 import me.hufman.idriveconnectionkit.rhmi.RHMIAction
 import me.hufman.idriveconnectionkit.rhmi.RHMIComponent
 import me.hufman.idriveconnectionkit.rhmi.RHMIModel
 import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import org.junit.Test
-import java.util.HashMap
 
 // Allow nested nullable access
 operator fun <K, V> Map<K, V>?.get(key: K) = this?.get(key)

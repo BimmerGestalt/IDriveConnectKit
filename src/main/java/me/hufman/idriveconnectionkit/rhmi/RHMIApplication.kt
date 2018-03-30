@@ -2,7 +2,9 @@ package me.hufman.idriveconnectionkit.rhmi
 
 import de.bmw.idrive.BMWRemoting
 import de.bmw.idrive.BMWRemotingServer
-import me.hufman.idriveconnectionkit.XMLUtils
+import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
+import me.hufman.idriveconnectionkit.xmlutils.getChildElements
+import me.hufman.idriveconnectionkit.xmlutils.getChildNamed
 import org.w3c.dom.Document
 import java.util.HashMap
 
@@ -20,8 +22,8 @@ interface RHMIApplication {
 		return this.loadFromXML(XMLUtils.loadXML(description))
 	}
 	fun loadFromXML(description: Document) {
-		XMLUtils.childNodes(description.getElementsByTagName("pluginApp")).forEach {pluginAppNode ->
-			XMLUtils.childNodes(XMLUtils.getChildNodeNamed(pluginAppNode, "models")).forEach { modelNode ->
+		description.getChildNamed("pluginApps").getChildElements().forEach { pluginAppNode ->
+			pluginAppNode.getChildNamed("models").getChildElements().forEach { modelNode ->
 				val model = RHMIModel.loadFromXML(this, modelNode)
 				if (model != null) {
 					models[model.id] = model
@@ -30,7 +32,7 @@ interface RHMIApplication {
 					}
 				}
 			}
-			XMLUtils.childNodes(XMLUtils.getChildNodeNamed(pluginAppNode, "actions")).forEach { actionNode ->
+			pluginAppNode.getChildNamed("actions").getChildElements().forEach { actionNode ->
 				val action = RHMIAction.loadFromXML(this, actionNode)
 				if (action != null) {
 					actions[action.id] = action
@@ -40,7 +42,7 @@ interface RHMIApplication {
 					}
 				}
 			}
-			XMLUtils.childNodes(XMLUtils.getChildNodeNamed(pluginAppNode, "hmiStates")).forEach { stateNode ->
+			pluginAppNode.getChildNamed("hmiStates").getChildElements().forEach { stateNode ->
 				val state = RHMIState.loadFromXML(this, stateNode)
 				if (state != null) {
 					states[state.id] = state
@@ -50,7 +52,7 @@ interface RHMIApplication {
 					}
 				}
 			}
-			val entryButtonNode = XMLUtils.getChildNodeNamed(pluginAppNode, "entryButton")
+			val entryButtonNode = pluginAppNode.getChildNamed("entryButton")
 			if (entryButtonNode != null) {
 				val component = RHMIComponent.loadFromXML(this, entryButtonNode)
 				if (component != null) {

@@ -1,6 +1,7 @@
 package me.hufman.idriveconnectionkit.rhmi
 
-import me.hufman.idriveconnectionkit.XMLUtils
+import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
+import me.hufman.idriveconnectionkit.xmlutils.getAttributesMap
 import org.w3c.dom.Node
 
 abstract class RHMIComponent private constructor(open val app: RHMIApplication, open val id: Int) {
@@ -14,7 +15,7 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 
 	companion object {
 		fun loadFromXML(app: RHMIApplication, node: Node): RHMIComponent? {
-			val attrs = XMLUtils.getAttributes(node)
+			val attrs = node.getAttributesMap()
 
 			val id = attrs["id"]?.toInt() ?: return null
 

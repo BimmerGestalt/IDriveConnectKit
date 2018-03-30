@@ -3,12 +3,14 @@ package me.hufman.idriveconnectionkit
 import de.bmw.idrive.BMWRemoting
 import me.hufman.idriveconnectionkit.rhmi.*
 import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
+import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
+import me.hufman.idriveconnectionkit.xmlutils.getChildNamed
 import org.junit.Assert.*
 import org.junit.Test
-import java.text.Normalizer
+import org.w3c.dom.Node
 
 class TestXMLParsing {
-	val xml = "<pluginApp>" +
+	val xml = "<pluginApps><pluginApp>" +
 			"<actions>" +
 			"<raAction id=\"2\"/>" +
 			"<combinedAction id=\"3\" sync=\"true\" actionType=\"spellWord\">" +
@@ -57,13 +59,14 @@ class TestXMLParsing {
 			"</popupHmiState>" +
 			"</hmiStates>" +
 			"<entryButton id=\"49\" action=\"4\" model=\"5\" imageModel=\"4\"/>" +
-			"</pluginApp>"
+			"</pluginApp></pluginApps>"
 	var app = RHMIApplicationMock()
 	val root = XMLUtils.loadXML(xml).childNodes.item(0)
-	val actions = root.childNodes.item(0)
-	val models = root.childNodes.item(1)
-	val states = root.childNodes.item(2)
-	val components = states.childNodes.item(1).childNodes.item(1)
+	var pluginApp = root.getChildNamed("pluginApp") as Node
+	val actions = pluginApp.getChildNamed("actions") as Node
+	val models = pluginApp.getChildNamed("models") as Node
+	val states = pluginApp.getChildNamed("hmiStates") as Node
+	val components = states.getChildNamed("toolbarHmiState")?.getChildNamed("components") as Node
 
 	@Test fun entireDescription() {
 		val app = RHMIApplicationConcrete()
@@ -121,14 +124,14 @@ class TestXMLParsing {
 	}
 
 	@Test fun raAction() {
-		val action = RHMIAction.loadFromXML(app, actions.childNodes.item(0))
+		val action = RHMIAction.loadFromXML(app, actions.getChildNamed("raAction") as Node)
 		assertNotNull(action)
 		assertTrue(action is RHMIAction.RAAction)
 		assertEquals(2, action?.id)
 	}
 
 	@Test fun combinedAction() {
-		val action = RHMIAction.loadFromXML(app, actions.childNodes.item(1))
+		val action = RHMIAction.loadFromXML(app, actions.getChildNamed("combinedAction") as Node)
 		assertNotNull(action)
 		assertTrue(action is RHMIAction.CombinedAction)
 		val combinedAction = action as RHMIAction.CombinedAction
@@ -146,7 +149,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun linkAction() {
-		val action = RHMIAction.loadFromXML(app, actions.childNodes.item(2))
+		val action = RHMIAction.loadFromXML(app, actions.getChildNamed("linkAction") as Node)
 		assertNotNull(action)
 		assertTrue(action is RHMIAction.LinkAction)
 		assertEquals(7, action?.id)
@@ -157,7 +160,7 @@ class TestXMLParsing {
 		assertEquals(12, linkAction.getLinkModel()?.id)
 	}
 	@Test fun imageIdModel() {
-		val model = RHMIModel.loadFromXML(app, models.childNodes.item(0))
+		val model = RHMIModel.loadFromXML(app, models.getChildNamed("imageIdModel") as Node)
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.ImageIdModel)
 		assertEquals(4, model?.id)
@@ -165,7 +168,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun textIdModel() {
-		val model = RHMIModel.loadFromXML(app, models.childNodes.item(1))
+		val model = RHMIModel.loadFromXML(app, models.getChildNamed("textIdModel") as Node)
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.TextIdModel)
 		assertEquals(5, model?.id)
@@ -173,7 +176,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun raBoolModel() {
-		val model = RHMIModel.loadFromXML(app, models.childNodes.item(2))
+		val model = RHMIModel.loadFromXML(app, models.getChildNamed("raBoolModel") as Node)
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaBoolModel)
 		assertEquals(50, model?.id)
@@ -184,7 +187,7 @@ class TestXMLParsing {
 		assertEquals(true, app.modelData[model?.id])
 	}
 	@Test fun raDataModel() {
-		val model = RHMIModel.loadFromXML(app, models.childNodes.item(3))
+		val model = RHMIModel.loadFromXML(app, models.getChildNamed("raDataModel") as Node)
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaDataModel)
 		assertEquals(null, app.modelData[model?.id])
@@ -196,7 +199,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun raImageModel() {
-		val model = RHMIModel.loadFromXML(app, models.childNodes.item(4))
+		val model = RHMIModel.loadFromXML(app, models.getChildNamed("raImageModel") as Node)
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaImageModel)
 		assertEquals(null, app.modelData[model?.id])
@@ -211,7 +214,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun raIntModel() {
-		val model = RHMIModel.loadFromXML(app, models.childNodes.item(5))
+		val model = RHMIModel.loadFromXML(app, models.getChildNamed("raIntModel") as Node)
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaIntModel)
 		assertEquals(null, app.modelData[model?.id])
@@ -223,7 +226,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun raListModel() {
-		val model = RHMIModel.loadFromXML(app, models.childNodes.item(6))
+		val model = RHMIModel.loadFromXML(app, models.getChildNamed("raListModel") as Node)
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaListModel)
 		assertEquals(null, app.modelData[model?.id])
@@ -239,7 +242,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun raGaugeModel() {
-		val model = RHMIModel.loadFromXML(app, models.childNodes.item(7))
+		val model = RHMIModel.loadFromXML(app, models.getChildNamed("raGaugeModel") as Node)
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.RaGaugeModel)
 		assertEquals(null, app.modelData[model?.id])
@@ -255,7 +258,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun formatDataModel() {
-		val model = RHMIModel.loadFromXML(app, models.childNodes.item(8))
+		val model = RHMIModel.loadFromXML(app, models.getChildNamed("formatDataModel") as Node)
 		assertNotNull(model)
 		assertTrue(model is RHMIModel.FormatDataModel)
 		assertEquals(10, model?.id)
@@ -269,7 +272,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun plainState() {
-		val state = RHMIState.loadFromXML(app, states.childNodes.item(0))
+		val state = RHMIState.loadFromXML(app, states.getChildNamed("hmiState") as Node)
 		assertNotNull(state)
 		assertTrue(state is RHMIState.PlainState)
 		assertEquals(46, state?.id)
@@ -282,7 +285,7 @@ class TestXMLParsing {
 		assertEquals("Test", app.modelData[5])
 	}
 	@Test fun toolbarState() {
-		val state = RHMIState.loadFromXML(app, states.childNodes.item(1))
+		val state = RHMIState.loadFromXML(app, states.getChildNamed("toolbarHmiState") as Node)
 		assertNotNull(state)
 		assertTrue(state is RHMIState.ToolbarState)
 		assertEquals(40, state?.id)
@@ -297,7 +300,7 @@ class TestXMLParsing {
 		assertEquals("Test", app.modelData[6])
 	}
 	@Test fun popupState() {
-		val state = RHMIState.loadFromXML(app, states.childNodes.item(2))
+		val state = RHMIState.loadFromXML(app, states.getChildNamed("popupHmiState") as Node)
 		assertNotNull(state)
 		assertTrue(state is RHMIState.PopupState)
 		assertEquals(49, state?.id)
@@ -311,7 +314,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun entryButton() {
-		val componentNode = root.childNodes.item(3)
+		val componentNode = pluginApp.getChildNamed("entryButton") as Node
 		val component = RHMIComponent.loadFromXML(app, componentNode)
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.EntryButton)
@@ -331,7 +334,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun toolbarButton() {
-		val componentNode = root.childNodes.item(2).childNodes.item(1).childNodes.item(0).childNodes.item(0)
+		val componentNode = states.getChildNamed("toolbarHmiState")?.getChildNamed("toolbarComponents")?.getChildNamed("button") as Node
 		val component = RHMIComponent.loadFromXML(app, componentNode)
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.ToolbarButton)
@@ -353,7 +356,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun button() {
-		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(0))
+		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("button") as Node)
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.Button)
 		val button = component as RHMIComponent.Button
@@ -374,13 +377,13 @@ class TestXMLParsing {
 	}
 
 	@Test fun separator() {
-		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(1))
+		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("separator") as Node)
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.Separator)
 		assertEquals(43, component?.id)
 	}
 	@Test fun label() {
-		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(2))
+		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("label") as Node)
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.Label)
 		assertEquals(44, component?.id)
@@ -391,7 +394,7 @@ class TestXMLParsing {
 		assertEquals("Test", app.modelData[6])
 	}
 	@Test fun list() {
-		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(3))
+		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("list") as Node)
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.List)
 		assertEquals(4, component?.id)
@@ -409,7 +412,7 @@ class TestXMLParsing {
 		assertArrayEquals(expectedList, (app.modelData[7] as BMWRemoting.RHMIDataTable).data)
 	}
 	@Test fun checkbox() {
-		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(4))
+		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("checkbox") as Node)
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.Checkbox)
 		assertEquals(46, component?.id)
@@ -426,7 +429,7 @@ class TestXMLParsing {
 		assertEquals("Test", app.modelData[5])
 	}
 	@Test fun gauge() {
-		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(5))
+		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("gauge") as Node)
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.Gauge)
 		assertEquals(47, component?.id)
@@ -445,7 +448,7 @@ class TestXMLParsing {
 		assertEquals("Test", app.modelData[5])
 	}
 	@Test fun input() {
-		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(6))
+		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("input") as Node)
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.Input)
 		assertEquals(48, component?.id)
@@ -472,7 +475,7 @@ class TestXMLParsing {
 	}
 
 	@Test fun image() {
-		val component = RHMIComponent.loadFromXML(app, components.childNodes.item(7))
+		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("image") as Node)
 		assertNotNull(component)
 		assertTrue(component is RHMIComponent.Image)
 		assertEquals(50, component?.id)

@@ -1,6 +1,9 @@
 package me.hufman.idriveconnectionkit.rhmi
 
-import me.hufman.idriveconnectionkit.XMLUtils
+import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
+import me.hufman.idriveconnectionkit.xmlutils.getAttributesMap
+import me.hufman.idriveconnectionkit.xmlutils.getChildElements
+import me.hufman.idriveconnectionkit.xmlutils.getChildNamed
 import org.w3c.dom.Node
 import java.util.HashMap
 
@@ -14,7 +17,7 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 
 	companion object {
 		fun loadFromXML(app: RHMIApplication, node: Node): RHMIState? {
-			val attrs = XMLUtils.getAttributes(node)
+			val attrs = node.getAttributesMap()
 
 			val id = attrs["id"]?.toInt() ?: return null
 
@@ -28,7 +31,7 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 			if (state != null) {
 				XMLUtils.unmarshalAttributes(state, attrs)
 
-				XMLUtils.childNodes(XMLUtils.getChildNodeNamed(node, "components")).forEach { componentNode ->
+				node.getChildNamed("components").getChildElements().forEach { componentNode ->
 					val component = RHMIComponent.loadFromXML(app, componentNode)
 					if (component != null) {
 						state.components[component.id] = component
@@ -36,7 +39,7 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 					}
 				}
 				if (state is ToolbarState) {
-					XMLUtils.childNodes(XMLUtils.getChildNodeNamed(node, "toolbarComponents")).forEach { componentNode ->
+					node.getChildNamed("toolbarComponents").getChildElements().forEach { componentNode ->
 						val component = RHMIComponent.loadFromXML(app, componentNode)
 						if (component != null) {
 							state.toolbarComponents[component.id] = component

@@ -1,18 +1,31 @@
-package me.hufman.idriveconnectionkit
+package me.hufman.idriveconnectionkit.xmlutils
 
 import org.w3c.dom.Document
-import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import org.xml.sax.SAXException
 
 import java.io.ByteArrayInputStream
 import java.io.IOException
-import java.util.LinkedList
+import java.lang.reflect.Field
 
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
+
+
+fun Node.getAttribute(attr: String): String? {
+	return XMLUtils.getAttribute(this, attr)
+}
+fun Node.getAttributesMap(): Map<String, String> {
+	return XMLUtils.getAttributes(this)
+}
+fun Node.getChildNamed(nodeName: String): Node? {
+	return XMLUtils.getChildNodeNamed(this, nodeName)
+}
+fun Node?.getChildElements(): List<Node> {
+	return XMLUtils.childNodes(this)
+}
 
 object XMLUtils {
 	fun convertNodeList(list: NodeList): List<Node> {
@@ -75,7 +88,16 @@ object XMLUtils {
 		} catch (e: IOException) {
 			throw IllegalArgumentException(e.toString())   // unlikely
 		}
+	}
 
+	fun getClassField(c: Class<in Any>, name: String): Field? {
+		return c.declaredFields.find {
+			it.name == name
+		} ?: getClassField(c.superclass, name)
+	}
+
+	fun getSetterMethodName(name: String): String {
+		return "set" + name.substring(0, 1).toUpperCase() + name.substring(1)
 	}
 
 	fun unmarshalAttributes(obj: Any, attrs: Map<String, String>) {
@@ -91,32 +113,22 @@ object XMLUtils {
 			 * and look for a setter
 			 */
 			val classType = obj.javaClass
-			val setterName = "set" + entry.key.substring(0, 1).toUpperCase() + entry.key.substring(1)
-			(
-				classType.declaredFields.any {
-					it.name == entry.key
-				} ||
-						classType.superclass.declaredFields.any {
-							it.name == entry.key
-						}
-			) &&
+			getClassField(classType, entry.key) != null &&
 			classType.methods.any {
-				it.name == setterName
+				it.name == getSetterMethodName(entry.key)
 			}
 		}.forEach { key,value ->
 			/** Look at the (possibly parent's) field's data type, to parse the string attribute as
 			 * and then find the matching setter and set it
 			 */
 			val classType = obj.javaClass
-			val field = if (classType.declaredFields.any {
-					it.name == key
-				}) classType.getDeclaredField(key)
-				else classType.superclass.getDeclaredField(key)
-			val setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1)
-			when(field.type) {
+			val field = getClassField(classType, key)
+			val setterName = getSetterMethodName(key)
+			when(field?.type) {
 				Integer::class.javaPrimitiveType -> classType.getMethod(setterName, Integer::class.javaPrimitiveType).invoke(obj, value.toInt())
 				Boolean::class.javaPrimitiveType -> classType.getMethod(setterName, Boolean::class.javaPrimitiveType).invoke(obj, value.toBoolean())
 				String::class.java -> classType.getMethod(setterName, String::class.java).invoke(obj, value)
+				null -> Unit
 				else -> field.set(obj, value)
 			}
 		}
