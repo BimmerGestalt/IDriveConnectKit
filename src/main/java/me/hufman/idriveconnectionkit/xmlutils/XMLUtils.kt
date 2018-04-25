@@ -117,7 +117,7 @@ object XMLUtils {
 			classType.methods.any {
 				it.name == getSetterMethodName(entry.key)
 			}
-		}.forEach { key,value ->
+		}.forEach { (key,value) ->
 			/** Look at the (possibly parent's) field's data type, to parse the string attribute as
 			 * and then find the matching setter and set it
 			 */
