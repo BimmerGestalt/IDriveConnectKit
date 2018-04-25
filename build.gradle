@@ -37,8 +37,8 @@ compileTestKotlin {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 }
 
@@ -54,6 +54,7 @@ task downloadEtchCompiler(type: Download) {
     src 'http://archive.apache.org/dist/etch/1.4.0/apache-etch-1.4.0-windows-x86-bin.zip'
     dest file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip")
     onlyIfNewer true
+    outputs.file "${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip"
 }
 task verifyEtchCompiler(type: Verify, dependsOn: downloadEtchCompiler) {
     src file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip")
@@ -64,6 +65,7 @@ task verifyEtchCompiler(type: Verify, dependsOn: downloadEtchCompiler) {
 task extractEtchCompiler(type: Copy, dependsOn: verifyEtchCompiler) {
     from zipTree(file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip"))
     into "${buildDir}/etch"
+    outputs.dir "${buildDir}/etch/apache-etch-1.4.0"
 }
 task compileEtch(type: JavaExec, dependsOn: extractEtchCompiler) {
     main "org.apache.etch.compiler.EtchMain"
@@ -74,6 +76,7 @@ task compileEtch(type: JavaExec, dependsOn: extractEtchCompiler) {
     )
     workingDir 'etch'
     args('--binding', 'java', '--output-dir', "${buildDir}/generated", 'BMWRemoting.etch')
+    outputs.dir "${buildDir}/generated"
 }
 task enableEtchRuntime(type: Copy, dependsOn: extractEtchCompiler) {
     from "${buildDir}/etch/apache-etch-1.4.0/binding-java/lib"
