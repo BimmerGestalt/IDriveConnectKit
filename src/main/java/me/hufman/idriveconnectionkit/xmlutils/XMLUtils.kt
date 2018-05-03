@@ -93,7 +93,7 @@ object XMLUtils {
 	fun getClassField(c: Class<in Any>, name: String): Field? {
 		return c.declaredFields.find {
 			it.name == name
-		} ?: getClassField(c.superclass, name)
+		} ?: if (c.superclass != null) getClassField(c.superclass, name) else null
 	}
 
 	fun getSetterMethodName(name: String): String {
