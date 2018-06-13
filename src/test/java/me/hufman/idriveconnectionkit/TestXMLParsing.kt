@@ -66,11 +66,22 @@ class TestXMLParsing {
 			"</hmiStates>" +
 			"<entryButton id=\"49\" action=\"4\" model=\"5\" imageModel=\"4\"/>" +
 			"<instrumentCluster id=\"145\" playlistModel=\"34\" detailsModel=\"33\" useCaseModel=\"35\" action=\"64\" textModel=\"39\" additionalTextModel=\"38\" setTrackAction=\"65\" iSpeechSupport=\"36\" iSpeechText=\"37\" skipForward=\"41\" skipBackward=\"40\"/>" +
+			"<events>\n" +
+			"    <popupEvent id=\"1\" target=\"49\" priority=\"10\"/>\n" +
+			"    <actionEvent id=\"2\" action=\"7\"/>\n" +
+			"    <actionEvent id=\"3\" action=\"7\"/>\n" +
+			"    <notificationIconEvent id=\"4\" imageIdModel=\"62\"/>\n" +
+			"    <popupEvent id=\"5\" target=\"49\" priority=\"10\"/>\n" +
+			"    <focusEvent id=\"6\" targetModel=\"6\"/>\n" +
+			"    <multimediaInfoEvent id=\"7\" textModel1=\"6\" textModel2=\"12\"/>\n" +
+			"    <statusbarEvent id=\"8\" textModel=\"12\"/>\n" +
+			"</events>" +
 			"</pluginApp></pluginApps>"
 	var app = RHMIApplicationMock()
 	val root = XMLUtils.loadXML(xml).childNodes.item(0)
 	var pluginApp = root.getChildNamed("pluginApp") as Node
 	val actions = pluginApp.getChildNamed("actions") as Node
+	val events = pluginApp.getChildNamed("events") as Node
 	val models = pluginApp.getChildNamed("models") as Node
 	val states = pluginApp.getChildNamed("hmiStates") as Node
 	val components = states.getChildNamed("toolbarHmiState")?.getChildNamed("components") as Node
@@ -79,6 +90,7 @@ class TestXMLParsing {
 		val app = RHMIApplicationConcrete()
 		app.loadFromXML(xml)
 		assertEquals(5, app.actions.size)
+		assertEquals(8, app.events.size)
 		assertEquals(11, app.models.size)
 		assertEquals(4, app.states.size)
 		assertEquals(12, app.components.size)
@@ -89,6 +101,16 @@ class TestXMLParsing {
 		assertTrue(app.actions[4] is RHMIAction.RAAction)
 		assertTrue(app.actions[5] is RHMIAction.HMIAction)
 		assertTrue(app.actions[7] is RHMIAction.LinkAction)
+
+		//all parsed events
+		assertTrue(app.events[1] is RHMIEvent.PopupEvent)
+		assertTrue(app.events[2] is RHMIEvent.ActionEvent)
+		assertTrue(app.events[3] is RHMIEvent.ActionEvent)
+		assertTrue(app.events[4] is RHMIEvent.NotificationIconEvent)
+		assertTrue(app.events[5] is RHMIEvent.PopupEvent)
+		assertTrue(app.events[6] is RHMIEvent.FocusEvent)
+		assertTrue(app.events[7] is RHMIEvent.MultimediaInfoEvent)
+		assertTrue(app.events[8] is RHMIEvent.StatusbarEvent)
 
 		// all parsed models
 		assertTrue(app.models[4] is RHMIModel.ImageIdModel)
@@ -170,6 +192,64 @@ class TestXMLParsing {
 		assertNotNull(linkAction.getLinkModel())
 		assertEquals(12, linkAction.getLinkModel()?.id)
 	}
+
+	@Test fun popupEvent() {
+		val event = RHMIEvent.loadFromXML(app, events.getChildNamed("popupEvent") as Node)
+		assertNotNull(event)
+		assertEquals(1, event?.id)
+		assertEquals(49, event?.asPopupEvent()?.target)
+		assertEquals(10, event?.asPopupEvent()?.priority)
+		var target = event?.asPopupEvent()?.getTarget()
+		assertEquals(49, target?.id)
+	}
+
+	@Test fun actionEvent() {
+		val event = RHMIEvent.loadFromXML(app, events.getChildNamed("actionEvent") as Node)
+		assertNotNull(event)
+		assertEquals(2, event?.id)
+		assertEquals(7, event?.asActionEvent()?.action)
+		val action = event?.asActionEvent()?.getAction()
+		assertEquals(7, action?.id)
+	}
+
+	@Test fun notificationIconEvent() {
+		val event = RHMIEvent.loadFromXML(app, events.getChildNamed("notificationIconEvent") as Node)
+		assertNotNull(event)
+		assertEquals(4, event?.id)
+		assertEquals(62, event?.asNotificationIconEvent()?.imageIdModel)
+		val model = event?.asNotificationIconEvent()?.getImageIdModel()
+		assertEquals(62, model?.id)
+	}
+
+	@Test fun focusEvent() {
+		val event = RHMIEvent.loadFromXML(app, events.getChildNamed("focusEvent") as Node)
+		assertNotNull(event)
+		assertEquals(6, event?.id)
+		assertEquals(6, event?.asFocusEvent()?.targetModel)
+		val model = event?.asFocusEvent()?.getTargetModel()
+		assertEquals(6, model?.id)
+	}
+
+	@Test fun multimediaInfoEvent() {
+		val event = RHMIEvent.loadFromXML(app, events.getChildNamed("multimediaInfoEvent") as Node)
+		assertNotNull(event)
+		assertEquals(7, event?.id)
+		assertEquals(6, event?.asMultimediaInfoEvent()?.textModel1)
+		val model1 = event?.asMultimediaInfoEvent()?.getTextModel1()
+		assertEquals(12, event?.asMultimediaInfoEvent()?.textModel2)
+		val model2 = event?.asMultimediaInfoEvent()?.getTextModel2()
+		assertEquals(12, model2?.id)
+	}
+
+	@Test fun statusbarEvent() {
+		val event = RHMIEvent.loadFromXML(app, events.getChildNamed("statusbarEvent") as Node)
+		assertNotNull(event)
+		assertEquals(8, event?.id)
+		assertEquals(12, event?.asStatusbarEvent()?.textModel)
+		val model = event?.asStatusbarEvent()?.getTextModel()
+		assertEquals(12, model?.id)
+	}
+
 	@Test fun imageIdModel() {
 		val model = RHMIModel.loadFromXML(app, models.getChildNamed("imageIdModel") as Node)
 		assertNotNull(model)

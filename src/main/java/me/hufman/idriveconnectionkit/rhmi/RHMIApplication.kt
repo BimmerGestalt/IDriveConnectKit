@@ -11,6 +11,7 @@ import org.w3c.dom.Document
 interface RHMIApplication {
 	val models: HashMap<Int, RHMIModel>
 	val actions: HashMap<Int, RHMIAction>
+	val events: HashMap<Int, RHMIEvent>
 	val states: HashMap<Int, RHMIState>
 	val components: HashMap<Int, RHMIComponent>
 
@@ -39,6 +40,12 @@ interface RHMIApplication {
 						if (action.raAction != null) actions[action.raAction.id] = action.raAction
 						if (action.hmiAction != null) actions[action.hmiAction.id] = action.hmiAction
 					}
+				}
+			}
+			pluginAppNode.getChildNamed("events").getChildElements().forEach { actionNode ->
+				val event = RHMIEvent.loadFromXML(this, actionNode)
+				if (event != null) {
+					events[event.id] = event
 				}
 			}
 			pluginAppNode.getChildNamed("hmiStates").getChildElements().forEach { stateNode ->
@@ -82,6 +89,7 @@ class RHMIApplicationConcrete : RHMIApplication {
 	/** Only knows about description elements that are specifically set */
 	override val models = HashMap<Int, RHMIModel>()
 	override val actions = HashMap<Int, RHMIAction>()
+	override val events = HashMap<Int, RHMIEvent>()
 	override val states = HashMap<Int, RHMIState>()
 	override val components = HashMap<Int, RHMIComponent>()
 
@@ -109,6 +117,7 @@ class RHMIApplicationEtch constructor(val remoteServer: BMWRemotingServer, val r
 	/** Represents an application layout that is backed by a Car connection */
 	override val models = HashMap<Int, RHMIModel>()
 	override val actions = HashMap<Int, RHMIAction>()
+	override val events = HashMap<Int, RHMIEvent>()
 	override val states = HashMap<Int, RHMIState>()
 	override val components = HashMap<Int, RHMIComponent>()
 

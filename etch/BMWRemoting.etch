@@ -205,7 +205,7 @@ service BMWRemoting {
 	// dynamic updates
 	void rhmi_setData (int handle, int modelId, object value) throws IllegalArgumentException, ServiceException, SecurityException;
 	void rhmi_setProperty (int handle, int componentId, int propertyId, Map values) throws IllegalArgumentException, ServiceException, SecurityException;
-	void rhmi_triggerEvent(int handle, int eventId, Map args);
+	void rhmi_triggerEvent(int handle, int eventId, Map args) throws IllegalArgumentException, ServiceException, SecurityException;
 
 	// AV multimedia interactions
 	int av_create (int instanceID, string id) throws IllegalArgumentException, ServiceException, SecurityException;

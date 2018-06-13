@@ -6,6 +6,7 @@ class RHMIApplicationMock : RHMIApplication {
 	/** Automatically instantiates elements of the application layout */
 	override val models = MockModelMap(this)
 	override val actions = MockActionMap(this)
+	override val events = MockEventMap(this)
 	override val states = MockStateMap(this)
 	override val components = MockComponentMap(this)
 
@@ -37,6 +38,11 @@ class MockModelMap(val app: RHMIApplication) : HashMap<Int, RHMIModel>() {
 class MockActionMap(val app: RHMIApplication) : HashMap<Int, RHMIAction>() {
 	override fun get(key:Int):RHMIAction.MockAction {
 		return RHMIAction.MockAction(app, key)
+	}
+}
+class MockEventMap(val app: RHMIApplication) : HashMap<Int, RHMIEvent>() {
+	override fun get(key:Int):RHMIEvent.MockEvent {
+		return RHMIEvent.MockEvent(app, key)
 	}
 }
 class MockStateMap(val app: RHMIApplication) : HashMap<Int, RHMIState>() {
