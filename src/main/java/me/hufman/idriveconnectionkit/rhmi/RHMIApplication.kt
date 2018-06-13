@@ -6,7 +6,6 @@ import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
 import me.hufman.idriveconnectionkit.xmlutils.getChildElements
 import me.hufman.idriveconnectionkit.xmlutils.getChildNamed
 import org.w3c.dom.Document
-import java.util.HashMap
 
 
 interface RHMIApplication {
@@ -69,7 +68,7 @@ interface RHMIApplication {
 	fun setProperty(componentId: Int, propertyId: Int, value: Any)
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
-	fun triggerHMIEvent(eventId: Int, args: Map<Any, Any>)
+	fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>)
 }
 
 class RHMIApplicationConcrete : RHMIApplication {
@@ -93,7 +92,7 @@ class RHMIApplicationConcrete : RHMIApplication {
 		propertyData[componentId]!!.set(propertyId, value)
 	}
 
-	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any>) {
+	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
@@ -119,7 +118,7 @@ class RHMIApplicationEtch constructor(val remoteServer: BMWRemotingServer, val r
 	}
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
-	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any>) {
+	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {
 		this.remoteServer.rhmi_triggerEvent(rhmiHandle, eventId, args)
 	}
 }

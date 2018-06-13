@@ -1,7 +1,6 @@
 package me.hufman.idriveconnectionkit.rhmi.mocking
 
 import me.hufman.idriveconnectionkit.rhmi.*
-import java.util.HashMap
 
 class RHMIApplicationMock : RHMIApplication {
 	/** Automatically instantiates elements of the application layout */
@@ -25,7 +24,7 @@ class RHMIApplicationMock : RHMIApplication {
 		propertyData[componentId]!!.set(propertyId, value)
 	}
 
-	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any>) {
+	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 }
