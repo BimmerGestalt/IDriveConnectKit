@@ -57,6 +57,12 @@ class TestXMLParsing {
 			"</toolbarHmiState>" +
 			"<popupHmiState id=\"49\" textModel=\"11\">" +
 			"</popupHmiState>" +
+			"<audioHmiState id=\"24\" artistAction=\"21\" coverAction=\"29\" progressAction=\"37\" playListAction=\"33\" albumAction=\"25\" textModel=\"44\" alternativeTextModel=\"48\" trackTextModel=\"47\" playListProgressTextModel=\"50\" playListTextModel=\"49\" artistImageModel=\"54\" artistTextModel=\"45\" albumImageModel=\"55\" albumTextModel=\"46\" coverImageModel=\"56\" playbackProgressModel=\"62\" downloadProgressModel=\"63\" currentTimeModel=\"51\" elapsingTimeModel=\"52\" playListFocusRowModel=\"59\" providerLogoImageModel=\"57\" statusBarImageModel=\"61\" playListModel=\"58\">" +
+			"<toolbarComponents>" +
+			"<button id=\"141\" action=\"3\" selectAction=\"4\" tooltipModel=\"5\" imageModel=\"4\" />" +
+			"</toolbarComponents>" +
+			"<components></components>" +
+			"</audioHmiState>" +
 			"</hmiStates>" +
 			"<entryButton id=\"49\" action=\"4\" model=\"5\" imageModel=\"4\"/>" +
 			"<instrumentCluster id=\"145\" playlistModel=\"34\" detailsModel=\"33\" useCaseModel=\"35\" action=\"64\" textModel=\"39\" additionalTextModel=\"38\" setTrackAction=\"65\" iSpeechSupport=\"36\" iSpeechText=\"37\" skipForward=\"41\" skipBackward=\"40\"/>" +
@@ -74,8 +80,8 @@ class TestXMLParsing {
 		app.loadFromXML(xml)
 		assertEquals(5, app.actions.size)
 		assertEquals(11, app.models.size)
-		assertEquals(3, app.states.size)
-		assertEquals(11, app.components.size)
+		assertEquals(4, app.states.size)
+		assertEquals(12, app.components.size)
 
 		// all parsed actions
 		assertTrue(app.actions[2] is RHMIAction.RAAction)
@@ -101,6 +107,7 @@ class TestXMLParsing {
 		assertTrue(app.states[46] is RHMIState.PlainState)
 		assertTrue(app.states[40] is RHMIState.ToolbarState)
 		assertTrue(app.states[49] is RHMIState.PopupState)
+		assertTrue(app.states[24] is RHMIState.AudioHmiState)
 
 		// all parsed components
 		assertTrue(app.components[41] is RHMIComponent.ToolbarButton)
@@ -111,6 +118,7 @@ class TestXMLParsing {
 		assertTrue(app.components[46] is RHMIComponent.Checkbox)
 		assertTrue(app.components[47] is RHMIComponent.Gauge)
 		assertTrue(app.components[48] is RHMIComponent.Input)
+		assertTrue(app.components[141] is RHMIComponent.ToolbarButton)
 		assertTrue(app.components[49] is RHMIComponent.EntryButton)
 		assertTrue(app.components[145] is RHMIComponent.InstrumentCluster)
 
@@ -314,6 +322,76 @@ class TestXMLParsing {
 
 		state?.getTextModel()?.asRaDataModel()?.value = "Test"
 		assertEquals("Test", app.modelData[11])
+	}
+	@Test fun audioState() {
+		val state = RHMIState.loadFromXML(app, states.getChildNamed("audioHmiState") as Node)
+		assertNotNull(state)
+		assertTrue(state is RHMIState.AudioHmiState)
+		val audio = state as RHMIState.AudioHmiState
+		assertEquals(24, state?.id)
+		assertEquals(0, state?.components?.size)
+		assertEquals(0, state?.componentsList?.size)
+		assertEquals(44, state?.textModel)
+		assertEquals(21, audio.artistAction)
+		assertEquals(29, audio.coverAction)
+		assertEquals(37, audio.progressAction)
+		assertEquals(33, audio.playListAction)
+		assertEquals(25, audio.albumAction)
+		assertEquals(44, audio.textModel)
+		assertEquals(48, audio.alternativeTextModel)
+		assertEquals(47, audio.trackTextModel)
+		assertEquals(50, audio.playListProgressTextModel)
+		assertEquals(49, audio.playListTextModel)
+		assertEquals(54, audio.artistImageModel)
+		assertEquals(45, audio.artistTextModel)
+		assertEquals(55, audio.albumImageModel)
+		assertEquals(46, audio.albumTextModel)
+		assertEquals(56, audio.coverImageModel)
+		assertEquals(62, audio.playbackProgressModel)
+		assertEquals(63, audio.downloadProgressModel)
+		assertEquals(51, audio.currentTimeModel)
+		assertEquals(52, audio.elapsingTimeModel)
+		assertEquals(59, audio.playListFocusRowModel)
+		assertEquals(57, audio.providerLogoImageModel)
+		assertEquals(61, audio.statusBarImageModel)
+		assertEquals(58, audio.playListModel)
+
+		audio.getTextModel()?.asRaDataModel()?.value = "textModel"
+		assertEquals("textModel", app.modelData[44])
+		audio.getAlternativeTextModel()?.asRaDataModel()?.value = "alternativeTextModel"
+		assertEquals("alternativeTextModel", app.modelData[48])
+		audio.getTrackTextModel()?.asRaDataModel()?.value = "trackTextModel"
+		assertEquals("trackTextModel", app.modelData[47])
+		audio.getPlayListProgressTextModel()?.asRaDataModel()?.value = "playListProgressTextModel"
+		assertEquals("playListProgressTextModel", app.modelData[50])
+		audio.getPlayListTextModel()?.asRaDataModel()?.value = "playListTextModel"
+		assertEquals("playListTextModel", app.modelData[49])
+		audio.getArtistImageModel()?.asRaDataModel()?.value = "artistImageModel"
+		assertEquals("artistImageModel", app.modelData[54])
+		audio.getArtistTextModel()?.asRaDataModel()?.value = "artistTextModel"
+		assertEquals("artistTextModel", app.modelData[45])
+		audio.getAlbumImageModel()?.asRaDataModel()?.value = "albumImageModel"
+		assertEquals("albumImageModel", app.modelData[55])
+		audio.getAlbumTextModel()?.asRaDataModel()?.value = "albumTextModel"
+		assertEquals("albumTextModel", app.modelData[46])
+		audio.getCoverImageModel()?.asRaDataModel()?.value = "coverImageModel"
+		assertEquals("coverImageModel", app.modelData[56])
+		audio.getPlaybackProgressModel()?.asRaDataModel()?.value = "playbackProgressModel"
+		assertEquals("playbackProgressModel", app.modelData[62])
+		audio.getDownloadProgressModel()?.asRaDataModel()?.value = "downloadProgressModel"
+		assertEquals("downloadProgressModel", app.modelData[63])
+		audio.getCurrentTimeModel()?.asRaDataModel()?.value = "currentTimeModel"
+		assertEquals("currentTimeModel", app.modelData[51])
+		audio.getElapsingTimeModel()?.asRaDataModel()?.value = "elapsingTimeModel"
+		assertEquals("elapsingTimeModel", app.modelData[52])
+		audio.getPlayListFocusRowModel()?.asRaDataModel()?.value = "playListFocusRowModel"
+		assertEquals("playListFocusRowModel", app.modelData[59])
+		audio.getProviderLogoImageModel()?.asRaDataModel()?.value = "providerLogoImageModel"
+		assertEquals("providerLogoImageModel", app.modelData[57])
+		audio.getStatusBarImageModel()?.asRaDataModel()?.value = "statusBarImageModel"
+		assertEquals("statusBarImageModel", app.modelData[61])
+		audio.getPlayListModel()?.asRaDataModel()?.value = "playListModel"
+		assertEquals("playListModel", app.modelData[58])
 	}
 
 	@Test fun entryButton() {

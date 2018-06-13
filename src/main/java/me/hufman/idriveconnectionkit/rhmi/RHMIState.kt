@@ -25,6 +25,7 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 				"hmiState" -> PlainState(app, id)
 				"toolbarHmiState" -> ToolbarState(app, id)
 				"popupHmiState" -> PopupState(app, id)
+				"audioHmiState" -> AudioHmiState(app, id)
 				else -> null
 			}
 
@@ -54,11 +55,123 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 	}
 
 	class PlainState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id)
-	class ToolbarState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id) {
+	open class ToolbarState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id) {
 		val toolbarComponents = HashMap<Int, RHMIComponent>()
 		val toolbarComponentsList = ArrayList<RHMIComponent>()
 	}
 	class PopupState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id)
+	class AudioHmiState(override val app: RHMIApplication, override val id: Int): ToolbarState(app, id) {
+
+		var artistAction: Int = 0
+		fun getArtistAction(): RHMIAction? {
+			return app.actions[artistAction]
+		}
+
+		var coverAction: Int = 0
+		fun getCoverAction(): RHMIAction? {
+			return app.actions[coverAction]
+		}
+
+		var progressAction: Int = 0
+		fun getProgressAction(): RHMIAction? {
+			return app.actions[progressAction]
+		}
+
+		var playListAction: Int = 0
+		fun getPlayListAction(): RHMIAction? {
+			return app.actions[playListAction]
+		}
+
+		var albumAction: Int = 0
+		fun getAlbumAction(): RHMIAction? {
+			return app.actions[albumAction]
+		}
+
+		var alternativeTextModel: Int = 0
+		fun getAlternativeTextModel(): RHMIModel? {
+			return app.models[alternativeTextModel]
+		}
+
+		var trackTextModel: Int = 0
+		fun getTrackTextModel(): RHMIModel? {
+			return app.models[trackTextModel]
+		}
+
+		var playListProgressTextModel: Int = 0
+		fun getPlayListProgressTextModel(): RHMIModel? {
+			return app.models[playListProgressTextModel]
+		}
+
+		var playListTextModel: Int = 0
+		fun getPlayListTextModel(): RHMIModel? {
+			return app.models[playListTextModel]
+		}
+
+		var artistImageModel: Int = 0
+		fun getArtistImageModel(): RHMIModel? {
+			return app.models[artistImageModel]
+		}
+
+		var artistTextModel: Int = 0
+		fun getArtistTextModel(): RHMIModel? {
+			return app.models[artistTextModel]
+		}
+
+		var albumImageModel: Int = 0
+		fun getAlbumImageModel(): RHMIModel? {
+			return app.models[albumImageModel]
+		}
+
+		var albumTextModel: Int = 0
+		fun getAlbumTextModel(): RHMIModel? {
+			return app.models[albumTextModel]
+		}
+
+		var coverImageModel: Int = 0
+		fun getCoverImageModel(): RHMIModel? {
+			return app.models[coverImageModel]
+		}
+
+		var playbackProgressModel: Int = 0
+		fun getPlaybackProgressModel(): RHMIModel? {
+			return app.models[playbackProgressModel]
+		}
+
+		var downloadProgressModel: Int = 0
+		fun getDownloadProgressModel(): RHMIModel? {
+			return app.models[downloadProgressModel]
+		}
+
+		var currentTimeModel: Int = 0
+		fun getCurrentTimeModel(): RHMIModel? {
+			return app.models[currentTimeModel]
+		}
+
+		var elapsingTimeModel: Int = 0
+		fun getElapsingTimeModel(): RHMIModel? {
+			return app.models[elapsingTimeModel]
+		}
+
+		var playListFocusRowModel: Int = 0
+		fun getPlayListFocusRowModel(): RHMIModel? {
+			return app.models[playListFocusRowModel]
+		}
+
+		var providerLogoImageModel: Int = 0
+		fun getProviderLogoImageModel(): RHMIModel? {
+			return app.models[providerLogoImageModel]
+		}
+
+		var statusBarImageModel: Int = 0
+		fun getStatusBarImageModel(): RHMIModel? {
+			return app.models[statusBarImageModel]
+		}
+
+		var playListModel: Int = 0
+		fun getPlayListModel(): RHMIModel? {
+			return app.models[playListModel]
+		}
+	}
 
 	class MockState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id) {
 		override fun asPlainState(): PlainState {
@@ -70,6 +183,9 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 		override fun asToolbarState(): ToolbarState {
 			return ToolbarState(app, id)
 		}
+		override fun asAudioState(): AudioHmiState {
+			return AudioHmiState(app, id)
+		}
 	}
 
 	open fun asPlainState(): PlainState? {
@@ -80,5 +196,8 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 	}
 	open fun asPopupState(): PopupState? {
 		return this as? PopupState
+	}
+	open fun asAudioState(): AudioHmiState? {
+		return this as? AudioHmiState
 	}
 }
