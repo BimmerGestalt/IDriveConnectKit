@@ -212,22 +212,30 @@ service BMWRemoting {
 	void av_requestConnection (int handle, AVConnectionType connectionType) throws IllegalArgumentException, ServiceException, SecurityException;
 	@Direction(CLIENT)
 	@AsyncReceiver( QUEUED )
+	@Oneway
 	void av_connectionGranted (int handle, AVConnectionType connectionType);
 	@Direction(CLIENT)
 	@AsyncReceiver( QUEUED )
-	void av_connectionDenied (int handle, AVConnectionType connectionType) throws IllegalArgumentException, ServiceException, SecurityException;
+	@Oneway
+	void av_connectionDenied (int handle, AVConnectionType connectionType);
 	@Direction(CLIENT)
 	@AsyncReceiver( QUEUED )
-	void av_connectionDeactivated (int handle, AVConnectionType connectionType) throws IllegalArgumentException, ServiceException, SecurityException;
+	@Oneway
+	void av_connectionDeactivated (int handle, AVConnectionType connectionType);
 	@Direction(CLIENT)
 	@AsyncReceiver( QUEUED )
-	void av_closeConnection (int handle, AVConnectionType connectionType) throws IllegalArgumentException, ServiceException, SecurityException;
+	@Oneway
+	void av_closeConnection (int handle, AVConnectionType connectionType);
 	void av_dispose (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
 	// state management
-	void av_requestPlayerState (int handle, AVConnectionType connectionType, AVPlayerState playerState) throws IllegalArgumentException, ServiceException, SecurityException;
+	@Direction(CLIENT)
+	@AsyncReceiver( QUEUED )
+	@Oneway
+	void av_requestPlayerState (int handle, AVConnectionType connectionType, AVPlayerState playerState);
 	void av_playerStateChanged (int handle, AVConnectionType connectionType, AVPlayerState playerState) throws IllegalArgumentException, ServiceException, SecurityException;
 
 	@Direction(CLIENT)
 	@AsyncReceiver( QUEUED )
-	void av_multimediaButtonEvent (int handle, AVButtonEvent event) throws IllegalArgumentException, ServiceException, SecurityException;
+	@Oneway
+	void av_multimediaButtonEvent (int handle, AVButtonEvent event);
 }
