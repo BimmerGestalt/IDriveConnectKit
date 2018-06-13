@@ -25,6 +25,7 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 				"label" -> Label(app, id)
 				"list" -> List(app, id)
 				"entryButton" -> EntryButton(app, id)
+				"instrumentCluster" -> InstrumentCluster(app, id)
 				"button" -> if (attrs["model"] == null) ToolbarButton(app, id) else Button(app, id)
 				"checkbox" -> Checkbox(app, id)
 				"gauge" -> Gauge(app, id)
@@ -102,6 +103,62 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 		var action: Int = 0
 		fun getAction(): RHMIAction? {
 			return app.actions[action]
+		}
+	}
+	class InstrumentCluster(override val app: RHMIApplication, override val id: Int): RHMIComponent(app, id) {
+		var textModel: Int = 0
+		fun getTextModel(): RHMIModel? {
+			return app.models[textModel]
+		}
+
+		var additionalTextModel: Int = 0
+		fun getAdditionalTextModel(): RHMIModel? {
+			return app.models[additionalTextModel]
+		}
+
+		var useCaseModel: Int = 0
+		fun getUseCaseModel(): RHMIModel? {
+			return app.models[useCaseModel]
+		}
+
+		var detailsModel: Int = 0
+		fun getDetailsModel(): RHMIModel? {
+			return app.models[detailsModel]
+		}
+
+		var playlistModel: Int = 0
+		fun getPlaylistModel(): RHMIModel? {
+			return app.models[playlistModel]
+		}
+
+		var iSpeechSupport: Int = 0
+		fun getISpeechSupport(): RHMIModel? {
+			return app.models[iSpeechSupport]
+		}
+
+		var iSpeechText: Int = 0
+		fun getISpeechText(): RHMIModel? {
+			return app.models[iSpeechText]
+		}
+
+		var skipForward: Int = 0
+		fun getSkipForward(): RHMIModel? {
+			return app.models[skipForward]
+		}
+
+		var skipBackward: Int = 0
+		fun getSkipBackward(): RHMIModel? {
+			return app.models[skipBackward]
+		}
+
+		var action: Int = 0
+		fun getAction(): RHMIAction? {
+			return app.actions[action]
+		}
+
+		var setTrackAction: Int = 0
+		fun getSetTrackAction(): RHMIAction? {
+			return app.actions[setTrackAction]
 		}
 	}
 	class ToolbarButton(override val app: RHMIApplication, override val id: Int): RHMIComponent(app, id) {
@@ -236,6 +293,9 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 		override fun asEntryButton(): EntryButton {
 			return EntryButton(app, id)
 		}
+		override fun asInstrumentCluster(): InstrumentCluster? {
+			return InstrumentCluster(app, id)
+		}
 		override fun asToolbarButton(): ToolbarButton {
 			return ToolbarButton(app, id)
 		}
@@ -267,6 +327,9 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 	}
 	open fun asEntryButton(): EntryButton? {
 		return this as? EntryButton
+	}
+	open fun asInstrumentCluster(): InstrumentCluster? {
+		return this as? InstrumentCluster
 	}
 	open fun asToolbarButton(): ToolbarButton? {
 		return this as? ToolbarButton

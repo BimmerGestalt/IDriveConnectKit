@@ -58,6 +58,13 @@ interface RHMIApplication {
 					components[component.id] = component
 				}
 			}
+			val instrumentClusterNode = pluginAppNode.getChildNamed("instrumentCluster")
+			if (instrumentClusterNode != null) {
+				val component = RHMIComponent.loadFromXML(this, instrumentClusterNode)
+				if (component != null) {
+					components[component.id] = component
+				}
+			}
 		}
 	}
 

@@ -59,6 +59,7 @@ class TestXMLParsing {
 			"</popupHmiState>" +
 			"</hmiStates>" +
 			"<entryButton id=\"49\" action=\"4\" model=\"5\" imageModel=\"4\"/>" +
+			"<instrumentCluster id=\"145\" playlistModel=\"34\" detailsModel=\"33\" useCaseModel=\"35\" action=\"64\" textModel=\"39\" additionalTextModel=\"38\" setTrackAction=\"65\" iSpeechSupport=\"36\" iSpeechText=\"37\" skipForward=\"41\" skipBackward=\"40\"/>" +
 			"</pluginApp></pluginApps>"
 	var app = RHMIApplicationMock()
 	val root = XMLUtils.loadXML(xml).childNodes.item(0)
@@ -74,7 +75,7 @@ class TestXMLParsing {
 		assertEquals(5, app.actions.size)
 		assertEquals(11, app.models.size)
 		assertEquals(3, app.states.size)
-		assertEquals(10, app.components.size)
+		assertEquals(11, app.components.size)
 
 		// all parsed actions
 		assertTrue(app.actions[2] is RHMIAction.RAAction)
@@ -110,6 +111,8 @@ class TestXMLParsing {
 		assertTrue(app.components[46] is RHMIComponent.Checkbox)
 		assertTrue(app.components[47] is RHMIComponent.Gauge)
 		assertTrue(app.components[48] is RHMIComponent.Input)
+		assertTrue(app.components[49] is RHMIComponent.EntryButton)
+		assertTrue(app.components[145] is RHMIComponent.InstrumentCluster)
 
 		// check the ordered list
 		val toolbarState = app.states[40] as RHMIState.ToolbarState
@@ -331,6 +334,26 @@ class TestXMLParsing {
 		assertArrayEquals(byteArrayOf(10, 12), (app.modelData[4] as BMWRemoting.RHMIResourceData).data)
 		component?.asEntryButton()?.getModel()?.asRaDataModel()?.value = "Test"
 		assertEquals("Test", app.modelData[5])
+	}
+
+	@Test fun instrumentCluster() {
+		val componentNode = pluginApp.getChildNamed("instrumentCluster") as Node
+		val component = RHMIComponent.loadFromXML(app, componentNode)
+		assertNotNull(component)
+		assertTrue(component is RHMIComponent.InstrumentCluster)
+		val ic = component as RHMIComponent.InstrumentCluster
+		assertEquals(145, ic.id)
+		assertEquals(34, ic.playlistModel)
+		assertEquals(33, ic.detailsModel)
+		assertEquals(35, ic.useCaseModel)
+		assertEquals(64, ic.action)
+		assertEquals(39, ic.textModel)
+		assertEquals(38, ic.additionalTextModel)
+		assertEquals(65, ic.setTrackAction)
+		assertEquals(36, ic.iSpeechSupport)
+		assertEquals(37, ic.iSpeechText)
+		assertEquals(41, ic.skipForward)
+		assertEquals(40, ic.skipBackward)
 	}
 
 	@Test fun toolbarButton() {
