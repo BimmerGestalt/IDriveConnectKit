@@ -46,9 +46,19 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 
 	open class TextIdModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
 		var textId: Int = 0
+			set(value) {
+				val resource = BMWRemoting.RHMIResourceIdentifier(BMWRemoting.RHMIResourceType.TEXTID, value)
+				app.setModel(id, resource)
+				field = value
+			}
 	}
 	open class ImageIdModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
 		var imageId: Int = 0
+			set(value) {
+				val resource = BMWRemoting.RHMIResourceIdentifier(BMWRemoting.RHMIResourceType.IMAGEID, value)
+				app.setModel(id, resource)
+				field = value
+			}
 	}
 	class RaBoolModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
 		var value: Boolean = false
