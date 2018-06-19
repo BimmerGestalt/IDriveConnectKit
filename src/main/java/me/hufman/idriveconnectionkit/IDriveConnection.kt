@@ -5,7 +5,16 @@ import de.bmw.idrive.BMWRemotingHelper
 import de.bmw.idrive.BMWRemotingServer
 
 object IDriveConnection {
+	var mockRemotingServer: BMWRemotingServer? = null
+	var mockRemotingClient: BMWRemotingClient? = null
+
 	fun getEtchConnection(host: String, port: Int, callbackClient: BMWRemotingClient): BMWRemotingServer {
+		val mockRemotingServer = IDriveConnection.mockRemotingServer
+		if (mockRemotingServer != null) {
+			mockRemotingClient = callbackClient
+			return mockRemotingServer
+		}
+
 		var uri = "tcp://" + host + ":" + port
 		uri = "$uri?Packetizer.maxPktSize=8388608&TcpTransport.noDelay=true"
 
