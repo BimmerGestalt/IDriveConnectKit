@@ -40,9 +40,24 @@ abstract class RHMIAction private constructor(open val app: RHMIApplication, ope
 		}
 	}
 
+	interface RHMIActionCallback {
+		fun onActionEvent(args: Map<*, *>?)
+	}
+
 	class CombinedAction(override val app: RHMIApplication, override val id: Int, val raAction: RAAction?, val hmiAction: HMIAction?): RHMIAction(app, id) {
 		var sync: String = ""
 		var actionType: String = ""
+
+		var onActionEvent: RHMIActionCallback?
+			set(value) { raAction?.rhmiActionCallback = value }
+			get() = raAction?.rhmiActionCallback
+
+		override fun asRAAction(): RAAction? {
+			return raAction
+		}
+		override fun asHMIAction(): HMIAction? {
+			return hmiAction
+		}
 	}
 	class HMIAction(override val app: RHMIApplication, override val id: Int): RHMIAction(app, id) {
 		var targetModel: Int = 0
@@ -50,7 +65,9 @@ abstract class RHMIAction private constructor(open val app: RHMIApplication, ope
 			return app.models[targetModel]
 		}
 	}
-	class RAAction(override val app: RHMIApplication, override val id: Int): RHMIAction(app, id) // no extra attrs
+	class RAAction(override val app: RHMIApplication, override val id: Int): RHMIAction(app, id) {
+		var rhmiActionCallback: RHMIActionCallback? = null
+	}
 	class LinkAction(override val app: RHMIApplication, override val id: Int): RHMIAction(app, id) {
 		var actionType: String = ""
 		var linkModel: Int = 0
