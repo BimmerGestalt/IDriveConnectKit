@@ -7,6 +7,7 @@ import org.xml.sax.SAXException
 
 import java.io.ByteArrayInputStream
 import java.io.IOException
+import java.lang.Exception
 import java.lang.reflect.Field
 
 import javax.xml.parsers.DocumentBuilder
@@ -124,12 +125,16 @@ object XMLUtils {
 			val classType = obj.javaClass
 			val field = getClassField(classType, key)
 			val setterName = getSetterMethodName(key)
-			when(field?.type) {
-				Integer::class.javaPrimitiveType -> classType.getMethod(setterName, Integer::class.javaPrimitiveType).invoke(obj, value.toInt())
-				Boolean::class.javaPrimitiveType -> classType.getMethod(setterName, Boolean::class.javaPrimitiveType).invoke(obj, value.toBoolean())
-				String::class.java -> classType.getMethod(setterName, String::class.java).invoke(obj, value)
-				null -> Unit
-				else -> field.set(obj, value)
+			try {
+				when (field?.type) {
+					Integer::class.javaPrimitiveType -> classType.getMethod(setterName, Integer::class.javaPrimitiveType).invoke(obj, value.toInt())
+					Boolean::class.javaPrimitiveType -> classType.getMethod(setterName, Boolean::class.javaPrimitiveType).invoke(obj, value.toBoolean())
+					String::class.java -> classType.getMethod(setterName, String::class.java).invoke(obj, value)
+					null -> Unit
+					else -> field.set(obj, value)
+				}
+			} catch (e:Exception) {
+				System.err.println("Failed to set $field with value $value, due to error ${e.message}: intValue=${value.toInt()} boolValue=${value.toBoolean()}")
 			}
 		}
 	}
