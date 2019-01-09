@@ -3,6 +3,7 @@ package me.hufman.idriveconnectionkit
 import de.bmw.idrive.BMWRemotingClient
 import de.bmw.idrive.BMWRemotingHelper
 import de.bmw.idrive.BMWRemotingServer
+import de.bmw.idrive.RemoteBMWRemotingServer
 
 object IDriveConnection {
 	var mockRemotingServer: BMWRemotingServer? = null
@@ -23,5 +24,10 @@ object IDriveConnection {
 		server._startAndWaitUp(4000)
 
 		return server
+	}
+
+	fun disconnectEtchConnection(server: BMWRemotingServer) {
+		if (server is RemoteBMWRemotingServer)
+			server._stopAndWaitDown(4000)
 	}
 }
