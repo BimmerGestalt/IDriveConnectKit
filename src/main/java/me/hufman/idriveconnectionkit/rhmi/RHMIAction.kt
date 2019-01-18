@@ -64,6 +64,19 @@ abstract class RHMIAction private constructor(open val app: RHMIApplication, ope
 		fun getTargetModel(): RHMIModel? {
 			return app.models[targetModel]
 		}
+		var target: Int = 0
+		fun getTargetState(): RHMIState? {
+			if (target > 0) {
+				return app.states[target]
+			} else if (targetModel > 0){
+				val modelValue = getTargetModel()?.asRaIntModel()?.value ?:
+						getTargetModel()?.asRaDataModel()?.value?.toInt()
+				if (modelValue != null) {
+					return app.states[modelValue]
+				}
+			}
+			return null
+		}
 	}
 	class RAAction(override val app: RHMIApplication, override val id: Int): RHMIAction(app, id) {
 		var rhmiActionCallback: RHMIActionCallback? = null
