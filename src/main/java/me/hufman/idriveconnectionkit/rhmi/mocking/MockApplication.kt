@@ -2,7 +2,7 @@ package me.hufman.idriveconnectionkit.rhmi.mocking
 
 import me.hufman.idriveconnectionkit.rhmi.*
 
-class RHMIApplicationMock : RHMIApplication {
+class RHMIApplicationMock : RHMIApplication() {
 	/** Automatically instantiates elements of the application layout */
 	override val models = MockModelMap(this)
 	override val actions = MockActionMap(this)

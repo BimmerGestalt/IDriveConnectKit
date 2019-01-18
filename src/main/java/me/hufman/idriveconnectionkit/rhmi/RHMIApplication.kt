@@ -8,12 +8,14 @@ import me.hufman.idriveconnectionkit.xmlutils.getChildNamed
 import org.w3c.dom.Document
 
 
-interface RHMIApplication {
-	val models: HashMap<Int, RHMIModel>
-	val actions: HashMap<Int, RHMIAction>
-	val events: HashMap<Int, RHMIEvent>
-	val states: HashMap<Int, RHMIState>
-	val components: HashMap<Int, RHMIComponent>
+abstract class RHMIApplication {
+	abstract val models: HashMap<Int, RHMIModel>
+	abstract val actions: HashMap<Int, RHMIAction>
+	abstract val events: HashMap<Int, RHMIEvent>
+	abstract val states: HashMap<Int, RHMIState>
+	abstract val components: HashMap<Int, RHMIComponent>
+
+	var ignoreUpdates = false
 
 	fun loadFromXML(description: String) {
 		return this.loadFromXML(description.toByteArray())
@@ -22,6 +24,7 @@ interface RHMIApplication {
 		return this.loadFromXML(XMLUtils.loadXML(description))
 	}
 	fun loadFromXML(description: Document) {
+		ignoreUpdates = true
 		description.getChildNamed("pluginApps").getChildElements().forEach { pluginAppNode ->
 			pluginAppNode.getChildNamed("models").getChildElements().forEach { modelNode ->
 				val model = RHMIModel.loadFromXML(this, modelNode)
@@ -73,19 +76,20 @@ interface RHMIApplication {
 				}
 			}
 		}
+		ignoreUpdates = false
 	}
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
-	fun setModel(modelId: Int, value: Any)
+	abstract fun setModel(modelId: Int, value: Any)
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
-	fun setProperty(componentId: Int, propertyId: Int, value: Any)
+	abstract fun setProperty(componentId: Int, propertyId: Int, value: Any)
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
-	fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>)
+	abstract fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>)
 }
 
-class RHMIApplicationConcrete : RHMIApplication {
+class RHMIApplicationConcrete : RHMIApplication() {
 	/** Only knows about description elements that are specifically set */
 	override val models = HashMap<Int, RHMIModel>()
 	override val actions = HashMap<Int, RHMIAction>()
@@ -113,7 +117,7 @@ class RHMIApplicationConcrete : RHMIApplication {
 
 }
 
-class RHMIApplicationEtch constructor(val remoteServer: BMWRemotingServer, val rhmiHandle: Int) : RHMIApplication {
+class RHMIApplicationEtch constructor(val remoteServer: BMWRemotingServer, val rhmiHandle: Int) : RHMIApplication() {
 	/** Represents an application layout that is backed by a Car connection */
 	override val models = HashMap<Int, RHMIModel>()
 	override val actions = HashMap<Int, RHMIAction>()
@@ -123,11 +127,13 @@ class RHMIApplicationEtch constructor(val remoteServer: BMWRemotingServer, val r
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
 	override fun setModel(modelId: Int, value: Any) {
+		if (ignoreUpdates) return
 		this.remoteServer.rhmi_setData(this.rhmiHandle, modelId, value)
 	}
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
 	override fun setProperty(componentId: Int, propertyId: Int, value: Any) {
+		if (ignoreUpdates) return
 		val propertyValue = HashMap<Int, Any>()
 		propertyValue[0] = value
 		this.remoteServer.rhmi_setProperty(rhmiHandle, componentId, propertyId, propertyValue)
