@@ -527,6 +527,9 @@ class TestXMLParsing {
 		val expectedList = arrayOf(arrayOf(true, 4, "Yes"))
 		component?.asList()?.getModel()?.value = sentList
 		assertArrayEquals(expectedList, (app.modelData[7] as BMWRemoting.RHMIDataTable).data)
+
+		assertEquals(1, component?.properties?.size)
+		assertEquals("100,0,*", component?.properties?.get(RHMIProperty.PropertyId.LIST_COLUMNWIDTH.id)?.value)
 	}
 	@Test fun checkbox() {
 		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("checkbox") as Node)
@@ -544,6 +547,12 @@ class TestXMLParsing {
 		assertEquals(true, app.modelData[50])
 		component?.asCheckbox()?.getTextModel()?.asRaDataModel()?.value = "Test"
 		assertEquals("Test", app.modelData[5])
+
+		assertEquals(1, component?.properties?.size)
+		assertEquals("false", component?.properties?.get(1)?.value)
+		val propertyBag = component?.properties?.get(1) as RHMIProperty.LayoutBag
+		assertEquals("true", propertyBag.get(0))
+		assertEquals(1, propertyBag.get(1))
 	}
 	@Test fun gauge() {
 		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("gauge") as Node)

@@ -4,6 +4,7 @@ import junit.framework.TestCase.*
 import me.hufman.idriveconnectionkit.rhmi.RHMIAction
 import me.hufman.idriveconnectionkit.rhmi.RHMIComponent
 import me.hufman.idriveconnectionkit.rhmi.RHMIModel
+import me.hufman.idriveconnectionkit.rhmi.RHMIProperty
 import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import org.junit.Test
 
@@ -48,17 +49,17 @@ class TestRHMIApplication {
 		button.tooltipModel = 51
 		assertEquals(51, button.getTooltipModel()?.id)
 
-		assertEquals(null, app.propertyData[button.id][RHMIComponent.Property.VISIBLE.propertyId])
+		assertEquals(null, app.propertyData[button.id][RHMIProperty.PropertyId.VISIBLE.id])
 		button.setVisible(true)
-		assertEquals(true, app.propertyData[button.id][RHMIComponent.Property.VISIBLE.propertyId])
+		assertEquals(true, app.propertyData[button.id][RHMIProperty.PropertyId.VISIBLE.id])
 
 		button.setEnabled(false)
-		assertEquals(false, app.propertyData[button.id][RHMIComponent.Property.ENABLED.propertyId])
+		assertEquals(false, app.propertyData[button.id][RHMIProperty.PropertyId.ENABLED.id])
 
 		button.setSelectable(false)
-		assertEquals(false, app.propertyData[button.id][RHMIComponent.Property.SELECTABLE.propertyId])
+		assertEquals(false, app.propertyData[button.id][RHMIProperty.PropertyId.SELECTABLE.id])
 
-		button.setProperty(RHMIComponent.Property.LIST_COLUMNWIDTH, "0,100,*")
-		assertEquals("0,100,*", app.propertyData[button.id][RHMIComponent.Property.LIST_COLUMNWIDTH.propertyId])
+		button.setProperty(RHMIProperty.PropertyId.LIST_COLUMNWIDTH, "0,100,*")
+		assertEquals("0,100,*", app.propertyData[button.id][RHMIProperty.PropertyId.LIST_COLUMNWIDTH.id])
 	}
 }

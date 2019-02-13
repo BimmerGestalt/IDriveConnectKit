@@ -36,8 +36,19 @@
                 <button id="42" action="3" selectAction="4" tooltipModel="5" model="11" />
                 <separator id="43" />
                 <label id="44" model="6" />
-                <list id="4" model="7" action="3" selectAction="4" />
-                <checkbox id="46" model="50" textModel="5" action="3" />
+                <list id="4" model="7" action="3" selectAction="4">
+                    <properties><property id="6" value="100,0,*" /></properties>
+                </list>
+                <checkbox id="46" model="50" textModel="5" action="3">
+                    <properties><property id="1" value="false">
+                        <condition conditionType="LAYOUTBAG">
+                            <assignments>
+                                <assignment conditionValue="0" value="true" />
+                                <assignment conditionValue="1" value="1" />
+                            </assignments>
+                        </condition>
+                    </property></properties>
+                </checkbox>
                 <gauge id="47" textModel="5" model="8" action="3" changeAction="4" />
                 <input id="48" textModel="5" resultModel="6" suggestModel="6" action="4" resultAction="3" suggestAction="3" />
                 <image id="50" model="62"/>
