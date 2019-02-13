@@ -10,73 +10,9 @@ import org.junit.Test
 import org.w3c.dom.Node
 
 class TestXMLParsing {
-	val xml = "<pluginApps><pluginApp>" +
-			"<actions>" +
-			"<raAction id=\"2\"/>" +
-			"<combinedAction id=\"3\" sync=\"true\" actionType=\"spellWord\">" +
-			"    <actions>" +
-			"        <raAction id=\"4\"/>" +
-			"        <hmiAction id=\"5\" targetModel=\"6\"/>" +
-			"    </actions>" +
-			"</combinedAction>" +
-			"<linkAction id=\"7\" actionType=\"call\" linkModel=\"12\"/>" +
-			"</actions>" +
-			"<models>" +
-			"<imageIdModel id=\"4\" imageId=\"15\"/>" +
-			"<textIdModel id=\"5\" textId=\"70\"/>" +
-			"<raBoolModel id=\"50\"/>" +
-			"<raDataModel id=\"6\"/>" +
-			"<raImageModel id=\"62\"/>" +
-			"<raIntModel id=\"60\" value=\"0\"/>" +
-			"<raListModel id=\"7\" modelType=\"EntICPlaylist\"/>" +
-			"<raGaugeModel id=\"8\" modelType=\"Progress\" min=\"0\" max=\"100\" value=\"0\" increment=\"1\"/>" +
-			"<formatDataModel id=\"10\" formatString=\"%0%1\">\n" +
-			"    <models>\n" +
-			"        <textIdModel id=\"11\"/>\n" +
-			"        <raDataModel id=\"12\"/>\n" +
-			"    </models>\n" +
-			"</formatDataModel>" +
-			"</models>" +
-			"<hmiStates>" +
-			"<hmiState id=\"46\" textModel=\"5\">" +
-			"</hmiState>" +
-			"<toolbarHmiState id=\"40\" textModel=\"6\">" +
-			"<toolbarComponents>" +
-			"<button id=\"41\" action=\"3\" selectAction=\"4\" tooltipModel=\"5\" imageModel=\"4\" />" +
-			"</toolbarComponents>" +
-			"<components>" +
-			"<button id=\"42\" action=\"3\" selectAction=\"4\" tooltipModel=\"5\" model=\"11\" />" +
-			"<separator id=\"43\" />" +
-			"<label id=\"44\" model=\"6\" />" +
-			"<list id=\"4\" model=\"7\" action=\"3\" selectAction=\"4\" />" +
-			"<checkbox id=\"46\" model=\"50\" textModel=\"5\" action=\"3\" />" +
-			"<gauge id=\"47\" textModel=\"5\" model=\"8\" action=\"3\" changeAction=\"4\" />" +
-			"<input id=\"48\" textModel=\"5\" resultModel=\"6\" suggestModel=\"6\" action=\"4\" resultAction=\"3\" suggestAction=\"3\" />" +
-			"<image id=\"50\" model=\"62\"/>" +
-			"</components>" +
-			"</toolbarHmiState>" +
-			"<popupHmiState id=\"49\" textModel=\"11\">" +
-			"</popupHmiState>" +
-			"<audioHmiState id=\"24\" artistAction=\"21\" coverAction=\"29\" progressAction=\"37\" playListAction=\"33\" albumAction=\"25\" textModel=\"44\" alternativeTextModel=\"48\" trackTextModel=\"47\" playListProgressTextModel=\"50\" playListTextModel=\"49\" artistImageModel=\"54\" artistTextModel=\"45\" albumImageModel=\"55\" albumTextModel=\"46\" coverImageModel=\"56\" playbackProgressModel=\"62\" downloadProgressModel=\"63\" currentTimeModel=\"51\" elapsingTimeModel=\"52\" playListFocusRowModel=\"59\" providerLogoImageModel=\"57\" statusBarImageModel=\"61\" playListModel=\"58\">" +
-			"<toolbarComponents>" +
-			"<button id=\"141\" action=\"3\" selectAction=\"4\" tooltipModel=\"5\" imageModel=\"4\" />" +
-			"</toolbarComponents>" +
-			"<components></components>" +
-			"</audioHmiState>" +
-			"</hmiStates>" +
-			"<entryButton id=\"49\" action=\"4\" model=\"5\" imageModel=\"4\"/>" +
-			"<instrumentCluster id=\"145\" playlistModel=\"34\" detailsModel=\"33\" useCaseModel=\"35\" action=\"64\" textModel=\"39\" additionalTextModel=\"38\" setTrackAction=\"65\" iSpeechSupport=\"36\" iSpeechText=\"37\" skipForward=\"41\" skipBackward=\"40\"/>" +
-			"<events>\n" +
-			"    <popupEvent id=\"1\" target=\"49\" priority=\"10\"/>\n" +
-			"    <actionEvent id=\"2\" action=\"7\"/>\n" +
-			"    <actionEvent id=\"3\" action=\"7\"/>\n" +
-			"    <notificationIconEvent id=\"4\" imageIdModel=\"62\"/>\n" +
-			"    <popupEvent id=\"5\" target=\"49\" priority=\"10\"/>\n" +
-			"    <focusEvent id=\"6\" targetModel=\"6\"/>\n" +
-			"    <multimediaInfoEvent id=\"7\" textModel1=\"6\" textModel2=\"12\"/>\n" +
-			"    <statusbarEvent id=\"8\" textModel=\"12\"/>\n" +
-			"</events>" +
-			"</pluginApp></pluginApps>"
+	val xml = this.javaClass.classLoader.getResourceAsStream("ui_layout.xml").bufferedReader().use {
+		it.readText()
+	}
 	var app = RHMIApplicationMock()
 	val root = XMLUtils.loadXML(xml).childNodes.item(0)
 	var pluginApp = root.getChildNamed("pluginApp") as Node
