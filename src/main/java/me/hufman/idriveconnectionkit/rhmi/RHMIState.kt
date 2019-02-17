@@ -10,6 +10,7 @@ import java.util.HashMap
 abstract class RHMIState private constructor(open val app: RHMIApplication, open val id: Int) {
 	val components = HashMap<Int, RHMIComponent>()
 	val componentsList = ArrayList<RHMIComponent>()
+	val properties = HashMap<Int, RHMIProperty>()
 	var textModel: Int = 0
 	fun getTextModel(): RHMIModel? {
 		return app.models[textModel]
@@ -39,10 +40,20 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 						state.componentsList.add(component)
 					}
 				}
+
+				val propertyNodes = node.getChildNamed("properties")
+				if (propertyNodes != null) {
+					propertyNodes.getChildElements().filter { it.nodeName == "property" }.forEach {
+						val property = RHMIProperty.loadFromXML(it)
+						if (property != null)
+							state.properties[property.id] = property
+					}
+				}
+
 				if (state is ToolbarState) {
 					node.getChildNamed("toolbarComponents").getChildElements().forEach { componentNode ->
 						val component = RHMIComponent.loadFromXML(app, componentNode)
-						if (component != null) {
+						if (component is RHMIComponent.ToolbarButton) {
 							state.toolbarComponents[component.id] = component
 							state.toolbarComponentsList.add(component)
 						}
@@ -56,8 +67,8 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 
 	class PlainState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id)
 	open class ToolbarState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id) {
-		val toolbarComponents = HashMap<Int, RHMIComponent>()
-		val toolbarComponentsList = ArrayList<RHMIComponent>()
+		val toolbarComponents = HashMap<Int, RHMIComponent.ToolbarButton>()
+		val toolbarComponentsList = ArrayList<RHMIComponent.ToolbarButton>()
 	}
 	class PopupState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id)
 	class AudioHmiState(override val app: RHMIApplication, override val id: Int): ToolbarState(app, id) {

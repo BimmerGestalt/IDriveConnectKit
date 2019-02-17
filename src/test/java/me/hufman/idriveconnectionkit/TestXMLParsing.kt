@@ -310,6 +310,9 @@ class TestXMLParsing {
 
 		state?.getTextModel()?.asRaDataModel()?.value = "Test"
 		assertEquals("Test", app.modelData[5])
+
+		assertEquals(1, state?.properties?.size)
+		assertEquals("false", state?.properties?.get(4)?.value)
 	}
 	@Test fun toolbarState() {
 		val state = RHMIState.loadFromXML(app, states.getChildNamed("toolbarHmiState") as Node)

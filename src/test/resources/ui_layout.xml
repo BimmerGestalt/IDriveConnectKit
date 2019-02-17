@@ -27,6 +27,7 @@
     </models>
     <hmiStates>
         <hmiState id="46" textModel="5">
+            <properties><property id="4" value="false" /></properties>
         </hmiState>
         <toolbarHmiState id="40" textModel="6">
             <toolbarComponents>
