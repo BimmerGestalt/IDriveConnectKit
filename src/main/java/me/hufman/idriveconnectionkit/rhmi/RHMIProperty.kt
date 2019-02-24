@@ -9,7 +9,12 @@ abstract class RHMIProperty(val id: Int, var value: Any = 0) {
 		ENABLED(1),
 		SELECTABLE(2),
 		VISIBLE(3),
-		LIST_COLUMNWIDTH(6)
+		VALID(3),
+		LIST_COLUMNWIDTH(6),
+		WIDTH(9),
+		HEIGHT(10),
+		POSITION_X(20),
+		POSITION_Y(21)
 	}
 
 	companion object {
