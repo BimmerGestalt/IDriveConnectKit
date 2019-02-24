@@ -104,6 +104,9 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 			abstract var height: Int
 			fun getWindow(startIndex: Int, numRows: Int): Array<Array<Any>> {
 				var actualNumRows = numRows
+				if (startIndex > height) {
+					return arrayOf()
+				}
 				if (startIndex + numRows > height) {
 					actualNumRows = height - startIndex
 				}
