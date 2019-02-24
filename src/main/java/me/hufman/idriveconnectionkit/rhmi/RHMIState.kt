@@ -65,6 +65,25 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 		}
 	}
 
+	// any custom event listeners that the client provides
+	var eventCallback: EventCallback? = null
+	var focusCallback: FocusCallback? = null
+	var visibleCallback: VisibleCallback? = null
+
+	// dispatch an event
+	fun onHmiEvent(eventId: Int?, args: Map<*, *>?) {
+		if (eventCallback != null) {
+			eventCallback?.onHmiEvent(eventId, args)
+		} else {
+			if (eventId == 1 && focusCallback != null) {
+				focusCallback?.onFocus(args?.get(4.toByte()) as? Boolean ?: false)
+			}
+			if (eventId == 11 && visibleCallback != null) {
+				visibleCallback?.onVisible(args?.get(23.toByte()) as? Boolean ?: false)
+			}
+		}
+	}
+
 	class PlainState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id)
 	open class ToolbarState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id) {
 		val toolbarComponents = HashMap<Int, RHMIComponent.ToolbarButton>()

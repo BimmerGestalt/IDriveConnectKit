@@ -1,10 +1,12 @@
 package me.hufman.idriveconnectionkit.rhmi
 
+import me.hufman.idriveconnectionkit.etchAsInt
 import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
 import me.hufman.idriveconnectionkit.xmlutils.getAttributesMap
 import me.hufman.idriveconnectionkit.xmlutils.getChildElements
 import me.hufman.idriveconnectionkit.xmlutils.getChildNamed
 import org.w3c.dom.Node
+
 
 abstract class RHMIComponent private constructor(open val app: RHMIApplication, open val id: Int) {
 
@@ -61,6 +63,32 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 	}
 	fun setEnabled(enabled: Boolean) {
 		this.setProperty(RHMIProperty.PropertyId.ENABLED, enabled)
+	}
+
+	// any custom event listeners that the client provides
+	var eventCallback: EventCallback? = null
+	var requestDataCallback: RequestDataCallback? = null
+	var focusCallback: FocusCallback? = null
+	var visibleCallback: VisibleCallback? = null
+
+	// dispatch an event
+	fun onHmiEvent(eventId: Int?, args: Map<*, *>?) {
+		if (eventCallback != null) {
+			eventCallback?.onHmiEvent(eventId, args)
+		} else {
+			if (eventId == 1 && focusCallback != null) {
+				focusCallback?.onFocus(args?.get(4.toByte()) as? Boolean ?: false)
+			}
+			if (eventId == 2 && requestDataCallback != null) {
+				requestDataCallback?.onRequestData(
+						etchAsInt(args?.get(5.toByte()), 0),
+						etchAsInt(args?.get(6.toByte()), 20)
+				)
+			}
+			if (eventId == 11 && visibleCallback != null) {
+				visibleCallback?.onVisible(args?.get(23.toByte()) as? Boolean ?: false)
+			}
+		}
 	}
 
 	class Separator(override val app: RHMIApplication, override val id: Int): RHMIComponent(app, id)
