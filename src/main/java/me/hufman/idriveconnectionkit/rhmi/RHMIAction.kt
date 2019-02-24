@@ -39,17 +39,6 @@ abstract class RHMIAction private constructor(open val app: RHMIApplication, ope
 			return action
 		}
 
-		// helper to create listeners
-		fun RHMIActionCallback(f: (args: Map<*, *>?) -> Unit): RHMIActionCallback = object : RHMIActionCallback {
-			override fun onActionEvent(args: Map<*, *>?) {
-				f(args)
-			}
-		}
-	}
-
-	// callback interfaces
-	interface RHMIActionCallback {
-		fun onActionEvent(args: Map<*, *>?)
 	}
 
 	class CombinedAction(override val app: RHMIApplication, override val id: Int, val raAction: RAAction?, val hmiAction: HMIAction?): RHMIAction(app, id) {
