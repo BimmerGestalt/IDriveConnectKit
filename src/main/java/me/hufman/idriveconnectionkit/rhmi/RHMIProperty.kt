@@ -9,7 +9,7 @@ abstract class RHMIProperty(val id: Int, var value: Any = 0) {
 		ENABLED(1),
 		SELECTABLE(2),
 		VISIBLE(3),
-		VALID(3),
+		VALID(4),
 		LIST_COLUMNWIDTH(6),
 		WIDTH(9),
 		HEIGHT(10),
