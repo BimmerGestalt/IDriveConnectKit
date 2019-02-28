@@ -8,9 +8,9 @@ import org.w3c.dom.Node
 import java.util.HashMap
 
 abstract class RHMIState private constructor(open val app: RHMIApplication, open val id: Int) {
-	val components = HashMap<Int, RHMIComponent>()
-	val componentsList = ArrayList<RHMIComponent>()
-	val properties = HashMap<Int, RHMIProperty>()
+	val components: MutableMap<Int, RHMIComponent> = HashMap()
+	val componentsList: MutableList<RHMIComponent> = ArrayList()
+	val properties: MutableMap<Int, RHMIProperty> = HashMap()
 	var textModel: Int = 0
 	fun getTextModel(): RHMIModel? {
 		return app.models[textModel]

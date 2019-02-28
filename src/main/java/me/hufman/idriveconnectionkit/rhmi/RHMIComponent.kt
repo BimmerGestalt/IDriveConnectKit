@@ -10,7 +10,7 @@ import org.w3c.dom.Node
 
 abstract class RHMIComponent private constructor(open val app: RHMIApplication, open val id: Int) {
 
-	val properties = HashMap<Int, RHMIProperty>()
+	val properties: MutableMap<Int, RHMIProperty> = HashMap()
 
 	companion object {
 		fun loadFromXML(app: RHMIApplication, node: Node): RHMIComponent? {

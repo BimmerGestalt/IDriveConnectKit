@@ -9,11 +9,11 @@ import org.w3c.dom.Document
 
 
 abstract class RHMIApplication {
-	abstract val models: HashMap<Int, RHMIModel>
-	abstract val actions: HashMap<Int, RHMIAction>
-	abstract val events: HashMap<Int, RHMIEvent>
-	abstract val states: HashMap<Int, RHMIState>
-	abstract val components: HashMap<Int, RHMIComponent>
+	abstract val models: MutableMap<Int, RHMIModel>
+	abstract val actions: MutableMap<Int, RHMIAction>
+	abstract val events: MutableMap<Int, RHMIEvent>
+	abstract val states: MutableMap<Int, RHMIState>
+	abstract val components: MutableMap<Int, RHMIComponent>
 
 	var ignoreUpdates = false
 
