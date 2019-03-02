@@ -167,7 +167,7 @@ service BMWRemoting {
 	@Direction(CLIENT)
 	@AsyncReceiver( QUEUED )
 	@Oneway
-	void am_onAppEvent (int handle, string ident, int appId, AMEvent event);
+	void am_onAppEvent (int handle, string ident, string appId, AMEvent event);
 
 	// remote human-machine interface
 	Map rhmi_getCapabilities (string component, int handle) throws IllegalArgumentException, ServiceException, SecurityException;
