@@ -9,19 +9,21 @@ interface RHMIActionCallback {
 
 interface RHMIActionButtonCallback: RHMIActionCallback {
 	override fun onActionEvent(args: Map<*, *>?) {
-		onAction()
+		val invokedBy = etchAsInt(args?.get(43.toByte()))
+		onAction(invokedBy)
 	}
 
-	fun onAction()
+	fun onAction(invokedBy: Int? = null)
 }
 
 interface RHMIActionListCallback: RHMIActionCallback {
 	override fun onActionEvent(args: Map<*, *>?) {
 		val index = etchAsInt(args?.get(1.toByte()))
-		onAction(index)
+		val invokedBy = etchAsInt(args?.get(43.toByte()))
+		onAction(index, invokedBy)
 	}
 
-	fun onAction(index: Int)
+	fun onAction(index: Int, invokedBy: Int? = null)
 }
 
 interface RHMIActionSpellerCallback: RHMIActionCallback {
@@ -41,13 +43,13 @@ fun RHMIActionCallback(f: (args: Map<*, *>?) -> Unit): RHMIActionCallback = obje
 }
 
 fun RHMIActionButtonCallback(f: () -> Unit): RHMIActionButtonCallback = object: RHMIActionButtonCallback {
-	override fun onAction() {
+	override fun onAction(invokedBy: Int?) {
 		f()
 	}
 }
 
 fun RHMIActionListCallback(f: (Int) -> Unit): RHMIActionListCallback = object: RHMIActionListCallback {
-	override fun onAction(index: Int) {
+	override fun onAction(index: Int, invokedBy: Int?) {
 		f(index)
 	}
 }
