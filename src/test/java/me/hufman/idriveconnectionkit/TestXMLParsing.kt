@@ -22,6 +22,28 @@ class TestXMLParsing {
 	val states = pluginApp.getChildNamed("hmiStates") as Node
 	val components = states.getChildNamed("toolbarHmiState")?.getChildNamed("components") as Node
 
+	@Test fun xmlUtils() {
+		val missingChild = XMLUtils.getChildNodeNamed(root, "missing")
+		assertNull(missingChild)
+
+		val app = XMLUtils.getChildNodeNamed(root, "pluginApp")
+		assertEquals("pluginApp", app?.nodeName)
+
+		val emptyAttrs = XMLUtils.getAttributes(states)
+		assertEquals(0, emptyAttrs.size)
+
+		val firstState = XMLUtils.childNodes(states).first()
+		assertTrue(XMLUtils.hasAttribute(firstState, "id"))
+		assertEquals("46", XMLUtils.getAttribute(firstState, "id"))
+
+		val stateChildren = XMLUtils.childNodes(firstState)
+		assertEquals(1, stateChildren.size)
+		assertEquals("properties", stateChildren[0].nodeName)
+		val stateChildrenNodes = XMLUtils.childNodes(firstState.childNodes)
+		assertEquals(1, stateChildrenNodes.size)
+		assertEquals("properties", stateChildrenNodes[0].nodeName)
+	}
+
 	@Test fun entireDescription() {
 		val app = RHMIApplicationConcrete()
 		app.loadFromXML(xml)
