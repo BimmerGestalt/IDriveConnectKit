@@ -47,9 +47,9 @@ class TestXMLParsing {
 	@Test fun entireDescription() {
 		val app = RHMIApplicationConcrete()
 		app.loadFromXML(xml)
-		assertEquals(5, app.actions.size)
+		assertEquals(7, app.actions.size)
 		assertEquals(8, app.events.size)
-		assertEquals(11, app.models.size)
+		assertEquals(19, app.models.size)
 		assertEquals(4, app.states.size)
 		assertEquals(12, app.components.size)
 
@@ -462,17 +462,28 @@ class TestXMLParsing {
 		assertTrue(component is RHMIComponent.InstrumentCluster)
 		val ic = component as RHMIComponent.InstrumentCluster
 		assertEquals(145, ic.id)
-		assertEquals(34, ic.playlistModel)
-		assertEquals(33, ic.detailsModel)
+		assertEquals(7, ic.playlistModel)
+		assertEquals(7, ic.getPlaylistModel()?.asRaListModel()?.id)
+		assertEquals(74, ic.detailsModel)
+		assertEquals(74, ic.getDetailsModel()?.asRaListModel()?.id)
 		assertEquals(35, ic.useCaseModel)
+		assertEquals(35, ic.getUseCaseModel()?.asRaDataModel()?.id)
 		assertEquals(64, ic.action)
+		assertEquals(64, ic.getAction()?.asRAAction()?.id)
 		assertEquals(39, ic.textModel)
+		assertEquals(39, ic.getTextModel()?.asRaDataModel()?.id)
 		assertEquals(38, ic.additionalTextModel)
+		assertEquals(38, ic.getAdditionalTextModel()?.asRaDataModel()?.id)
 		assertEquals(65, ic.setTrackAction)
+		assertEquals(65, ic.getSetTrackAction()?.asRAAction()?.id)
 		assertEquals(36, ic.iSpeechSupport)
+		assertEquals(36, ic.getISpeechSupport()?.asRaBoolModel()?.id)
 		assertEquals(37, ic.iSpeechText)
+		assertEquals(37, ic.getISpeechText()?.asRaIntModel()?.id)
 		assertEquals(41, ic.skipForward)
+		assertEquals(41, ic.getSkipForward()?.asRaDataModel()?.id)
 		assertEquals(40, ic.skipBackward)
+		assertEquals(40, ic.getSkipBackward()?.asRaDataModel()?.id)
 	}
 
 	@Test fun toolbarButton() {

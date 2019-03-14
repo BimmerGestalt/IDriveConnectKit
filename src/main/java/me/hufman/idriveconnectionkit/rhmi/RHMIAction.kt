@@ -86,7 +86,23 @@ abstract class RHMIAction private constructor(open val app: RHMIApplication, ope
 		}
 	}
 
-	class MockAction(override val app: RHMIApplication, override val id: Int): RHMIAction(app, id) // no extra attrs
+	class MockAction(override val app: RHMIApplication, override val id: Int): RHMIAction(app, id) {
+		override fun asCombinedAction(): CombinedAction? {
+			return CombinedAction(app, id, this.asRAAction(), this.asHMIAction())
+		}
+
+		override fun asHMIAction(): HMIAction? {
+			return HMIAction(app, id)
+		}
+
+		override fun asRAAction(): RAAction? {
+			return RAAction(app, id)
+		}
+
+		override fun asLinkAction(): LinkAction? {
+			return LinkAction(app, id)
+		}
+	}
 
 	open fun asCombinedAction(): CombinedAction? {
 		return this as? CombinedAction

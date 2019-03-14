@@ -1,5 +1,6 @@
 <pluginApps><pluginApp>
     <actions>
+        <unknown />
         <raAction id="2"/>
         <combinedAction id="3" sync="true" actionType="spellWord">
             <actions>
@@ -8,8 +9,11 @@
             </actions>
         </combinedAction>
         <linkAction id="7" actionType="call" linkModel="12"/>
+        <raAction id="64"/>
+        <raAction id="65"/>
     </actions>
     <models>
+        <unknown />
         <imageIdModel id="4" imageId="15"/>
         <textIdModel id="5" textId="70"/>
         <raBoolModel id="50"/>
@@ -17,6 +21,14 @@
         <raImageModel id="62"/>
         <raIntModel id="60" value="0"/>
         <raListModel id="7" modelType="EntICPlaylist"/>
+        <raListModel id="74" modelType="EntICDetails"/>
+        <raDataModel id="35"/>
+        <raBoolModel id="36"/>
+        <textIdModel id="37"/>
+        <raDataModel id="38"/>
+        <raDataModel id="39"/>
+        <raDataModel id="40"/>
+        <raDataModel id="41"/>
         <raGaugeModel id="8" modelType="Progress" min="0" max="100" value="0" increment="1"/>
         <formatDataModel id="10" formatString="%0%1">
             <models>
@@ -34,6 +46,7 @@
                 <button id="41" action="3" selectAction="4" tooltipModel="5" imageModel="4" />
             </toolbarComponents>
             <components>
+                <unknown />
                 <button id="42" action="3" selectAction="4" tooltipModel="5" model="11" />
                 <separator id="43" />
                 <label id="44" model="6" />
@@ -65,7 +78,7 @@
         </audioHmiState>
     </hmiStates>
     <entryButton id="49" action="4" model="5" imageModel="4"/>
-    <instrumentCluster id="145" playlistModel="34" detailsModel="33" useCaseModel="35" action="64" textModel="39" additionalTextModel="38" setTrackAction="65" iSpeechSupport="36" iSpeechText="37" skipForward="41" skipBackward="40"/>
+    <instrumentCluster id="145" playlistModel="7" detailsModel="74" useCaseModel="35" action="64" textModel="39" additionalTextModel="38" setTrackAction="65" iSpeechSupport="36" iSpeechText="37" skipForward="41" skipBackward="40"/>
     <events>
         <popupEvent id="1" target="49" priority="10"/>
         <actionEvent id="2" action="7"/>

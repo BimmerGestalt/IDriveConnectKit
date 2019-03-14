@@ -37,11 +37,11 @@ object XMLUtils {
 		return outputList
 	}
 	fun hasAttribute(element: Node, attr: String): Boolean {
-		return element.attributes.getNamedItem(attr) != null
+		return element.attributes?.getNamedItem(attr) != null
 	}
 
 	fun getAttribute(element: Node, attr: String): String? {
-		return element.attributes.getNamedItem(attr).nodeValue
+		return element.attributes?.getNamedItem(attr)?.nodeValue
 	}
 
 	fun getAttributes(element: Node): Map<String, String> {
