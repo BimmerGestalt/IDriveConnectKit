@@ -1,0 +1,27 @@
+apply plugin: 'jacoco'
+
+task coverage(type: JacocoReport, dependsOn: "check") {
+    dependsOn "check"
+    group = "Verification"
+    description = "Generate Jacoco coverage reports"
+
+    reports {
+        xml.enabled = true
+        xml.destination = file("$buildDir/reports/jacoco/jacoco.xml")   // have this in a common location for coveralls to find
+        html.enabled = true
+    }
+
+    def kotlinClasses = fileTree(dir: "$buildDir/classes/kotlin/main",
+            exclude: 'de/bmw/idrive/**')
+    classDirectories = files([kotlinClasses])
+
+    sourceDirectories = files([
+            "${project.projectDir}/src/main/java"
+    ])
+    executionData = files("${project.buildDir}/jacoco/test.exec")
+
+}
+
+coveralls {
+    jacocoReportPath 'build/reports/jacoco/jacoco.xml'
+}

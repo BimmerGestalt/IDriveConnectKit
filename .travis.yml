@@ -1,2 +1,5 @@
 language: java
-script: gradle check
+script: ./gradlew check
+
+after_success:
+- ./gradlew coverage coveralls
