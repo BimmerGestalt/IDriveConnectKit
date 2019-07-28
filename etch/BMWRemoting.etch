@@ -222,10 +222,7 @@ service BMWRemoting {
 	@AsyncReceiver( QUEUED )
 	@Oneway
 	void av_connectionDeactivated (int handle, AVConnectionType connectionType);
-	@Direction(CLIENT)
-	@AsyncReceiver( QUEUED )
-	@Oneway
-	void av_closeConnection (int handle, AVConnectionType connectionType);
+	void av_closeConnection (int handle, AVConnectionType connectionType) throws IllegalArgumentException, ServiceException, SecurityException;
 	void av_dispose (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
 	// state management
 	@Direction(CLIENT)
