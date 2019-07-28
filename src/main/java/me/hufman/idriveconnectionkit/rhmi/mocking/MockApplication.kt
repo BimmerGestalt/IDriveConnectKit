@@ -11,14 +11,14 @@ class RHMIApplicationMock : RHMIApplication() {
 	override val components = MockComponentMap(this)
 
 	val modelData = HashMap<Int, Any>()
-	val propertyData = HashMap<Int, HashMap<Int, Any>>()
+	val propertyData = HashMap<Int, HashMap<Int, Any?>>()
 
 
 	override fun setModel(modelId: Int, value: Any) {
 		modelData[modelId] = value
 	}
 
-	override fun setProperty(componentId: Int, propertyId: Int, value: Any) {
+	override fun setProperty(componentId: Int, propertyId: Int, value: Any?) {
 		if (!propertyData.containsKey(componentId)) {
 			propertyData[componentId] = HashMap()
 		}
