@@ -1,10 +1,7 @@
 package me.hufman.idriveconnectionkit
 
 import junit.framework.TestCase.*
-import me.hufman.idriveconnectionkit.rhmi.RHMIAction
-import me.hufman.idriveconnectionkit.rhmi.RHMIComponent
-import me.hufman.idriveconnectionkit.rhmi.RHMIModel
-import me.hufman.idriveconnectionkit.rhmi.RHMIProperty
+import me.hufman.idriveconnectionkit.rhmi.*
 import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import org.junit.Test
 
@@ -12,6 +9,22 @@ import org.junit.Test
 operator fun <K, V> Map<K, V>?.get(key: K) = this?.get(key)
 
 class TestRHMIApplication {
+	@Test fun mockStates() {
+		var app = RHMIApplicationMock()
+		val state = app.states[10]
+		assertTrue(state is RHMIState)
+		assertTrue(state is RHMIState.MockState)
+		assertEquals(10, state.id)
+
+		state.textModel = 12
+		assertNotNull(state.getTextModel())
+		assertEquals(12, state.getTextModel()?.id)
+
+		assertEquals(null, app.propertyData[state.id][24])
+		state.setProperty(24, 3)
+		assertEquals(3, app.propertyData[state.id][24])
+	}
+
 	@Test fun mockModels() {
 		val app = RHMIApplicationMock()
 		val model = app.models[10]

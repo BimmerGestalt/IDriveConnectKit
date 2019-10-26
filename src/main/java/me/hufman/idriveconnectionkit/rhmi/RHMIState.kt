@@ -65,6 +65,14 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 		}
 	}
 
+	fun setProperty(property: RHMIProperty.PropertyId, value: Any) {
+		this.setProperty(property.id, value)
+	}
+	fun setProperty(propertyId: Int, value: Any) {
+		app.setProperty(id, propertyId, value)
+		properties[propertyId] = RHMIProperty.SimpleProperty(propertyId, value)
+	}
+
 	// any custom event listeners that the client provides
 	var eventCallback: EventCallback? = null
 	var focusCallback: FocusCallback? = null
