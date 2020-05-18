@@ -9,6 +9,7 @@ class RHMIApplicationMock : RHMIApplication() {
 	override val events = MockEventMap(this)
 	override val states = MockStateMap(this)
 	override val components = MockComponentMap(this)
+	val triggeredEvents = HashMap<Int, Map<*, *>>()
 
 	val modelData = HashMap<Int, Any>()
 	val propertyData = HashMap<Int, HashMap<Int, Any?>>()
@@ -26,7 +27,7 @@ class RHMIApplicationMock : RHMIApplication() {
 	}
 
 	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		triggeredEvents[eventId] = args
 	}
 }
 

@@ -75,4 +75,11 @@ class TestRHMIApplication {
 		button.setProperty(RHMIProperty.PropertyId.LIST_COLUMNWIDTH, "0,100,*")
 		assertEquals("0,100,*", app.propertyData[button.id][RHMIProperty.PropertyId.LIST_COLUMNWIDTH.id])
 	}
+
+	@Test fun mockEvents() {
+		val app = RHMIApplicationMock()
+		app.triggerHMIEvent(6, mapOf(0 to 20))
+		assertEquals(1, app.triggeredEvents.size)
+		assertEquals(mapOf(0 to 20), app.triggeredEvents[6])
+	}
 }

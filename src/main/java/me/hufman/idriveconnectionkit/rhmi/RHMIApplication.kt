@@ -99,6 +99,7 @@ class RHMIApplicationConcrete : RHMIApplication() {
 
 	val modelData = HashMap<Int, Any>()
 	val propertyData = HashMap<Int, HashMap<Int, Any?>>()
+	val triggeredEvents = HashMap<Int, Map<*, *>>()
 
 	override fun setModel(modelId: Int, value: Any) {
 		modelData[modelId] = value
@@ -112,7 +113,7 @@ class RHMIApplicationConcrete : RHMIApplication() {
 	}
 
 	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		triggeredEvents[eventId] = args
 	}
 
 }
