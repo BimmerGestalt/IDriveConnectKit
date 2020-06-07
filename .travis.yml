@@ -1,4 +1,5 @@
 language: java
+jdk: openjdk10
 script: ./gradlew check
 
 after_success:
