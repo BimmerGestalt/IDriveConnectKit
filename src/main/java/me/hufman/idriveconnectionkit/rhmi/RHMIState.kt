@@ -1,5 +1,6 @@
 package me.hufman.idriveconnectionkit.rhmi
 
+import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
 import me.hufman.idriveconnectionkit.xmlutils.getAttributesMap
 import me.hufman.idriveconnectionkit.xmlutils.getChildElements
@@ -211,18 +212,26 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 		}
 	}
 
-	class MockState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id) {
+	class MockState(override val app: RHMIApplicationMock, override val id: Int): RHMIState(app, id) {
 		override fun asPlainState(): PlainState {
-			return PlainState(app, id)
+			return app.states.computeIfWrongType(id) {
+				PlainState(app, id)
+			}
 		}
 		override fun asPopupState(): PopupState {
-			return PopupState(app, id)
+			return app.states.computeIfWrongType(id) {
+				PopupState(app, id)
+			}
 		}
 		override fun asToolbarState(): ToolbarState {
-			return ToolbarState(app, id)
+			return app.states.computeIfWrongType(id) {
+				ToolbarState(app, id)
+			}
 		}
 		override fun asAudioState(): AudioHmiState {
-			return AudioHmiState(app, id)
+			return app.states.computeIfWrongType(id) {
+				AudioHmiState(app, id)
+			}
 		}
 	}
 

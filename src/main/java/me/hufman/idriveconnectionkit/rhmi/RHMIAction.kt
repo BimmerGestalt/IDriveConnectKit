@@ -1,5 +1,6 @@
 package me.hufman.idriveconnectionkit.rhmi
 
+import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
 import me.hufman.idriveconnectionkit.xmlutils.getAttributesMap
 import me.hufman.idriveconnectionkit.xmlutils.getChildElements
@@ -86,21 +87,29 @@ abstract class RHMIAction private constructor(open val app: RHMIApplication, ope
 		}
 	}
 
-	class MockAction(override val app: RHMIApplication, override val id: Int): RHMIAction(app, id) {
-		override fun asCombinedAction(): CombinedAction? {
-			return CombinedAction(app, id, this.asRAAction(), this.asHMIAction())
+	class MockAction(override val app: RHMIApplicationMock, override val id: Int): RHMIAction(app, id) {
+		override fun asCombinedAction(): CombinedAction {
+			return app.actions.computeIfWrongType(id) {
+				CombinedAction(app, id, RAAction(app, id), HMIAction(app, id))
+			}
 		}
 
-		override fun asHMIAction(): HMIAction? {
-			return HMIAction(app, id)
+		override fun asHMIAction(): HMIAction {
+			return app.actions.computeIfWrongType(id) {
+				HMIAction(app, id)
+			}
 		}
 
-		override fun asRAAction(): RAAction? {
-			return RAAction(app, id)
+		override fun asRAAction(): RAAction {
+			return app.actions.computeIfWrongType(id) {
+				RAAction(app, id)
+			}
 		}
 
-		override fun asLinkAction(): LinkAction? {
-			return LinkAction(app, id)
+		override fun asLinkAction(): LinkAction {
+			return app.actions.computeIfWrongType(id) {
+				LinkAction(app, id)
+			}
 		}
 	}
 

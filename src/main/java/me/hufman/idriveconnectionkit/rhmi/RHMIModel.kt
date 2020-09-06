@@ -1,6 +1,7 @@
 package me.hufman.idriveconnectionkit.rhmi
 
 import de.bmw.idrive.BMWRemoting
+import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
 import me.hufman.idriveconnectionkit.xmlutils.getAttributesMap
 import me.hufman.idriveconnectionkit.xmlutils.getChildElements
@@ -146,41 +147,59 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 		}
 	}
 
-	open class MockModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
+	open class MockModel(override val app: RHMIApplicationMock, override val id: Int): RHMIModel(app, id) {
 		override fun asFormatDataModel(): FormatDataModel {
-			return FormatDataModel(app, id, ArrayList())
+			return app.models.computeIfWrongType(id) {
+				FormatDataModel(app, id, ArrayList())
+			}
 		}
 
 		override fun asImageIdModel(): ImageIdModel {
-			return ImageIdModel(app, id)
+			return app.models.computeIfWrongType(id) {
+				ImageIdModel(app, id)
+			}
 		}
 
 		override fun asRaBoolModel(): RaBoolModel {
-			return RaBoolModel(app, id)
+			return app.models.computeIfWrongType(id) {
+				RaBoolModel(app, id)
+			}
 		}
 
 		override fun asRaDataModel(): RaDataModel {
-			return RaDataModel(app, id)
+			return app.models.computeIfWrongType(id) {
+				RaDataModel(app, id)
+			}
 		}
 
 		override fun asRaGaugeModel(): RaGaugeModel {
-			return RaGaugeModel(app, id)
+			return app.models.computeIfWrongType(id) {
+				RaGaugeModel(app, id)
+			}
 		}
 
 		override fun asRaImageModel(): RaImageModel {
-			return RaImageModel(app, id)
+			return app.models.computeIfWrongType(id) {
+				RaImageModel(app, id)
+			}
 		}
 
 		override fun asRaIntModel(): RaIntModel {
-			return RaIntModel(app, id)
+			return app.models.computeIfWrongType(id) {
+				RaIntModel(app, id)
+			}
 		}
 
 		override fun asRaListModel(): RaListModel {
-			return RaListModel(app, id)
+			return app.models.computeIfWrongType(id) {
+				RaListModel(app, id)
+			}
 		}
 
 		override fun asTextIdModel(): TextIdModel {
-			return TextIdModel(app, id)
+			return app.models.computeIfWrongType(id) {
+				TextIdModel(app, id)
+			}
 		}
 	}
 

@@ -1,6 +1,7 @@
 package me.hufman.idriveconnectionkit.rhmi
 
 import de.bmw.idrive.BMWRemoting
+import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
 import me.hufman.idriveconnectionkit.xmlutils.getAttributesMap
 import org.w3c.dom.Node
@@ -89,7 +90,38 @@ abstract class RHMIEvent private constructor(open val app: RHMIApplication, open
 		}
 	}
 
-	class MockEvent(override val app: RHMIApplication, override val id: Int): RHMIEvent(app, id)
+	class MockEvent(override val app: RHMIApplicationMock, override val id: Int): RHMIEvent(app, id) {
+		override fun asPopupEvent(): PopupEvent {
+			return app.events.computeIfWrongType(id) {
+				PopupEvent(app, id)
+			}
+		}
+		override fun asActionEvent(): ActionEvent {
+			return app.events.computeIfWrongType(id) {
+				ActionEvent(app, id)
+			}
+		}
+		override fun asNotificationIconEvent(): NotificationIconEvent {
+			return app.events.computeIfWrongType(id) {
+				NotificationIconEvent(app, id)
+			}
+		}
+		override fun asFocusEvent(): FocusEvent {
+			return app.events.computeIfWrongType(id) {
+				FocusEvent(app, id)
+			}
+		}
+		override fun asMultimediaInfoEvent(): MultimediaInfoEvent {
+			return app.events.computeIfWrongType(id) {
+				MultimediaInfoEvent(app, id)
+			}
+		}
+		override fun asStatusbarEvent(): StatusbarEvent {
+			return app.events.computeIfWrongType(id) {
+				StatusbarEvent(app, id)
+			}
+		}
+	}
 
 	open fun asPopupEvent(): PopupEvent? {
 		return this as? PopupEvent

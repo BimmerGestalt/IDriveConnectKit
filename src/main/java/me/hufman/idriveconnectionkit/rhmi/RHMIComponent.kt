@@ -1,6 +1,7 @@
 package me.hufman.idriveconnectionkit.rhmi
 
 import me.hufman.idriveconnectionkit.etchAsInt
+import me.hufman.idriveconnectionkit.rhmi.mocking.RHMIApplicationMock
 import me.hufman.idriveconnectionkit.xmlutils.XMLUtils
 import me.hufman.idriveconnectionkit.xmlutils.getAttributesMap
 import me.hufman.idriveconnectionkit.xmlutils.getChildElements
@@ -312,39 +313,61 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 		}
 	}
 
-	class MockComponent(override val app: RHMIApplication, override val id: Int): RHMIComponent(app, id) {
+	class MockComponent(override val app: RHMIApplicationMock, override val id: Int): RHMIComponent(app, id) {
 		override fun asSeparator(): Separator {
-			return Separator(app, id)
+			return app.components.computeIfWrongType(id) {
+				Separator(app, id)
+			}
 		}
 		override fun asImage(): Image {
-			return Image(app, id)
+			return app.components.computeIfWrongType(id) {
+				Image(app, id)
+			}
 		}
 		override fun asLabel(): Label {
-			return Label(app, id)
+			return app.components.computeIfWrongType(id) {
+				Label(app, id)
+			}
 		}
 		override fun asList(): List {
-			return List(app, id)
+			return app.components.computeIfWrongType(id) {
+				List(app, id)
+			}
 		}
 		override fun asEntryButton(): EntryButton {
-			return EntryButton(app, id)
+			return app.components.computeIfWrongType(id) {
+				EntryButton(app, id)
+			}
 		}
-		override fun asInstrumentCluster(): InstrumentCluster? {
-			return InstrumentCluster(app, id)
+		override fun asInstrumentCluster(): InstrumentCluster {
+			return app.components.computeIfWrongType(id) {
+				InstrumentCluster(app, id)
+			}
 		}
 		override fun asToolbarButton(): ToolbarButton {
-			return ToolbarButton(app, id)
+			return app.components.computeIfWrongType(id) {
+				ToolbarButton(app, id)
+			}
 		}
 		override fun asButton(): Button {
-			return Button(app, id)
+			return app.components.computeIfWrongType(id) {
+				Button(app, id)
+			}
 		}
 		override fun asCheckbox(): Checkbox {
-			return Checkbox(app, id)
+			return app.components.computeIfWrongType(id) {
+				Checkbox(app, id)
+			}
 		}
 		override fun asGauge(): Gauge {
-			return Gauge(app, id)
+			return app.components.computeIfWrongType(id) {
+				Gauge(app, id)
+			}
 		}
 		override fun asInput(): Input {
-			return Input(app, id)
+			return app.components.computeIfWrongType(id) {
+				Input(app, id)
+			}
 		}
 	}
 
