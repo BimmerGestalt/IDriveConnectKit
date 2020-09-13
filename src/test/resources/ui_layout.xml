@@ -40,6 +40,11 @@
     <hmiStates>
         <hmiState id="46" textModel="5">
             <properties><property id="4" value="false" /></properties>
+            <optionComponents>
+                <separator id="121" />
+                <label id="75" model="60" />
+                <button id="76" action="5" model="61" />
+            </optionComponents>
         </hmiState>
         <toolbarHmiState id="40" textModel="6">
             <toolbarComponents>

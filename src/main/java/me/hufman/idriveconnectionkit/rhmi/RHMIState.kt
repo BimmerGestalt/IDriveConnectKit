@@ -11,6 +11,7 @@ import java.util.HashMap
 abstract class RHMIState private constructor(open val app: RHMIApplication, open val id: Int) {
 	val components: MutableMap<Int, RHMIComponent> = HashMap()
 	val componentsList: MutableList<RHMIComponent> = ArrayList()
+	val optionComponentsList: MutableList<RHMIComponent> = ArrayList()
 	val properties: MutableMap<Int, RHMIProperty> = HashMap()
 	var textModel: Int = 0
 	fun getTextModel(): RHMIModel? {
@@ -57,6 +58,16 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 						if (component is RHMIComponent.ToolbarButton) {
 							state.toolbarComponents[component.id] = component
 							state.toolbarComponentsList.add(component)
+						}
+					}
+				}
+
+				val optionComponents = node.getChildNamed("optionComponents")
+				if (optionComponents != null) {
+					optionComponents.getChildElements().forEach { optionComponentNode ->
+						val component = RHMIComponent.loadFromXML(app, optionComponentNode)
+						if (component != null) {
+							state.optionComponentsList.add(component)
 						}
 					}
 				}

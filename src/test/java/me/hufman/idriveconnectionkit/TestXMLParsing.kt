@@ -37,11 +37,13 @@ class TestXMLParsing {
 		assertEquals("46", XMLUtils.getAttribute(firstState, "id"))
 
 		val stateChildren = XMLUtils.childNodes(firstState)
-		assertEquals(1, stateChildren.size)
+		assertEquals(2, stateChildren.size)
 		assertEquals("properties", stateChildren[0].nodeName)
+		assertEquals("optionComponents", stateChildren[1].nodeName)
 		val stateChildrenNodes = XMLUtils.childNodes(firstState.childNodes)
-		assertEquals(1, stateChildrenNodes.size)
+		assertEquals(2, stateChildrenNodes.size)
 		assertEquals("properties", stateChildrenNodes[0].nodeName)
+		assertEquals("optionComponents", stateChildrenNodes[1].nodeName)
 	}
 
 	@Test fun entireDescription() {
@@ -112,6 +114,15 @@ class TestXMLParsing {
 		assertTrue(toolbarState.componentsList[4] is RHMIComponent.Checkbox)
 		assertTrue(toolbarState.componentsList[5] is RHMIComponent.Gauge)
 		assertTrue(toolbarState.componentsList[6] is RHMIComponent.Input)
+
+		// check the options components
+		val state = app.states[46]!!
+		assertEquals(3, state.optionComponentsList.size)
+		assertTrue(state.optionComponentsList[0] is RHMIComponent.Separator)
+		assertTrue(state.optionComponentsList[1] is RHMIComponent.Label)
+		assertTrue(state.optionComponentsList[2] is RHMIComponent.Button)
+		assertEquals(76, state.optionComponentsList[2].id)
+		assertEquals(61, state.optionComponentsList[2].asButton()?.model)
 	}
 
 	@Test fun raAction() {
