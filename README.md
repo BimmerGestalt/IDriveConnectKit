@@ -3,6 +3,7 @@ IDriveConnectionKit
 
 [![Build Status](https://travis-ci.org/hufman/IDriveConnectKit.svg?branch=master)](https://travis-ci.org/hufman/IDriveConnectKit)
 [![Coverage Status](https://coveralls.io/repos/github/hufman/IDriveConnectKit/badge.svg?branch=master)](https://coveralls.io/github/hufman/IDriveConnectKit?branch=master)
+![MIT Licensed](https://img.shields.io/github/license/hufman/IDriveConnectKit)
 
 This is a collection of helper utilities for interacting with the BMW/Mini IDrive, including the IDrive Etch protocol definition and convenience classes for building RHMI applications.
 
