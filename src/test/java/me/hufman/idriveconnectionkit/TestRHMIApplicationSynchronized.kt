@@ -15,7 +15,7 @@ import org.junit.Test
 class TestRHMIApplicationSynchronized {
 
 	val backing = RHMIApplicationConcrete()
-	val subject = RHMIApplicationSynchronized(backing)
+	val subject = RHMIApplicationSynchronized(backing, null)
 
 	@Before
 	fun setUp() {

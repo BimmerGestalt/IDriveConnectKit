@@ -47,8 +47,9 @@ class RHMIApplicationIdempotent(val app: RHMIApplication): RHMIApplication(), RH
 
 /**
  * A wrapper RHMIApplication that ensures only a single thread can send to the car at a time
+ * Pass in a lock object to synchronize around, or null to synchronize on itself
  */
-class RHMIApplicationSynchronized(val app: RHMIApplication): RHMIApplication(), RHMIApplicationWrapper {
+class RHMIApplicationSynchronized(val app: RHMIApplication, private val lock: Any?): RHMIApplication(), RHMIApplicationWrapper {
 	override val models = app.models
 	override val actions = app.actions
 	override val events = app.events
@@ -57,7 +58,7 @@ class RHMIApplicationSynchronized(val app: RHMIApplication): RHMIApplication(), 
 
 	/** Run some code in the same lock as this RHMI Application */
 	fun runSynchronized(task: () -> Unit) {
-		synchronized(this) {
+		synchronized(lock ?: this) {
 			task()
 		}
 	}
