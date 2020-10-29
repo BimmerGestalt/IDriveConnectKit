@@ -178,6 +178,7 @@ service BMWRemoting {
 	int rhmi_create (string token, RHMIMetaData metaData) throws IllegalArgumentException, ServiceException, SecurityException;
 	int rhmi_create_version (string token, RHMIVersion rhmiVersion, RHMIMetaData metaData) throws IllegalArgumentException, ServiceException, SecurityException;
 	void rhmi_initialize (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
+	void rhmi_dispose (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
 
 	// the RHMI State (app page)
 	int rhmi_getState (int handle) throws IllegalArgumentException, ServiceException, SecurityException;
