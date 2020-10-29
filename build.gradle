@@ -81,6 +81,7 @@ task compileEtch(type: JavaExec, dependsOn: extractEtchCompiler) {
     )
     workingDir 'etch'
     args('--binding', 'java', '--output-dir', "${buildDir}/generated", 'BMWRemoting.etch')
+    inputs.file("etch/BMWRemoting.etch")
     outputs.dir "${buildDir}/generated"
 }
 task enableEtchRuntime(type: Copy, dependsOn: extractEtchCompiler) {
