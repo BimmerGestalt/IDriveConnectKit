@@ -8,6 +8,7 @@ import me.hufman.idriveconnectionkit.xmlutils.getChildNamed
 import org.junit.Assert.*
 import org.junit.Test
 import org.w3c.dom.Node
+import java.net.URLClassLoader
 
 class TestXMLParsing {
 	val xml = this.javaClass.classLoader.getResourceAsStream("ui_layout.xml").bufferedReader().use {
