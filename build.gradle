@@ -58,7 +58,7 @@ targetCompatibility = "1.7"
 task downloadEtchCompiler(type: Download) {
     src 'http://archive.apache.org/dist/etch/1.4.0/apache-etch-1.4.0-windows-x86-bin.zip'
     dest file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip")
-    onlyIfNewer true
+    overwrite false
     outputs.file "${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip"
 }
 task verifyEtchCompiler(type: Verify, dependsOn: downloadEtchCompiler) {
