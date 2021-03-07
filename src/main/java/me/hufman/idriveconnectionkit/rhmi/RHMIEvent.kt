@@ -17,6 +17,7 @@ abstract class RHMIEvent private constructor(open val app: RHMIApplication, open
 			val event = when (node.nodeName) {
 				"popupEvent" -> PopupEvent(app, id)
 				"actionEvent" -> ActionEvent(app, id)
+				"notificationEvent" -> NotificationEvent(app, id)
 				"notificationIconEvent" -> NotificationIconEvent(app, id)
 				"focusEvent" -> FocusEvent(app, id)
 				"multimediaInfoEvent" -> MultimediaInfoEvent(app, id)
@@ -54,6 +55,45 @@ abstract class RHMIEvent private constructor(open val app: RHMIApplication, open
 		var action: Int = 0
 		fun getAction(): RHMIAction? {
 			return app.actions[action]
+		}
+	}
+
+	class NotificationEvent(override val app: RHMIApplication, override val id: Int): RHMIEvent(app, id) {
+		var imageModel: Int = 0
+		fun getImageModel(): RHMIModel? {
+			return app.models[imageModel]
+		}
+
+		var titleTextModel: Int = 0
+		fun getTitleTextModel(): RHMIModel? {
+			return app.models[titleTextModel]
+		}
+
+		var notificationTextModel: Int = 0
+		fun getNotificationTextModel(): RHMIModel? {
+			return app.models[notificationTextModel]
+		}
+
+		var notificationPriority: Int = 0
+		fun getNotificationPriority(): RHMIModel? {
+			return app.models[notificationPriority]
+		}
+
+		var indexId: Int = 0
+		fun getIndexId(): RHMIModel? {
+			return app.models[indexId]
+		}
+
+		var categoryTextModel: Int = 0
+		fun getCategoryTextModel(): RHMIModel? {
+			return app.models[categoryTextModel]
+		}
+
+		var optionTextId: Int = 0
+
+		var actionId: Int = 0
+		fun getActionId(): RHMIAction? {
+			return app.actions[actionId]
 		}
 	}
 
