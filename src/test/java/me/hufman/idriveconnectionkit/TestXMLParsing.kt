@@ -54,7 +54,7 @@ class TestXMLParsing {
 		assertEquals(8, app.events.size)
 		assertEquals(19, app.models.size)
 		assertEquals(4, app.states.size)
-		assertEquals(12, app.components.size)
+		assertEquals(13, app.components.size)
 
 		// all parsed actions
 		assertTrue(app.actions[2] is RHMIAction.RAAction)
@@ -101,6 +101,8 @@ class TestXMLParsing {
 		assertTrue(app.components[46] is RHMIComponent.Checkbox)
 		assertTrue(app.components[47] is RHMIComponent.Gauge)
 		assertTrue(app.components[48] is RHMIComponent.Input)
+		assertTrue(app.components[50] is RHMIComponent.Image)
+		assertTrue(app.components[51] is RHMIComponent.Button)
 		assertTrue(app.components[141] is RHMIComponent.ToolbarButton)
 		assertTrue(app.components[49] is RHMIComponent.EntryButton)
 		assertTrue(app.components[145] is RHMIComponent.InstrumentCluster)
@@ -115,6 +117,8 @@ class TestXMLParsing {
 		assertTrue(toolbarState.componentsList[4] is RHMIComponent.Checkbox)
 		assertTrue(toolbarState.componentsList[5] is RHMIComponent.Gauge)
 		assertTrue(toolbarState.componentsList[6] is RHMIComponent.Input)
+		assertTrue(toolbarState.componentsList[7] is RHMIComponent.Image)
+		assertTrue(toolbarState.componentsList[8] is RHMIComponent.Button)
 
 		// check the options components
 		val state = app.states[46]!!
@@ -355,8 +359,8 @@ class TestXMLParsing {
 		assertEquals(40, state?.id)
 		assertEquals(1, state?.asToolbarState()?.toolbarComponents?.size)
 		assertEquals(1, state?.asToolbarState()?.toolbarComponentsList?.size)
-		assertEquals(8, state?.components?.size)
-		assertEquals(8, state?.componentsList?.size)
+		assertEquals(9, state?.components?.size)
+		assertEquals(9, state?.componentsList?.size)
 		assertEquals(6, state?.textModel)
 		assertEquals(6, state?.getTextModel()?.id)
 
@@ -534,11 +538,33 @@ class TestXMLParsing {
 		assertEquals(5, button.getTooltipModel()?.id)
 		assertEquals(11, button.model)
 		assertEquals(11, button.getModel()?.id)
+		assertEquals(0, button.imageModel)
 
 		component?.asButton()?.getModel()?.asRaDataModel()?.value = "Hi"
 		assertEquals("Hi", app.modelData[11])
 		component?.asButton()?.getTooltipModel()?.asRaDataModel()?.value = "Test"
 		assertEquals("Test", app.modelData[5])
+	}
+
+	@Test fun imageButton() {
+		val component = RHMIComponent.loadFromXML(app, XMLUtils.childNodes(components).last {it.nodeName == "button" })
+		assertNotNull(component)
+		assertTrue(component is RHMIComponent.Button)
+		val button = component as RHMIComponent.Button
+		assertEquals(51, button.id)
+		assertEquals(3, button.action)
+		assertEquals(3, button.getAction()?.id)
+		assertEquals(4, button.selectAction)
+		assertEquals(4, button.getSelectAction()?.id)
+		assertEquals(0, button.tooltipModel)
+		assertEquals(11, button.model)
+		assertEquals(11, button.getModel()?.id)
+		assertEquals(4, button.imageModel)
+
+		component?.asButton()?.getModel()?.asRaDataModel()?.value = "Hi"
+		assertEquals("Hi", app.modelData[11])
+		component?.asButton()?.getImageModel()?.asRaImageModel()?.value = byteArrayOf(10, 12)
+		assertArrayEquals(byteArrayOf(10, 12), (app.modelData[4] as BMWRemoting.RHMIResourceData).data)
 	}
 
 	@Test fun separator() {

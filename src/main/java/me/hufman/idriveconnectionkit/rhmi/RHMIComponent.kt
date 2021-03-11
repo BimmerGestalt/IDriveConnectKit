@@ -230,6 +230,11 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 		fun getTooltipModel(): RHMIModel? {
 			return app.models[tooltipModel]
 		}
+		// Some buttons can have an icon, usually an ImageIdModel
+		var imageModel: Int = 0
+		fun getImageModel(): RHMIModel? {
+			return app.models[imageModel]
+		}
 		// The action when a user clicks the controller
 		var action: Int = 0
 		fun getAction(): RHMIAction? {
