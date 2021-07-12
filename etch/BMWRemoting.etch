@@ -238,18 +238,17 @@ service BMWRemoting {
 	void av_multimediaButtonEvent (int handle, AVButtonEvent event);
 
 	// Mapping API
-	int map_create () throws IllegalArgumentException, ServiceException;
-	void map_dispose (int handle) throws IllegalArgumentException, ServiceException;
-	int map_initializeImport (int handle, string filename, int transferId, int size) throws IllegalArgumentException, ServiceException;
-	void map_importData (int handle, int transferId, int seq, byte[] data) throws IllegalArgumentException, ServiceException;
-	@Direction(BOTH)
-	void map_abortImport (int handle, int transferId, int reason) throws IllegalArgumentException, ServiceException;
-	void map_finalizeImport (int handle, int transferId) throws IllegalArgumentException, ServiceException;
-	void map_highlight (int handle, string filename, short overlayId, string location) throws IllegalArgumentException, ServiceException;
-	void map_showOverlay (int handle, string filename, short overlayId) throws IllegalArgumentException, ServiceException;
-	void map_hideOverlay (int handle, string filename, short overlayId) throws IllegalArgumentException, ServiceException;
-	void map_setMode(int handle, MapMode mode) throws IllegalArgumentException, ServiceException;
-	void map_remove(int handle, string filename) throws IllegalArgumentException, ServiceException;
+	int map_create () throws ServiceException, SecurityException;
+	void map_dispose (int handle) throws IllegalArgumentException, SecurityException, ServiceException;
+	int map_initializeImport (int handle, string filename, int transferId, int size) throws IllegalArgumentException, SecurityException, ServiceException;
+	void map_importData (int handle, int transferId, int seq, byte[] data) throws IllegalArgumentException, SecurityException, ServiceException;
+	void map_abortImport (int handle, int transferId, int reason) throws IllegalArgumentException, SecurityException, ServiceException;
+	void map_finalizeImport (int handle, int transferId) throws IllegalArgumentException, ServiceException, SecurityException;
+	void map_highlight (int handle, string filename, short overlayId, string location) throws IllegalArgumentException, SecurityException, ServiceException;
+	void map_showOverlay (int handle, string filename, short overlayId) throws IllegalArgumentException, SecurityException, ServiceException;
+	void map_hideOverlay (int handle, string filename, short overlayId) throws IllegalArgumentException, SecurityException, ServiceException;
+	void map_setMode(int handle, MapMode mode) throws IllegalArgumentException, SecurityException, ServiceException;
+	void map_remove(int handle, string filename) throws IllegalArgumentException, SecurityException, ServiceException;
 
 	@Direction(CLIENT)
 	@AsyncReceiver( QUEUED )
