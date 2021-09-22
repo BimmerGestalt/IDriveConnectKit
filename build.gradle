@@ -21,6 +21,7 @@ apply from: 'buildtools/ColoredOutput.gradle'
 apply from: 'buildtools/jacoco.gradle'
 apply plugin: 'java-library'
 apply plugin: 'kotlin'
+apply plugin: 'maven-publish'
 
 if (!project.getPlugins().hasPlugin("de.undercouch.download")) {
     apply plugin: "de.undercouch.download"
@@ -89,8 +90,28 @@ task enableEtchRuntime(type: Copy, dependsOn: extractEtchCompiler) {
     include '*.jar'
     into file("libs/")
 }
+task extractEtchRuntime(type: Copy, dependsOn: enableEtchRuntime) {
+    from zipTree(file("libs/apache-etch-java-runtime-1.4.0.jar"))
+    include '**/*.class'
+    includeEmptyDirs false
+    into "${buildDir}/classes/java/main"
+    outputs.dir "${buildDir}/classes/java/main/org/apache/etch"
+}
 
 compileJava.dependsOn compileEtch
-compileJava.dependsOn enableEtchRuntime
+compileJava.dependsOn extractEtchRuntime
 compileJava.mustRunAfter compileEtch
-compileJava.mustRunAfter enableEtchRuntime
+compileJava.mustRunAfter extractEtchRuntime
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            // publish to Jitpack
+            groupId 'io.bimmergestalt'
+            artifactId 'IDriveConnectKit'
+            version '0.1'
+
+            from components.java
+        }
+    }
+}
