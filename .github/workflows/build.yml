@@ -1,0 +1,31 @@
+name: build
+
+on:
+  push:
+    branches: '*'
+    tags: '*'
+  pull_request:
+
+jobs:
+  unitTest:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout the project
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Build the project
+        run: ./gradlew build --stacktrace
+      - name: Run unit tests
+        run: ./gradlew check --stacktrace
+      - name: Upload coverage results
+        run: ./gradlew coverage coveralls --stacktrace
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
