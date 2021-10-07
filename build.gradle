@@ -122,7 +122,7 @@ publishing {
             // publish to Jitpack
             groupId 'io.bimmergestalt'
             artifactId 'IDriveConnectKit'
-            version '0.1'
+            version '0.2'
 
             from components.java
         }
