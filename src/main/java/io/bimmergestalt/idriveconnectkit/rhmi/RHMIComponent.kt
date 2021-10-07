@@ -1,6 +1,6 @@
 package io.bimmergestalt.idriveconnectkit.rhmi
 
-import io.bimmergestalt.idriveconnectkit.etchAsInt
+import io.bimmergestalt.idriveconnectkit.Utils.etchAsInt
 import io.bimmergestalt.idriveconnectkit.rhmi.mocking.RHMIApplicationMock
 import io.bimmergestalt.idriveconnectkit.xmlutils.XMLUtils
 import io.bimmergestalt.idriveconnectkit.xmlutils.getAttributesMap

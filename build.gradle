@@ -103,6 +103,19 @@ compileJava.dependsOn extractEtchRuntime
 compileJava.mustRunAfter compileEtch
 compileJava.mustRunAfter extractEtchRuntime
 
+// https://youtrack.jetbrains.com/issue/IDEA-119280
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/classes/test"
+}
+task copyTestResourcesOut(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/../out/test/classes"
+}
+// doesn't seem to actually work, you should run this step manually
+processTestResources.dependsOn copyTestResources
+processTestResources.dependsOn copyTestResourcesOut
+
 publishing {
     publications {
         maven(MavenPublication) {

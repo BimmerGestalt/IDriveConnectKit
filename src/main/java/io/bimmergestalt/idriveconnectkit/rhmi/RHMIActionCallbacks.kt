@@ -1,6 +1,6 @@
 package io.bimmergestalt.idriveconnectkit.rhmi
 
-import io.bimmergestalt.idriveconnectkit.etchAsInt
+import io.bimmergestalt.idriveconnectkit.Utils.etchAsInt
 
 // callback interfaces
 interface RHMIActionCallback {

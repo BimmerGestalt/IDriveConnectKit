@@ -132,7 +132,25 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 				realData[index] = row
 			}
 		}
+		open class RHMIListAdapter<T>(width: Int, val realData: List<T>) : RHMIModel.RaListModel.RHMIList(width) {
+			override fun get(index: Int): Array<Any> {
+				return convertRow(index, realData[index])
+			}
 
+			open fun convertRow(index: Int, item: T): Array<Any> {
+				return Array(width) { i ->
+					if (i == width - 1) {
+						item.toString()
+					} else {
+						""
+					}
+				}
+			}
+
+			override var height: Int
+				get() = realData.size
+				set(_) {}
+		}
 		var value: RHMIList?
 			get() = null
 			set(value) {

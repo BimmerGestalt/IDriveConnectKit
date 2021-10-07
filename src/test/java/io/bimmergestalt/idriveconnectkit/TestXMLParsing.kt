@@ -8,9 +8,12 @@ import io.bimmergestalt.idriveconnectkit.xmlutils.getChildNamed
 import org.junit.Assert.*
 import org.junit.Test
 import org.w3c.dom.Node
+import java.lang.IndexOutOfBoundsException
+import kotlin.test.BeforeTest
+import kotlin.test.expect
 
 class TestXMLParsing {
-	val xml = this.javaClass.classLoader.getResourceAsStream("ui_layout.xml").bufferedReader().use {
+	val xml = this.javaClass.classLoader.getResourceAsStream("ui_layout.xml")!!.bufferedReader().use {
 		it.readText()
 	}
 	var app = RHMIApplicationMock()
@@ -603,6 +606,26 @@ class TestXMLParsing {
 
 		assertEquals(1, component?.properties?.size)
 		assertEquals("100,0,*", component?.properties?.get(RHMIProperty.PropertyId.LIST_COLUMNWIDTH.id)?.value)
+	}
+	@Test fun listAdapter() {
+		val realData = mutableListOf("first", "second", "third")
+		val adapter = RHMIModel.RaListModel.RHMIListAdapter(2, realData)
+		assertEquals(3, adapter.height)
+		assertArrayEquals(arrayOf("", "first"), adapter[0])
+		assertArrayEquals(arrayOf("", "second"), adapter[1])
+		assertArrayEquals(arrayOf("", "third"), adapter[2])
+		try {
+			adapter[3]
+			fail("Somehow fetched more data than in the list")
+		} catch (e: IndexOutOfBoundsException) {}
+
+		// data is updated
+		realData.add("next")
+		assertEquals(4, adapter.height)
+		assertArrayEquals(arrayOf("", "first"), adapter[0])
+		assertArrayEquals(arrayOf("", "second"), adapter[1])
+		assertArrayEquals(arrayOf("", "third"), adapter[2])
+		assertArrayEquals(arrayOf("", "next"), adapter[3])
 	}
 	@Test fun checkbox() {
 		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("checkbox") as Node)
