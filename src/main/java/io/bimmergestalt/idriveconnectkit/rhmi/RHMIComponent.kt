@@ -30,6 +30,7 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 				"checkbox" -> Checkbox(app, id)
 				"gauge" -> Gauge(app, id)
 				"input" -> Input(app, id)
+				"calendarDay" -> CalendarDay(app, id)
 				else -> null
 			}
 
@@ -317,6 +318,20 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 			return app.actions[suggestAction]
 		}
 	}
+	class CalendarDay(override val app: RHMIApplication, override val id: Int): RHMIComponent(app, id) {
+		var action: Int = 0
+		fun getAction(): RHMIAction? {
+			return app.actions[action]
+		}
+		var dateModel: Int = 0
+		fun getDateModel(): RHMIModel? {
+			return app.models[dateModel]
+		}
+		var appointmentListModel: Int = 0
+		fun getAppointmentListModel(): RHMIModel? {
+			return app.models[appointmentListModel]
+		}
+	}
 
 	class MockComponent(override val app: RHMIApplicationMock, override val id: Int): RHMIComponent(app, id) {
 		override fun asSeparator(): Separator {
@@ -374,6 +389,11 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 				Input(app, id)
 			}
 		}
+		override fun asCalendarDay(): CalendarDay {
+			return app.components.computeIfWrongType(id) {
+				CalendarDay(app, id)
+			}
+		}
 	}
 
 	open fun asSeparator(): Separator? {
@@ -408,5 +428,8 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 	}
 	open fun asInput(): Input? {
 		return this as? Input
+	}
+	open fun asCalendarDay(): CalendarDay? {
+		return this as? CalendarDay
 	}
 }

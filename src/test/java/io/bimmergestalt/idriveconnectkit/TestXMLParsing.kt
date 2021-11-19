@@ -24,6 +24,7 @@ class TestXMLParsing {
 	val models = pluginApp.getChildNamed("models") as Node
 	val states = pluginApp.getChildNamed("hmiStates") as Node
 	val components = states.getChildNamed("toolbarHmiState")?.getChildNamed("components") as Node
+	val calendarComponents = states.getChildNamed("calendarHmiState")?.getChildNamed("components") as Node
 
 	@Test fun xmlUtils() {
 		val missingChild = XMLUtils.getChildNodeNamed(root, "missing")
@@ -55,8 +56,8 @@ class TestXMLParsing {
 		assertEquals(7, app.actions.size)
 		assertEquals(8, app.events.size)
 		assertEquals(19, app.models.size)
-		assertEquals(4, app.states.size)
-		assertEquals(13, app.components.size)
+		assertEquals(6, app.states.size)
+		assertEquals(14, app.components.size)
 
 		// all parsed actions
 		assertTrue(app.actions[2] is RHMIAction.RAAction)
@@ -93,6 +94,8 @@ class TestXMLParsing {
 		assertTrue(app.states[40] is RHMIState.ToolbarState)
 		assertTrue(app.states[49] is RHMIState.PopupState)
 		assertTrue(app.states[24] is RHMIState.AudioHmiState)
+		assertTrue(app.states[27] is RHMIState.CalendarMonthState)
+		assertTrue(app.states[28] is RHMIState.CalendarState)
 
 		// all parsed components
 		assertTrue(app.components[41] is RHMIComponent.ToolbarButton)
@@ -108,6 +111,7 @@ class TestXMLParsing {
 		assertTrue(app.components[141] is RHMIComponent.ToolbarButton)
 		assertTrue(app.components[49] is RHMIComponent.EntryButton)
 		assertTrue(app.components[145] is RHMIComponent.InstrumentCluster)
+		assertTrue(app.components[29] is RHMIComponent.CalendarDay)
 
 		// check the ordered list
 		val toolbarState = app.states[40] as RHMIState.ToolbarState
@@ -452,6 +456,34 @@ class TestXMLParsing {
 		audio.getPlayListModel()?.asRaDataModel()?.value = "playListModel"
 		assertEquals("playListModel", app.modelData[58])
 	}
+	@Test fun calendarMonthState() {
+		val state = RHMIState.loadFromXML(app, states.getChildNamed("calendarMonthHmiState") as Node)
+		assertNotNull(state)
+		assertTrue(state is RHMIState.CalendarMonthState)
+		state as RHMIState.CalendarMonthState
+		assertEquals(27, state.id)
+		assertEquals(0, state.components.size)
+		assertEquals(0, state.componentsList.size)
+		assertEquals(0, state.textModel)
+		assertEquals(60, state.dateModel)
+		assertEquals(74, state.highlightListModel)
+		assertEquals(37, state.action)
+		assertEquals(33, state.changeAction)
+	}
+	@Test fun calendarState() {
+		val state = RHMIState.loadFromXML(app, states.getChildNamed("calendarHmiState") as Node)
+		assertNotNull(state)
+		assertTrue(state is RHMIState.CalendarState)
+		state as RHMIState.CalendarState
+		assertEquals(28, state.id)
+		assertEquals(1, state.components.size)
+		assertEquals(1, state.componentsList.size)
+		assertEquals(11, state.textModel)
+		assertEquals(11, state.getTextModel()?.id)
+
+		assertTrue(state.components[29] is RHMIComponent.CalendarDay)
+		assertTrue(state.componentsList[0] is RHMIComponent.CalendarDay)
+	}
 
 	@Test fun entryButton() {
 		val componentNode = pluginApp.getChildNamed("entryButton") as Node
@@ -706,5 +738,18 @@ class TestXMLParsing {
 
 		component?.asImage()?.getModel()?.asRaImageModel()?.value = byteArrayOf(10, 12)
 		assertArrayEquals(byteArrayOf(10, 12), (app.modelData[62] as BMWRemoting.RHMIResourceData).data)
+	}
+
+	@Test fun calendarDay() {
+		val component = RHMIComponent.loadFromXML(app, calendarComponents.getChildNamed("calendarDay") as Node)
+		assertNotNull(component)
+		assertTrue(component is RHMIComponent.CalendarDay)
+		assertEquals(29, component?.id)
+		assertEquals(60, component?.asCalendarDay()?.dateModel)
+		assertEquals(60, component?.asCalendarDay()?.getDateModel()?.id)
+		assertEquals(74, component?.asCalendarDay()?.appointmentListModel)
+		assertEquals(74, component?.asCalendarDay()?.getAppointmentListModel()?.id)
+		assertEquals(37, component?.asCalendarDay()?.action)
+		assertEquals(37, component?.asCalendarDay()?.getAction()?.id)
 	}
 }

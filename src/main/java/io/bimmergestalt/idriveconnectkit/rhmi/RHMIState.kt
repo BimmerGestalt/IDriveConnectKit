@@ -29,6 +29,8 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 				"toolbarHmiState" -> ToolbarState(app, id)
 				"popupHmiState" -> PopupState(app, id)
 				"audioHmiState" -> AudioHmiState(app, id)
+				"calendarMonthHmiState" -> CalendarMonthState(app, id)
+				"calendarHmiState" -> CalendarState(app, id)
 				else -> null
 			}
 
@@ -223,6 +225,28 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 		}
 	}
 
+	class CalendarMonthState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id) {
+		// doesn't usually have a textModel
+		var action: Int = 0
+		fun getAction(): RHMIAction? {
+			return app.actions[action]
+		}
+		var changeAction: Int = 0
+		fun getChangeAction(): RHMIAction? {
+			return app.actions[changeAction]
+		}
+
+		var dateModel: Int = 0
+		fun getDateModel(): RHMIModel? {
+			return app.models[dateModel]
+		}
+		var highlightListModel: Int = 0
+		fun getHighlightListModel(): RHMIModel? {
+			return app.models[highlightListModel]
+		}
+	}
+	class CalendarState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id)
+
 	class MockState(override val app: RHMIApplicationMock, override val id: Int): RHMIState(app, id) {
 		override fun asPlainState(): PlainState {
 			return app.states.computeIfWrongType(id) {
@@ -244,6 +268,16 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 				AudioHmiState(app, id)
 			}
 		}
+		override fun asCalendarMonthState(): CalendarMonthState {
+			return app.states.computeIfWrongType(id) {
+				CalendarMonthState(app, id)
+			}
+		}
+		override fun asCalendarState(): CalendarState {
+			return app.states.computeIfWrongType(id) {
+				CalendarState(app, id)
+			}
+		}
 	}
 
 	open fun asPlainState(): PlainState? {
@@ -257,5 +291,11 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 	}
 	open fun asAudioState(): AudioHmiState? {
 		return this as? AudioHmiState
+	}
+	open fun asCalendarMonthState(): CalendarMonthState? {
+		return this as? CalendarMonthState
+	}
+	open fun asCalendarState(): CalendarState? {
+		return this as? CalendarState
 	}
 }

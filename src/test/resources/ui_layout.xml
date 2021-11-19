@@ -82,6 +82,12 @@
             </toolbarComponents>
             <components></components>
         </audioHmiState>
+        <calendarMonthHmiState id="27" dateModel="60" highlightListModel="74" action="37" changeAction="33"/>
+        <calendarHmiState id="28" textModel="11">
+            <components>
+                <calendarDay id="29" action="37" appointmentListModel="74" dateModel="60"/>
+            </components>
+        </calendarHmiState>
     </hmiStates>
     <entryButton id="49" action="4" model="5" imageModel="4"/>
     <instrumentCluster id="145" playlistModel="7" detailsModel="74" useCaseModel="35" action="64" textModel="39" additionalTextModel="38" setTrackAction="65" iSpeechSupport="36" iSpeechText="37" skipForward="41" skipBackward="40"/>
