@@ -57,7 +57,7 @@ sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
 task downloadEtchCompiler(type: Download) {
-    src 'http://archive.apache.org/dist/etch/1.4.0/apache-etch-1.4.0-windows-x86-bin.zip'
+    src 'https://archive.apache.org/dist/etch/1.4.0/apache-etch-1.4.0-windows-x86-bin.zip'
     dest file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip")
     overwrite false
     outputs.file "${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip"
@@ -90,18 +90,23 @@ task enableEtchRuntime(type: Copy, dependsOn: extractEtchCompiler) {
     include '*.jar'
     into file("libs/")
 }
-task extractEtchRuntime(type: Copy, dependsOn: enableEtchRuntime) {
-    from zipTree(file("libs/apache-etch-java-runtime-1.4.0.jar"))
-    include '**/*.class'
-    includeEmptyDirs false
-    into "${buildDir}/classes/java/main"
-    outputs.dir "${buildDir}/classes/java/main/org/apache/etch"
+// if we are running by ourself in Jitpack, include the Etch Runtime in the resulting jar
+if (!(new File("app")).exists()) {
+    task extractEtchRuntime(type: Copy, dependsOn: enableEtchRuntime) {
+        from zipTree(file("libs/apache-etch-java-runtime-1.4.0.jar"))
+        include '**/*.class'
+        includeEmptyDirs false
+        into "${buildDir}/classes/java/main"
+        outputs.dir "${buildDir}/classes/java/main/org/apache/etch"
+    }
+    compileJava.dependsOn extractEtchRuntime
+    compileJava.mustRunAfter extractEtchRuntime
 }
 
 compileJava.dependsOn compileEtch
-compileJava.dependsOn extractEtchRuntime
+compileJava.dependsOn enableEtchRuntime
 compileJava.mustRunAfter compileEtch
-compileJava.mustRunAfter extractEtchRuntime
+compileJava.mustRunAfter enableEtchRuntime
 
 // https://youtrack.jetbrains.com/issue/IDEA-119280
 task copyTestResources(type: Copy) {
