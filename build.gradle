@@ -56,8 +56,14 @@ sourceSets {
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
+def isRunningOnJitpack = System.getenv("JITPACK") == "true"
 task downloadEtchCompiler(type: Download) {
-    src 'https://archive.apache.org/dist/etch/1.4.0/apache-etch-1.4.0-windows-x86-bin.zip'
+    if (isRunningOnJitpack)
+        // can't connect to archive.apache.org
+        // https://github.com/jitpack/jitpack.io/issues/4995
+        src 'https://bimmergestalt.s3.amazonaws.com/aaidrive/external/apache-etch-1.4.0-windows-x86-bin.zip'
+    else
+        src 'https://archive.apache.org/dist/etch/1.4.0/apache-etch-1.4.0-windows-x86-bin.zip'
     dest file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip")
     overwrite false
     outputs.file "${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip"
