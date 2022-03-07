@@ -37,7 +37,17 @@ class TestRHMIDimensions {
 		Assert.assertEquals(1141, sidebar.appWidth)
 
 		isWidescreen = false
-		Assert.assertEquals(633, sidebar.appWidth)
+		Assert.assertEquals(673, sidebar.appWidth)
+
+		// Mini5XL has these sidebar dimensions
+		val mini = Mini5XLDimensions()
+		val miniSidebar = SidebarRHMIDimensions(mini) {isWidescreen}
+		isWidescreen = true
+		Assert.assertEquals(1267, miniSidebar.appWidth)
+
+		isWidescreen = false
+		Assert.assertEquals(532, miniSidebar.marginRight)
+		Assert.assertEquals(908, miniSidebar.visibleWidth)
 	}
 
 }

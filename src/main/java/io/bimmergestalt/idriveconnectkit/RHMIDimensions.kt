@@ -133,6 +133,6 @@ class SidebarRHMIDimensions(val fullscreen: RHMIDimensions, val isWidescreen: ()
 	override val paddingTop: Int = fullscreen.paddingTop
 	override val marginRight: Int
 		get() = if (isWidescreen() || fullscreen.rhmiWidth < 900) { fullscreen.marginRight } else {
-			(fullscreen.appWidth * 0.45).toInt()
+			(fullscreen.rhmiWidth * 0.37).toInt()
 		}
 }
