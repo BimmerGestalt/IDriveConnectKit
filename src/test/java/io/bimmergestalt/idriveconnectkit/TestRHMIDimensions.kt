@@ -10,6 +10,9 @@ class TestRHMIDimensions {
 		assert(RHMIDimensions.create(mapOf("hmi.display-width" to "1280", "hmi.display-height" to "480"))
 				is GenericRHMIDimensions)
 		assert(RHMIDimensions.create(mapOf("hmi.display-width" to "1280", "hmi.display-height" to "480",
+				"hmi.type" to "BMW ID4"))
+				is BMW4RHMIDimensions)
+		assert(RHMIDimensions.create(mapOf("hmi.display-width" to "1280", "hmi.display-height" to "480",
 			"hmi.type" to "BMW ID5"))
 				is GenericRHMIDimensions)
 		assert(RHMIDimensions.create(mapOf("hmi.display-width" to "1440", "hmi.display-height" to "540",

@@ -33,6 +33,7 @@ interface RHMIDimensions {
 			val rhmiHeight = capabilities["hmi.display-height"]?.toIntOrNull() ?: 480
 
 			if (brand == "BMW" && !id4 && rhmiWidth == 1440) return BMW5XLRHMIDimensions(rhmiWidth, rhmiHeight)
+			if (brand == "BMW" && id4) return BMW4RHMIDimensions(rhmiWidth, rhmiHeight)
 			if (brand == "MINI" && !id4 && a4axl) return Mini5XLDimensions()
 			if (brand == "MINI" && !id4) return Mini5Dimensions()
 			if (brand == "MINI") return MiniDimensions(rhmiWidth, rhmiHeight)
@@ -68,6 +69,19 @@ class GenericRHMIDimensions(override val rhmiWidth: Int, override val rhmiHeight
 	*/
 	override val marginLeft: Int = 64
 	override val paddingLeft: Int = 70
+	override val paddingTop: Int = 80
+	override val marginRight: Int = 5
+}
+
+class BMW4RHMIDimensions(override val rhmiWidth: Int, override val rhmiHeight: Int):RHMIDimensions {
+	/*
+	Examining a screenshot of an ID4 window closely,
+	from https://github.com/BimmerGestalt/AAIdrive/issues/538#issuecomment-1049829217
+	and from https://github.com/BimmerGestalt/AAIdrive/issues/538#issuecomment-1051007203
+	it has 60px more paddingLeft than the GenericRHMIDimensions
+	*/
+	override val marginLeft: Int = 64
+	override val paddingLeft: Int = 130
 	override val paddingTop: Int = 80
 	override val marginRight: Int = 5
 }
