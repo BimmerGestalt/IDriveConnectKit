@@ -29,10 +29,12 @@ interface RHMIDimensions {
 			val brand = if (capabilities["hmi.type"]?.startsWith("MINI") == true) "MINI" else "BMW"
 			val id4 = capabilities["hmi.type"]?.contains("ID4") == true
 			val a4axl = capabilities["a4axl"] == "true"
+			val entryEvoId5 = capabilities["hmi.version"]?.startsWith("EntryEvo_ID5_") == true
 			val rhmiWidth = capabilities["hmi.display-width"]?.toIntOrNull() ?: 800
 			val rhmiHeight = capabilities["hmi.display-height"]?.toIntOrNull() ?: 480
 
 			if (brand == "BMW" && !id4 && rhmiWidth == 1440) return BMW5XLRHMIDimensions(rhmiWidth, rhmiHeight)
+			if (brand == "BMW" && entryEvoId5 && rhmiWidth == 1280) return BMW5XLRHMIDimensions(1440, 540)   // this hmi version lies
 			if (brand == "BMW" && id4) return BMW4RHMIDimensions(rhmiWidth, rhmiHeight)
 			if (brand == "MINI" && !id4 && a4axl) return Mini5XLDimensions()
 			if (brand == "MINI" && !id4) return Mini5Dimensions()
@@ -91,9 +93,9 @@ class BMW4RHMIDimensions(override val rhmiWidth: Int, override val rhmiHeight: I
  */
 class BMW5XLRHMIDimensions(override val rhmiWidth: Int, override val rhmiHeight: Int):
 	RHMIDimensions {
-	override val marginLeft: Int = 100
-	override val paddingLeft: Int = 70
-	override val paddingTop: Int = 80
+	override val marginLeft: Int = 90
+	override val paddingLeft: Int = 90
+	override val paddingTop: Int = 60
 	override val marginRight: Int = 5
 }
 
