@@ -90,12 +90,13 @@ class BMW4RHMIDimensions(override val rhmiWidth: Int, override val rhmiHeight: I
 
 /**
  * BMW5 has a flat toolbar, and on a 1440w screen it measures 100px
+ * Precise measurements from https://github.com/BimmerGestalt/AAIdrive/issues/538#issuecomment-1097109720
  */
 class BMW5XLRHMIDimensions(override val rhmiWidth: Int, override val rhmiHeight: Int):
 	RHMIDimensions {
 	override val marginLeft: Int = 90
 	override val paddingLeft: Int = 90
-	override val paddingTop: Int = 60
+	override val paddingTop: Int = 67
 	override val marginRight: Int = 5
 }
 
@@ -134,7 +135,13 @@ class SidebarRHMIDimensions(val fullscreen: RHMIDimensions, val isWidescreen: ()
 	override val paddingLeft: Int = fullscreen.paddingLeft
 	override val paddingTop: Int = fullscreen.paddingTop
 	override val marginRight: Int
-		get() = if (isWidescreen() || fullscreen.rhmiWidth < 900) { fullscreen.marginRight } else {
-			(fullscreen.rhmiWidth * 0.37).toInt()
+		get() {
+			return if (isWidescreen() || fullscreen.rhmiWidth < 900) { fullscreen.marginRight } else {
+				if (fullscreen is BMW5XLRHMIDimensions) {
+					(fullscreen.rhmiWidth * 0.37).toInt() - 20
+				} else {
+					(fullscreen.rhmiWidth * 0.37).toInt()
+				}
+			}
 		}
 }
