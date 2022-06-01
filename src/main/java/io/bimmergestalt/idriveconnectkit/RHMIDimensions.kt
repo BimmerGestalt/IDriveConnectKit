@@ -137,7 +137,7 @@ class SidebarRHMIDimensions(val fullscreen: RHMIDimensions, val isWidescreen: ()
 	override val paddingTop: Int = fullscreen.paddingTop
 	override val marginRight: Int
 		get() {
-			return if (isWidescreen() || fullscreen.rhmiWidth < 900) { fullscreen.marginRight } else {
+			return if (isWidescreen() || fullscreen.rhmiWidth < 1000) { fullscreen.marginRight } else {
 				if (fullscreen is BMW5XLRHMIDimensions) {
 					(fullscreen.rhmiWidth * 0.37).toInt() - 20
 				} else {
