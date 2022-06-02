@@ -35,6 +35,7 @@ interface RHMIDimensions {
 
 			if (brand == "BMW" && !id4 && rhmiWidth == 1440) return BMW5XLRHMIDimensions(rhmiWidth, rhmiHeight)
 			if (brand == "BMW" && entryEvoId5 && rhmiWidth == 1280) return BMW5XLRHMIDimensions(1440, 540)   // this hmi version lies
+			if (brand == "BMW" && entryEvoId5 && rhmiWidth == 800) return BMW5XLRHMIDimensions(980, 540)   // this hmi version lies
 			if (brand == "BMW" && id4) return BMW4RHMIDimensions(rhmiWidth, rhmiHeight)
 			if (brand == "MINI" && !id4 && a4axl) return Mini5XLDimensions()
 			if (brand == "MINI" && !id4) return Mini5Dimensions()
@@ -136,7 +137,7 @@ class SidebarRHMIDimensions(val fullscreen: RHMIDimensions, val isWidescreen: ()
 	override val paddingTop: Int = fullscreen.paddingTop
 	override val marginRight: Int
 		get() {
-			return if (isWidescreen() || fullscreen.rhmiWidth < 900) { fullscreen.marginRight } else {
+			return if (isWidescreen() || fullscreen.rhmiWidth < 1000) { fullscreen.marginRight } else {
 				if (fullscreen is BMW5XLRHMIDimensions) {
 					(fullscreen.rhmiWidth * 0.37).toInt() - 20
 				} else {
