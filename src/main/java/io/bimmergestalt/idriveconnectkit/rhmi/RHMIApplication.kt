@@ -3,6 +3,7 @@ package io.bimmergestalt.idriveconnectkit.rhmi
 import de.bmw.idrive.BMWRemoting
 import de.bmw.idrive.BMWRemotingServer
 import io.bimmergestalt.idriveconnectkit.xmlutils.XMLUtils
+import io.bimmergestalt.idriveconnectkit.xmlutils.getAttribute
 import io.bimmergestalt.idriveconnectkit.xmlutils.getChildElements
 import io.bimmergestalt.idriveconnectkit.xmlutils.getChildNamed
 import org.w3c.dom.Document
@@ -64,7 +65,13 @@ abstract class RHMIApplication {
 			val entryButtonNode = pluginAppNode.getChildNamed("entryButton")
 			if (entryButtonNode != null) {
 				val component = RHMIComponent.loadFromXML(this, entryButtonNode)
-				if (component != null) {
+				if (component is RHMIComponent.EntryButton) {
+					pluginAppNode.getAttribute("applicationType")?.also {
+						component.applicationType = it
+					}
+					pluginAppNode.getAttribute("applicationWeight")?.toIntOrNull()?.also {
+						component.applicationWeight = it
+					}
 					components[component.id] = component
 				}
 			}

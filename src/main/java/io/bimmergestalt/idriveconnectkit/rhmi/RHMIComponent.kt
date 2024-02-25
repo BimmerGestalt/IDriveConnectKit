@@ -141,6 +141,10 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 		fun getAction(): RHMIAction? {
 			return app.actions[action]
 		}
+		// What category to put the entrybutton
+		var applicationType = "OnlineServices"
+		// How to sort the button
+		var applicationWeight = 500
 	}
 	class InstrumentCluster(override val app: RHMIApplication, override val id: Int): RHMIComponent(app, id) {
 		var textModel: Int = 0
