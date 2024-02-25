@@ -1,6 +1,8 @@
 package io.bimmergestalt.idriveconnectkit.rhmi
 
 import de.bmw.idrive.BMWRemoting
+import de.bmw.idrive.BMWRemoting.RHMIDataTable
+import de.bmw.idrive.BMWRemoting.RHMIResourceData
 import io.bimmergestalt.idriveconnectkit.rhmi.mocking.RHMIApplicationMock
 import io.bimmergestalt.idriveconnectkit.xmlutils.XMLUtils
 import io.bimmergestalt.idriveconnectkit.xmlutils.getAttributesMap
@@ -46,33 +48,36 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 	}
 
 	open class TextIdModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
-		var textId: Int = 0
+		var textId: Int
+			get() = (app.getModel(id) as? BMWRemoting.RHMIResourceIdentifier)?.id ?: 0
 			set(value) {
 				val resource = BMWRemoting.RHMIResourceIdentifier(BMWRemoting.RHMIResourceType.TEXTID, value)
 				app.setModel(id, resource)
-				field = value
 			}
 	}
 	open class ImageIdModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
-		var imageId: Int = 0
+		var imageId: Int
+			get() = (app.getModel(id) as? BMWRemoting.RHMIResourceIdentifier)?.id ?: 0
 			set(value) {
 				val resource = BMWRemoting.RHMIResourceIdentifier(BMWRemoting.RHMIResourceType.IMAGEID, value)
 				app.setModel(id, resource)
-				field = value
 			}
 	}
 	class RaBoolModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
-		var value: Boolean = false
-			set(value) { app.setModel(id, value); field = value }
+		var value: Boolean
+			get() = app.getModel(id) as? Boolean ?: false
+			set(value) = app.setModel(id, value)
 	}
 	class RaDataModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
 		var modelType: String = ""
-		var value: String = ""
-			set(value) { app.setModel(id, value); field = value }
+		var value: String
+			get() = app.getModel(id) as? String ?: ""
+			set(value) = app.setModel(id, value)
 	}
 	open class RaIntModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
-		var value: Int = 0
-			set(value) { app.setModel(id, value); field = value }
+		var value: Int
+			get() = app.getModel(id) as? Int ?: 0
+			set(value) = app.setModel(id, value)
 	}
 	class RaGaugeModel(override val app: RHMIApplication, override val id: Int): RaIntModel(app, id) {
 		var modelType: String = ""
@@ -88,7 +93,7 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 
 	class RaImageModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
 		var value: ByteArray?
-			get() = null
+			get() = (app.getModel(id) as? RHMIResourceData)?.data
 			set(value) {
 				if (value != null) {
 					val data = BMWRemoting.RHMIResourceData(BMWRemoting.RHMIResourceType.IMAGEDATA, value)
@@ -115,7 +120,7 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 			}
 		}
 		class RHMIListConcrete(override var width: Int): RHMIList(width) {
-			val realData = ArrayList<Array<Any>>()
+			private val realData = ArrayList<Array<Any>>()
 			override fun get(index: Int): Array<Any> {
 				return realData[index]
 			}
@@ -127,6 +132,9 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 			}
 			fun addRow(row: Array<Any>) {
 				realData.add(row)
+			}
+			fun addAll(data: Iterable<Array<Any>>) {
+				realData.addAll(data)
 			}
 			operator fun set(index: Int, row: Array<Any>) {
 				realData[index] = row
@@ -152,7 +160,7 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 				set(_) {}
 		}
 		var value: RHMIList?
-			get() = null
+			get() = _getValue()
 			set(value) {
 				if (value != null) {
 					setValue(value, 0, value.height, value.height)
@@ -162,6 +170,14 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 		fun setValue(data: RaListModel.RHMIList, startIndex: Int, numRows: Int, totalRows: Int) {
 			val table = BMWRemoting.RHMIDataTable(data.getWindow(startIndex, numRows), false, startIndex, numRows, totalRows, 0, data.width, data.width)
 			app.setModel(this.id, table)
+		}
+		private fun _getValue(): RHMIList? {
+			return (app.getModel(id) as? RHMIDataTable)?.let {
+				RHMIListConcrete(it.numColumns).apply {
+					addAll(it.data.toList())
+				}
+
+			}
 		}
 	}
 

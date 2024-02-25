@@ -82,8 +82,12 @@ abstract class RHMIApplication {
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
 	abstract fun setModel(modelId: Int, value: Any)
 
+	open fun getModel(modelId: Int): Any? = null
+
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
 	abstract fun setProperty(componentId: Int, propertyId: Int, value: Any?)
+
+	open fun getProperty(componentId: Int, propertyId: Int): Any? = null
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
 	abstract fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>)
@@ -98,12 +102,14 @@ class RHMIApplicationConcrete : RHMIApplication() {
 	override val components = HashMap<Int, RHMIComponent>()
 
 	val modelData = HashMap<Int, Any>()
-	val propertyData = HashMap<Int, HashMap<Int, Any?>>()
+	val propertyData = HashMap<Int, MutableMap<Int, Any?>>().withDefault { HashMap() }
 	val triggeredEvents = HashMap<Int, Map<*, *>>()
 
 	override fun setModel(modelId: Int, value: Any) {
 		modelData[modelId] = value
 	}
+
+	override fun getModel(modelId: Int): Any? = modelData[modelId]
 
 	override fun setProperty(componentId: Int, propertyId: Int, value: Any?) {
 		if (!propertyData.containsKey(componentId)) {
@@ -111,6 +117,7 @@ class RHMIApplicationConcrete : RHMIApplication() {
 		}
 		propertyData[componentId]!!.set(propertyId, value)
 	}
+	override fun getProperty(componentId: Int, propertyId: Int): Any? = propertyData[componentId]!![propertyId]
 
 	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {
 		triggeredEvents[eventId] = args

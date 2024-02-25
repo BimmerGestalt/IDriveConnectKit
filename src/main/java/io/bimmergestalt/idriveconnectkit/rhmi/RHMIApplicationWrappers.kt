@@ -1,6 +1,7 @@
 package io.bimmergestalt.idriveconnectkit.rhmi
 
 import de.bmw.idrive.BMWRemoting
+import de.bmw.idrive.BMWRemoting.RHMIResourceIdentifier
 
 interface RHMIApplicationWrapper {
 	fun unwrap(): RHMIApplication
@@ -16,25 +17,46 @@ class RHMIApplicationIdempotent(val app: RHMIApplication): RHMIApplication(), RH
 	override val states = app.states
 	override val components = app.components
 
+	private val sentData = HashMap<Int, Any>()
+	private val sentProperties = HashMap<Int, MutableMap<Int, Any?>>().withDefault { HashMap() }
+
 	override fun setModel(modelId: Int, value: Any) {
 		val model = models[modelId]
+		val previouslySent = sentData.containsKey(modelId)
 		val identical = when(model) {
 			is RHMIModel.RaIntModel -> model.value == value
 			is RHMIModel.RaDataModel -> model.value == value
 			is RHMIModel.RaBoolModel -> model.value == value
-			is RHMIModel.TextIdModel -> model.textId == (value as? BMWRemoting.RHMIResourceIdentifier)?.id
-			is RHMIModel.ImageIdModel -> model.imageId == (value as? BMWRemoting.RHMIResourceIdentifier)?.id
+			is RHMIModel.TextIdModel -> model.textId == (value as? RHMIResourceIdentifier)?.id
+			is RHMIModel.ImageIdModel -> model.imageId == (value as? RHMIResourceIdentifier)?.id
 			else -> false
 		}
-		if (!identical) {
+		if (!previouslySent || !identical) {
 			app.setModel(modelId, value)
+		}
+		val saved = when(model) {
+			is RHMIModel.RaIntModel -> true
+			is RHMIModel.RaDataModel -> true
+			is RHMIModel.RaBoolModel -> true
+			is RHMIModel.TextIdModel -> true
+			is RHMIModel.ImageIdModel -> true
+			else -> false
+		}
+		if (saved) {
+			sentData[modelId] = value
 		}
 	}
 
+	override fun getModel(modelId: Int): Any? = sentData[modelId]
+
 	override fun setProperty(componentId: Int, propertyId: Int, value: Any?) {
-		if (components[componentId]?.properties?.get(propertyId)?.value != value)
+		if (getProperty(componentId, propertyId) != value) {
 			app.setProperty(componentId, propertyId, value)
+			sentProperties[componentId]!![propertyId] = value
+		}
 	}
+
+	override fun getProperty(componentId: Int, propertyId: Int): Any? = sentProperties[componentId]!![propertyId]
 
 	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {
 		app.triggerHMIEvent(eventId, args)
