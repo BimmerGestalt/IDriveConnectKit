@@ -70,8 +70,12 @@ abstract class RHMIProperty(val id: Int, var value: Any = 0) {
 	class SimpleProperty(id: Int, value: Any = 0): RHMIProperty(id, value)
 
 	class LayoutBag(id: Int, value: Any = 0, val values: Map<Int, Any>): RHMIProperty(id, value) {
-		fun get(layout: Int): Any {
+		override fun getForLayout(layout: Int): Any {
 			return values.getOrElse(layout) { value }
 		}
+	}
+
+	open fun getForLayout(layout: Int): Any {
+		return value
 	}
 }
