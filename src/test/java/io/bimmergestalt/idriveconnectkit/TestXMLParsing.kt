@@ -679,8 +679,8 @@ class TestXMLParsing {
 		assertEquals(1, component?.properties?.size)
 		assertEquals("false", component?.properties?.get(1)?.value)
 		val propertyBag = component?.properties?.get(1) as RHMIProperty.LayoutBag
-		assertEquals("true", propertyBag.get(0))
-		assertEquals(1, propertyBag.get(1))
+		assertEquals("true", propertyBag.getForLayout(0))
+		assertEquals(1, propertyBag.getForLayout(1))
 	}
 	@Test fun gauge() {
 		val component = RHMIComponent.loadFromXML(app, components.getChildNamed("gauge") as Node)
