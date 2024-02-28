@@ -48,7 +48,7 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 				val propertyNodes = node.getChildNamed("properties")
 				if (propertyNodes != null) {
 					propertyNodes.getChildElements().filter { it.nodeName == "property" }.forEach {
-						val property = RHMIProperty.loadFromXML(it)
+						val property = RHMIProperty.loadFromXML(app, state.id, it)
 						if (property != null)
 							state.properties[property.id] = property
 					}

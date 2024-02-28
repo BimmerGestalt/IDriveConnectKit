@@ -40,7 +40,7 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 				val propertyNodes = node.getChildNamed("properties")
 				if (propertyNodes != null) {
 					propertyNodes.getChildElements().filter { it.nodeName == "property" }.forEach {
-						val property = RHMIProperty.loadFromXML(it)
+						val property = RHMIProperty.loadFromXML(app, component.id, it)
 						if (property != null)
 							component.properties[property.id] = property
 					}
@@ -55,7 +55,8 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 	}
 	fun setProperty(propertyId: Int, value: Any) {
 		app.setProperty(id, propertyId, value)
-		properties[propertyId] = RHMIProperty.SimpleProperty(propertyId, value)
+		// allow component.property[id] to read from the app's setProperty
+		properties[propertyId] = RHMIProperty.AppProperty(app, id, propertyId, value)
 	}
 	fun setVisible(visible: Boolean) {
 		this.setProperty(RHMIProperty.PropertyId.VISIBLE, visible)

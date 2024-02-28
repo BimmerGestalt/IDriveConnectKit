@@ -3,7 +3,7 @@ package io.bimmergestalt.idriveconnectkit.rhmi
 import io.bimmergestalt.idriveconnectkit.xmlutils.*
 import org.w3c.dom.Node
 
-abstract class RHMIProperty(val id: Int, var value: Any = 0) {
+abstract class RHMIProperty(val id: Int, open var value: Any = 0) {
 
 	enum class PropertyId(val id: Int) {
 		ENABLED(1),
@@ -35,7 +35,7 @@ abstract class RHMIProperty(val id: Int, var value: Any = 0) {
 	}
 
 	companion object {
-		fun loadFromXML(node: Node): RHMIProperty? {
+		fun loadFromXML(app: RHMIApplication, componentId: Int, node: Node): RHMIProperty? {
 			val attrs = node.getAttributesMap()
 
 			val id = attrs["id"]?.toInt() ?: return null
@@ -47,7 +47,7 @@ abstract class RHMIProperty(val id: Int, var value: Any = 0) {
 			val assignments = if (assignmentsNode != null) assignmentMap(assignmentsNode) else null
 			return when (condition?.getAttribute("conditionType")) {
 				"LAYOUTBAG" -> LayoutBag(id, value, assignments as Map)
-				else -> SimpleProperty(id, value)
+				else -> AppProperty(app, componentId, id, value)
 			}
 		}
 
@@ -67,6 +67,10 @@ abstract class RHMIProperty(val id: Int, var value: Any = 0) {
 		}
 	}
 
+	open fun getForLayout(layout: Int): Any {
+		return value
+	}
+
 	class SimpleProperty(id: Int, value: Any = 0): RHMIProperty(id, value)
 
 	class LayoutBag(id: Int, value: Any = 0, val values: Map<Int, Any>): RHMIProperty(id, value) {
@@ -75,7 +79,10 @@ abstract class RHMIProperty(val id: Int, var value: Any = 0) {
 		}
 	}
 
-	open fun getForLayout(layout: Int): Any {
-		return value
+	class AppProperty(val app: RHMIApplication, val componentId: Int, id: Int, private val defaultValue: Any = 0): RHMIProperty(id) {
+		override fun getForLayout(layout: Int): Any = app.getProperty(componentId, id) ?: value
+		override var value: Any
+			get() = app.getProperty(componentId, id) ?: defaultValue
+			set(value) { app.setProperty(componentId, id, value) }
 	}
 }
