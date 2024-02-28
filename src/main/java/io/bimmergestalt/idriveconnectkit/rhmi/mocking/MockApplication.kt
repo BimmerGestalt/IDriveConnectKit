@@ -11,11 +11,11 @@ class RHMIApplicationMock : RHMIApplication() {
 	override val components = MockComponentMap(this)
 	val triggeredEvents = HashMap<Int, Map<*, *>>()
 
-	val modelData = HashMap<Int, Any>()
+	val modelData = HashMap<Int, Any?>()
 	val propertyData = HashMap<Int, HashMap<Int, Any?>>()
 
 
-	override fun setModel(modelId: Int, value: Any) {
+	override fun setModel(modelId: Int, value: Any?) {
 		modelData[modelId] = value
 	}
 

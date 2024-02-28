@@ -87,7 +87,7 @@ abstract class RHMIApplication {
 	}
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
-	abstract fun setModel(modelId: Int, value: Any)
+	abstract fun setModel(modelId: Int, value: Any?)
 
 	open fun getModel(modelId: Int): Any? = null
 
@@ -108,11 +108,11 @@ class RHMIApplicationConcrete : RHMIApplication() {
 	override val states = HashMap<Int, RHMIState>()
 	override val components = HashMap<Int, RHMIComponent>()
 
-	val modelData = HashMap<Int, Any>()
+	val modelData = HashMap<Int, Any?>()
 	val propertyData = HashMap<Int, MutableMap<Int, Any?>>().withDefault { HashMap() }
 	val triggeredEvents = HashMap<Int, Map<*, *>>()
 
-	override fun setModel(modelId: Int, value: Any) {
+	override fun setModel(modelId: Int, value: Any?) {
 		modelData[modelId] = value
 	}
 
@@ -141,7 +141,7 @@ class RHMIApplicationEtch constructor(val remoteServer: BMWRemotingServer, val r
 	override val components = HashMap<Int, RHMIComponent>()
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
-	override fun setModel(modelId: Int, value: Any) {
+	override fun setModel(modelId: Int, value: Any?) {
 		if (ignoreUpdates) return
 		this.remoteServer.rhmi_setData(this.rhmiHandle, modelId, value)
 	}

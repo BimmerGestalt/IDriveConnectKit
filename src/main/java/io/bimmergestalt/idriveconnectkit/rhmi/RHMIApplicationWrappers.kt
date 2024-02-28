@@ -1,6 +1,5 @@
 package io.bimmergestalt.idriveconnectkit.rhmi
 
-import de.bmw.idrive.BMWRemoting
 import de.bmw.idrive.BMWRemoting.RHMIResourceIdentifier
 
 interface RHMIApplicationWrapper {
@@ -17,10 +16,10 @@ class RHMIApplicationIdempotent(val app: RHMIApplication): RHMIApplication(), RH
 	override val states = app.states
 	override val components = app.components
 
-	private val sentData = HashMap<Int, Any>()
+	private val sentData = HashMap<Int, Any?>()
 	private val sentProperties = HashMap<Int, MutableMap<Int, Any?>>().withDefault { HashMap() }
 
-	override fun setModel(modelId: Int, value: Any) {
+	override fun setModel(modelId: Int, value: Any?) {
 		val model = models[modelId]
 		val previouslySent = sentData.containsKey(modelId)
 		val identical = when(model) {
@@ -85,7 +84,7 @@ class RHMIApplicationSynchronized(val app: RHMIApplication, private val lock: An
 		}
 	}
 
-	override fun setModel(modelId: Int, value: Any) = runSynchronized {
+	override fun setModel(modelId: Int, value: Any?) = runSynchronized {
 		app.setModel(modelId, value)
 	}
 
