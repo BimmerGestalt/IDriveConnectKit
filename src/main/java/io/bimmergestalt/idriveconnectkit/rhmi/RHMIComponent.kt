@@ -2,6 +2,7 @@ package io.bimmergestalt.idriveconnectkit.rhmi
 
 import io.bimmergestalt.idriveconnectkit.Utils.etchAsInt
 import io.bimmergestalt.idriveconnectkit.rhmi.mocking.RHMIApplicationMock
+import io.bimmergestalt.idriveconnectkit.withRealDefault
 import io.bimmergestalt.idriveconnectkit.xmlutils.XMLUtils
 import io.bimmergestalt.idriveconnectkit.xmlutils.getAttributesMap
 import io.bimmergestalt.idriveconnectkit.xmlutils.getChildElements
@@ -11,7 +12,10 @@ import org.w3c.dom.Node
 
 abstract class RHMIComponent private constructor(open val app: RHMIApplication, open val id: Int) {
 
-	val properties: MutableMap<Int, RHMIProperty> = HashMap()
+	val properties: MutableMap<Int, RHMIProperty> = HashMap<Int, RHMIProperty>().withRealDefault { propertyId ->
+		// look up from the app storage if the property wasn't loaded from xml
+		RHMIProperty.AppProperty(app, id, propertyId)
+	}
 
 	companion object {
 		fun loadFromXML(app: RHMIApplication, node: Node): RHMIComponent? {
