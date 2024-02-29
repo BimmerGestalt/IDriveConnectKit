@@ -91,13 +91,16 @@ object XMLUtils {
 		}
 	}
 
-	fun getClassField(c: Class<in Any>, name: String): Field? {
+	private fun getClassField(c: Class<in Any>, name: String): Field? {
 		return c.declaredFields.find {
 			it.name == name
 		} ?: if (c.superclass != null) getClassField(c.superclass, name) else null
 	}
 
-	fun getSetterMethodName(name: String): String {
+	private fun getGetterMethodName(name: String): String {
+		return "get" + name.substring(0, 1).toUpperCase() + name.substring(1)
+	}
+	private fun getSetterMethodName(name: String): String {
 		return "set" + name.substring(0, 1).toUpperCase() + name.substring(1)
 	}
 
@@ -114,27 +117,38 @@ object XMLUtils {
 			 * and look for a setter
 			 */
 			val classType = obj.javaClass
-			getClassField(classType, entry.key) != null &&
-			classType.methods.any {
-				it.name == getSetterMethodName(entry.key)
-			}
+			getClassField(classType, entry.key) != null ||
+			(
+				classType.methods.any {
+					it.name == getGetterMethodName(entry.key)
+				} &&
+				classType.methods.any {
+					it.name == getSetterMethodName(entry.key)
+				}
+			)
 		}.forEach { (key,value) ->
 			/** Look at the (possibly parent's) field's data type, to parse the string attribute as
 			 * and then find the matching setter and set it
 			 */
 			val classType = obj.javaClass
-			val field = getClassField(classType, key)
+			val field = getClassField(classType, key)   // use the backing field type, if it exists
+			val getterName = getGetterMethodName(key)
+			val getter = classType.getMethod(getterName)    // otherwise use the getter type
 			val setterName = getSetterMethodName(key)
+			val setterType = if (field != null) {
+				field.type
+			} else {
+				getter.returnType
+			}
 			try {
-				when (field?.type) {
+				when (setterType) {
 					Integer::class.javaPrimitiveType -> classType.getMethod(setterName, Integer::class.javaPrimitiveType).invoke(obj, value.toInt())
 					Boolean::class.javaPrimitiveType -> classType.getMethod(setterName, Boolean::class.javaPrimitiveType).invoke(obj, value.toBoolean())
 					String::class.java -> classType.getMethod(setterName, String::class.java).invoke(obj, value)
 					null -> Unit
-					else -> field.set(obj, value)
 				}
 			} catch (e:Exception) {
-				System.err.println("Failed to set $field with value $value, due to error ${e.message}: intValue=${value.toInt()} boolValue=${value.toBoolean()}")
+				System.err.println("Failed to set $key with value $value, due to error ${e.message}: intValue=${value.toInt()} boolValue=${value.toBoolean()}")
 			}
 		}
 	}

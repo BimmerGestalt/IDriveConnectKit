@@ -18,6 +18,7 @@ class RHMIApplicationMock : RHMIApplication() {
 	override fun setModel(modelId: Int, value: Any?) {
 		modelData[modelId] = value
 	}
+	override fun getModel(modelId: Int): Any? = modelData[modelId]
 
 	override fun setProperty(componentId: Int, propertyId: Int, value: Any?) {
 		if (!propertyData.containsKey(componentId)) {
@@ -25,6 +26,7 @@ class RHMIApplicationMock : RHMIApplication() {
 		}
 		propertyData[componentId]!!.set(propertyId, value)
 	}
+	override fun getProperty(componentId: Int, propertyId: Int): Any? = propertyData[componentId]?.get(propertyId)
 
 	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {
 		triggeredEvents[eventId] = args

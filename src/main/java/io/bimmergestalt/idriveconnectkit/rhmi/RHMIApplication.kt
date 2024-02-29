@@ -124,8 +124,7 @@ class RHMIApplicationConcrete : RHMIApplication() {
 		}
 		propertyData[componentId]!!.set(propertyId, value)
 	}
-	override fun getProperty(componentId: Int, propertyId: Int): Any? = propertyData[componentId]!![propertyId]
-
+	override fun getProperty(componentId: Int, propertyId: Int): Any? = propertyData[componentId]?.get(propertyId)
 	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {
 		triggeredEvents[eventId] = args
 	}

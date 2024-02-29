@@ -277,7 +277,7 @@ class TestXMLParsing {
 		assertEquals(62, model?.id)
 		assertEquals(null, model?.asRaImageModel()?.value)
 		model?.asRaImageModel()?.value = "Hi".toByteArray()
-		assertEquals(null, model?.asRaImageModel()?.value)
+		assertArrayEquals("Hi".toByteArray(), model?.asRaImageModel()?.value)
 		assertTrue(app.modelData[model?.id] is BMWRemoting.RHMIResourceData)
 		val expectedImageData = BMWRemoting.RHMIResourceData(BMWRemoting.RHMIResourceType.IMAGEDATA, "Hi".toByteArray())
 		assertEquals(expectedImageData.type, (app.modelData[model?.id] as BMWRemoting.RHMIResourceData).type)
@@ -308,8 +308,10 @@ class TestXMLParsing {
 		sentList.addRow(arrayOf(true, 4, "Yes"))
 		val expectedList = arrayOf(arrayOf(true, 4, "Yes"))
 		model?.asRaListModel()?.value = sentList
-		assertEquals(null, model?.asRaListModel()?.value)
-		assertArrayEquals(expectedList, (app.modelData[model?.id] as BMWRemoting.RHMIDataTable).data)
+		val retrievedList = model?.asRaListModel()?.value
+		assertNotNull(retrievedList)
+		assertArrayEquals(expectedList[0], retrievedList!![0])
+		assertArrayEquals(expectedList, (app.modelData[model.id] as BMWRemoting.RHMIDataTable).data)
 	}
 
 	@Test fun raGaugeModel() {

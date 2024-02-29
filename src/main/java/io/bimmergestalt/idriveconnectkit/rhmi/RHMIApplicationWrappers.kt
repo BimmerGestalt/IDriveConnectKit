@@ -51,11 +51,11 @@ class RHMIApplicationIdempotent(val app: RHMIApplication): RHMIApplication(), RH
 	override fun setProperty(componentId: Int, propertyId: Int, value: Any?) {
 		if (getProperty(componentId, propertyId) != value) {
 			app.setProperty(componentId, propertyId, value)
-			sentProperties[componentId]!![propertyId] = value
+			sentProperties.getOrPut(componentId) { HashMap() }[propertyId] = value
 		}
 	}
 
-	override fun getProperty(componentId: Int, propertyId: Int): Any? = sentProperties[componentId]!![propertyId]
+	override fun getProperty(componentId: Int, propertyId: Int): Any? = sentProperties[componentId]?.get(propertyId)
 
 	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {
 		app.triggerHMIEvent(eventId, args)
@@ -78,9 +78,9 @@ class RHMIApplicationSynchronized(val app: RHMIApplication, private val lock: An
 	override val components = app.components
 
 	/** Run some code in the same lock as this RHMI Application */
-	fun runSynchronized(task: () -> Unit) {
+	fun <R> runSynchronized(task: () -> R): R {
 		synchronized(lock ?: this) {
-			task()
+			return task()
 		}
 	}
 
@@ -88,8 +88,16 @@ class RHMIApplicationSynchronized(val app: RHMIApplication, private val lock: An
 		app.setModel(modelId, value)
 	}
 
+	override fun getModel(modelId: Int): Any? = runSynchronized {
+		app.getModel(modelId)
+	}
+
 	override fun setProperty(componentId: Int, propertyId: Int, value: Any?) = runSynchronized {
 		app.setProperty(componentId, propertyId, value)
+	}
+
+	override fun getProperty(componentId: Int, propertyId: Int): Any? = runSynchronized {
+		app.getProperty(componentId, propertyId)
 	}
 
 	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) = runSynchronized {
