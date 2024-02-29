@@ -9,6 +9,8 @@ import io.bimmergestalt.idriveconnectkit.xmlutils.getAttributesMap
 import io.bimmergestalt.idriveconnectkit.xmlutils.getChildElements
 import io.bimmergestalt.idriveconnectkit.xmlutils.getChildNamed
 import org.w3c.dom.Node
+import kotlin.math.max
+import kotlin.math.min
 
 
 abstract class RHMIModel private constructor(open val app: RHMIApplication, open val id: Int) {
@@ -106,29 +108,58 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 	class RaListModel(override val app: RHMIApplication, override val id: Int): RHMIModel(app, id) {
 		var modelType: String = ""
 		abstract class RHMIList(open val width: Int) {
+			/**
+			 * Return the data at this row, or null if it doesn't exist
+			 */
 			abstract operator fun get(index: Int): Array<Any>
-			abstract var height: Int
+
+			/**
+			 * Return the table index of the first row of this RHMIList
+			 */
+			abstract val startIndex: Int
+
+			/**
+			 * Return the table index after the last row of this RHMIList
+			 */
+			abstract val endIndex: Int
+
+			/**
+			 * Return the number of actual rows in this RHMList
+			 */
+			abstract val height: Int
+
 			fun getWindow(startIndex: Int, numRows: Int): Array<Array<Any>> {
-				var actualNumRows = numRows
-				if (startIndex > height) {
-					return arrayOf()
-				}
-				if (startIndex + numRows > height) {
-					actualNumRows = height - startIndex
-				}
-				return Array(actualNumRows) { index -> this[startIndex + index]}
+				val lastIndex = min(startIndex + numRows, endIndex)
+				val actualNumRows = max(0, lastIndex - startIndex)
+				return Array(actualNumRows) { index -> this[startIndex + index] ?: emptyArray() }
 			}
 		}
-		class RHMIListConcrete(override var width: Int): RHMIList(width) {
-			private val realData = ArrayList<Array<Any>>()
+		class RHMIListConcrete(override var width: Int, override var startIndex: Int = 0, endIndex: Int = 0): RHMIList(width) {
+			private var realData = ArrayList<Array<Any>>()
 			override fun get(index: Int): Array<Any> {
-				return realData[index]
+				return realData.getOrNull(index - startIndex) ?: emptyArray()
 			}
 
-			override var height: Int = 0
+			private val forcedEndIndex = endIndex
+			override val endIndex: Int
+				get() = max(forcedEndIndex, startIndex + realData.size)
+			override val height: Int
 				get() = realData.size
+
 			fun clear() {
 				realData.clear()
+			}
+			private fun resize(index: Int) {
+				if (index < startIndex) {
+					val newData = ArrayList<Array<Any>>()
+					newData.addAll((index until startIndex).map { emptyArray() })
+					newData.addAll(realData)
+					realData = newData
+					startIndex = index
+				}
+				if (index >= endIndex) {
+					realData.addAll((endIndex until index).map { emptyArray() })
+				}
 			}
 			fun addRow(row: Array<Any>) {
 				realData.add(row)
@@ -137,10 +168,17 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 				realData.addAll(data)
 			}
 			operator fun set(index: Int, row: Array<Any>) {
-				realData[index] = row
+				resize(index)
+				realData[index - startIndex] = row
 			}
 		}
 		open class RHMIListAdapter<T>(width: Int, val realData: List<T>) : RHMIModel.RaListModel.RHMIList(width) {
+			override val startIndex: Int = 0
+			override val endIndex: Int
+				get() = realData.size
+			override val height: Int
+				get() = realData.size
+
 			override fun get(index: Int): Array<Any> {
 				return convertRow(index, realData[index])
 			}
@@ -154,16 +192,12 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 					}
 				}
 			}
-
-			override var height: Int
-				get() = realData.size
-				set(_) {}
 		}
 		var value: RHMIList?
 			get() = _getValue()
 			set(value) {
 				if (value != null) {
-					setValue(value, 0, value.height, value.height)
+					setValue(value, value.startIndex, value.height, value.endIndex)
 				}
 			}
 
@@ -173,10 +207,9 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 		}
 		private fun _getValue(): RHMIList? {
 			return (app.getModel(id) as? RHMIDataTable)?.let {
-				RHMIListConcrete(it.numColumns).apply {
+				RHMIListConcrete(it.numColumns, startIndex = it.fromRow, endIndex = it.totalRows).apply {
 					addAll(it.data.toList())
 				}
-
 			}
 		}
 	}
