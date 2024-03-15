@@ -6,9 +6,9 @@ task coverage(type: JacocoReport, dependsOn: "check") {
     description = "Generate Jacoco coverage reports"
 
     reports {
-        xml.enabled = true
-        xml.destination = file("$buildDir/reports/jacoco/jacoco.xml")   // have this in a common location for coveralls to find
-        html.enabled = true
+        xml.required = true
+        xml.outputLocation = file("$buildDir/reports/jacoco/jacoco.xml")   // have this in a common location for coveralls to find
+        html.required = true
     }
 
     def kotlinClasses = fileTree(dir: "$buildDir/classes/kotlin/main",
