@@ -35,74 +35,96 @@ class TestRHMIApplicationIdempotent {
 		// RaDataModel
 		subject.models[1]?.asRaDataModel()?.value = "2"
 		assertEquals("2", backing.modelData[1])
+		assertEquals("2", subject.models[1]?.asRaDataModel()?.value)
 		backing.modelData.remove(1)
 
 		// repeated setting should not send to the backing connection
 		subject.models[1]?.asRaDataModel()?.value = "2"
 		assertEquals(null, backing.modelData[1])
+		assertEquals("2", subject.models[1]?.asRaDataModel()?.value)
 		// but changing the value should write to the backing connection
 		subject.models[1]?.asRaDataModel()?.value = "3"
 		assertEquals("3", backing.modelData[1])
+		assertEquals("3", subject.models[1]?.asRaDataModel()?.value)
+
+		// idempotent should read through to backing
+		subject.sentData.remove(1)
+		assertEquals("3", subject.models[1]?.asRaDataModel()?.value)    // read from backing if cleared from Idempotent
 
 		// RaIntModel
 		subject.models[2]?.asRaIntModel()?.value = 2
 		assertEquals(2, backing.modelData[2])
+		assertEquals(2, subject.models[2]?.asRaIntModel()?.value)
 		backing.modelData.remove(2)
 
 		// repeated setting should not send to the backing connection
 		subject.models[2]?.asRaIntModel()?.value = 2
 		assertEquals(null, backing.modelData[2])
+		assertEquals(2, subject.models[2]?.asRaIntModel()?.value)
 		// but changing the value should write to the backing connection
 		subject.models[2]?.asRaIntModel()?.value = 3
 		assertEquals(3, backing.modelData[2])
+		assertEquals(3, subject.models[2]?.asRaIntModel()?.value)
 
 		// RaGaugeModel
 		subject.models[3]?.asRaGaugeModel()?.value = 2
+		assertEquals(2, subject.models[3]?.asRaGaugeModel()?.value)
 		assertEquals(2, backing.modelData[3])
 		backing.modelData.remove(3)
 
 		// repeated setting should not send to the backing connection
 		subject.models[3]?.asRaGaugeModel()?.value = 2
 		assertEquals(null, backing.modelData[3])
+		assertEquals(2, subject.models[3]?.asRaGaugeModel()?.value)
 		// but changing the value should write to the backing connection
 		subject.models[3]?.asRaGaugeModel()?.value = 3
 		assertEquals(3, backing.modelData[3])
+		assertEquals(3, subject.models[3]?.asRaGaugeModel()?.value)
 
 		// RaBoolModel
 		subject.models[4]?.asRaBoolModel()?.value = true
 		assertEquals(true, backing.modelData[4])
+		assertEquals(true, subject.models[4]?.asRaBoolModel()?.value)
 		backing.modelData.remove(4)
 
 		// repeated setting should not send to the backing connection
 		subject.models[4]?.asRaBoolModel()?.value = true
 		assertEquals(null, backing.modelData[4])
+		assertEquals(true, subject.models[4]?.asRaBoolModel()?.value)
 		// but changing the value should write to the backing connection
 		subject.models[4]?.asRaBoolModel()?.value = false
 		assertEquals(false, backing.modelData[4])
+		assertEquals(false, subject.models[4]?.asRaBoolModel()?.value)
 
 		// TextIdModel
 		subject.models[5]?.asTextIdModel()?.textId = 1
 		assertEquals(1, (backing.modelData[5] as BMWRemoting.RHMIResourceIdentifier).id)
+		assertEquals(1, subject.models[5]?.asTextIdModel()?.textId)
 		backing.modelData.remove(5)
 
 		// repeated setting should not send to the backing connection
 		subject.models[5]?.asTextIdModel()?.textId = 1
 		assertEquals(null, backing.modelData[5])
+		assertEquals(1, subject.models[5]?.asTextIdModel()?.textId)
 		// but changing the value should write to the backing connection
 		subject.models[5]?.asTextIdModel()?.textId = 5
 		assertEquals(5, (backing.modelData[5] as BMWRemoting.RHMIResourceIdentifier).id)
+		assertEquals(5, subject.models[5]?.asTextIdModel()?.textId)
 
 		// ImageIdModel
 		subject.models[6]?.asImageIdModel()?.imageId = 3
 		assertEquals(3, (backing.modelData[6] as BMWRemoting.RHMIResourceIdentifier).id)
+		assertEquals(3, subject.models[6]?.asImageIdModel()?.imageId)
 		backing.modelData.remove(6)
 
 		// repeated setting should not send to the backing connection
 		subject.models[6]?.asImageIdModel()?.imageId = 3
 		assertEquals(null, backing.modelData[6])
+		assertEquals(3, subject.models[6]?.asImageIdModel()?.imageId)
 		// but changing the value should write to the backing connection
 		subject.models[6]?.asImageIdModel()?.imageId = 6
 		assertEquals(6, (backing.modelData[6] as BMWRemoting.RHMIResourceIdentifier).id)
+		assertEquals(6, subject.models[6]?.asImageIdModel()?.imageId)
 	}
 
 	@Test
@@ -130,14 +152,21 @@ class TestRHMIApplicationIdempotent {
 	fun setProperty() {
 		subject.components[10]?.asLabel()?.setVisible(true)
 		assertEquals(true, backing.propertyData[10]!![RHMIProperty.PropertyId.VISIBLE.id])
+		assertEquals(true, subject.components[10]?.asLabel()?.properties?.get(RHMIProperty.PropertyId.VISIBLE.id)?.value)
 		backing.propertyData.remove(10)
 
 		// repeated setting should not send to the backing connection
 		subject.components[10]?.asLabel()?.setVisible(true)
 		assertEquals(null, backing.propertyData[10])
+		assertEquals(true, subject.components[10]?.asLabel()?.properties?.get(RHMIProperty.PropertyId.VISIBLE.id)?.value)
 		// but changing the value should write to the backing connection
 		subject.components[10]?.asLabel()?.setVisible(false)
 		assertEquals(false, backing.propertyData[10]!![RHMIProperty.PropertyId.VISIBLE.id])
+		assertEquals(false, subject.components[10]?.asLabel()?.properties?.get(RHMIProperty.PropertyId.VISIBLE.id)?.value)
+
+		// idempotent should read through backing
+		subject.sentProperties.remove(10)
+		assertEquals(false, subject.components[10]?.asLabel()?.properties?.get(RHMIProperty.PropertyId.VISIBLE.id)?.value)
 	}
 
 	@Test

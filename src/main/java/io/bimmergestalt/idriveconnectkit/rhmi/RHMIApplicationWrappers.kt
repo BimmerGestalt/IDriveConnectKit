@@ -16,8 +16,8 @@ class RHMIApplicationIdempotent(val app: RHMIApplication): RHMIApplication(), RH
 	override val states = app.states
 	override val components = app.components
 
-	private val sentData = HashMap<Int, Any?>()
-	private val sentProperties = HashMap<Int, MutableMap<Int, Any?>>().withDefault { HashMap() }
+	internal val sentData = HashMap<Int, Any?>()
+	internal val sentProperties = HashMap<Int, MutableMap<Int, Any?>>().withDefault { HashMap() }
 
 	override fun setModel(modelId: Int, value: Any?) {
 		val model = models[modelId]
@@ -46,7 +46,8 @@ class RHMIApplicationIdempotent(val app: RHMIApplication): RHMIApplication(), RH
 		}
 	}
 
-	override fun getModel(modelId: Int): Any? = sentData[modelId]
+	override fun getModel(modelId: Int): Any? =
+		sentData[modelId] ?: app.getModel(modelId)
 
 	override fun setProperty(componentId: Int, propertyId: Int, value: Any?) {
 		if (getProperty(componentId, propertyId) != value) {
@@ -55,7 +56,8 @@ class RHMIApplicationIdempotent(val app: RHMIApplication): RHMIApplication(), RH
 		}
 	}
 
-	override fun getProperty(componentId: Int, propertyId: Int): Any? = sentProperties[componentId]?.get(propertyId)
+	override fun getProperty(componentId: Int, propertyId: Int): Any? =
+		sentProperties[componentId]?.get(propertyId) ?: app.getProperty(componentId, propertyId)
 
 	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {
 		app.triggerHMIEvent(eventId, args)
