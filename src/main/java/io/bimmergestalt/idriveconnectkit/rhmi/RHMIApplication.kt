@@ -131,27 +131,42 @@ class RHMIApplicationConcrete : RHMIApplication() {
 
 }
 
-class RHMIApplicationEtch constructor(val remoteServer: BMWRemotingServer, val rhmiHandle: Int) : RHMIApplication() {
-	/** Represents an application layout that is backed by a Car connection */
+class RHMIApplicationEtch(val remoteServer: BMWRemotingServer, val rhmiHandle: Int) : RHMIApplication() {
+	/** Represents an application layout that is backed by a Car connection
+	 * Most data is not retained, so if you want to read data back out,
+	 * use RHMIApplicationConcrete or RHMIApplicationIdempotent
+	 * */
 	override val models = HashMap<Int, RHMIModel>()
 	override val actions = HashMap<Int, RHMIAction>()
 	override val events = HashMap<Int, RHMIEvent>()
 	override val states = HashMap<Int, RHMIState>()
 	override val components = HashMap<Int, RHMIComponent>()
 
+	// remember a little bit of properties and small ints
+	val modelData = HashMap<Int, Any?>()
+	val propertyData = HashMap<Int, MutableMap<Int, Any?>>()
+
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
 	override fun setModel(modelId: Int, value: Any?) {
+		if (value is Int || value is BMWRemoting.RHMIResourceIdentifier) {
+			modelData[modelId] = value
+		} else {
+			modelData.remove(modelId)
+		}
 		if (ignoreUpdates) return
 		this.remoteServer.rhmi_setData(this.rhmiHandle, modelId, value)
 	}
+	override fun getModel(modelId: Int): Any? = modelData[modelId]
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
 	override fun setProperty(componentId: Int, propertyId: Int, value: Any?) {
+		propertyData.getOrPut(componentId){HashMap()}[propertyId] = value
 		if (ignoreUpdates) return
 		val propertyValue = HashMap<Int, Any?>()
 		propertyValue[0] = value
 		this.remoteServer.rhmi_setProperty(rhmiHandle, componentId, propertyId, propertyValue)
 	}
+	override fun getProperty(componentId: Int, propertyId: Int): Any? = propertyData[componentId]?.get(propertyId)
 
 	@Throws(BMWRemoting.SecurityException::class, BMWRemoting.IllegalArgumentException::class, BMWRemoting.ServiceException::class)
 	override fun triggerHMIEvent(eventId: Int, args: Map<Any, Any?>) {

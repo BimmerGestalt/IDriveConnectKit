@@ -742,6 +742,9 @@ class TestXMLParsing {
 
 		assertEquals(1, component?.properties?.size)
 		assertEquals("false", component?.properties?.get(1)?.value)
+		val property = component?.properties?.get(1) as RHMIProperty
+		assertEquals("true", property.getForLayout(0))
+		assertEquals(1, property.getForLayout(1))
 		val propertyBag = component?.properties?.get(1) as RHMIProperty.LayoutBag
 		assertEquals("true", propertyBag.getForLayout(0))
 		assertEquals(1, propertyBag.getForLayout(1))
