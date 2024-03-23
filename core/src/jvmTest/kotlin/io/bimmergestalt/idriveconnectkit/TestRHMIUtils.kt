@@ -2,47 +2,12 @@ package io.bimmergestalt.idriveconnectkit
 
 import de.bmw.idrive.BMWRemoting
 import de.bmw.idrive.BaseBMWRemotingServer
-import io.bimmergestalt.idriveconnectkit.Utils.etchAsInt
-import io.bimmergestalt.idriveconnectkit.Utils.rhmi_setResourceCached
+import io.bimmergestalt.idriveconnectkit.RHMIUtils.rhmi_setResourceCached
+import org.junit.Assert
 import org.junit.Test
-
-import org.junit.Assert.*
 import java.io.ByteArrayInputStream
 
-class TestUtils {
-
-	@Test
-	fun testEtchByteAsInt() {
-		val wasByte = etchAsInt(4.toByte())
-		assertTrue(wasByte is Int)
-		assertEquals(4, wasByte)
-	}
-
-	@Test
-	fun testEtchShortAsInt() {
-		val wasShort = etchAsInt(4.toShort())
-		assertTrue(wasShort is Int)
-		assertEquals(4, wasShort)
-	}
-
-	@Test
-	fun testEtchIntAsInt() {
-		val wasInt = etchAsInt(4.toInt())
-		assertTrue(wasInt is Int)
-		assertEquals(4, wasInt)
-	}
-
-	@Test
-	fun testEtchStringAsInt() {
-		val wasString = etchAsInt("string")
-		assertTrue(wasString is Int)
-		assertEquals(0, wasString)
-
-		val wasStringDefault = etchAsInt("string", 5)
-		assertTrue(wasStringDefault is Int)
-		assertEquals(5, wasStringDefault)
-	}
-
+class TestRHMIUtils {
 	@Test
 	fun testRhmiUncached() {
 		val mockServer = MockBMWRemoteServer()
@@ -50,11 +15,11 @@ class TestUtils {
 		val dataArray = ByteArray(64)
 		val data = ByteArrayInputStream(dataArray)
 		mockServer.rhmi_setResourceCached(40, BMWRemoting.RHMIResourceType.DESCRIPTION, data)
-		assertEquals(40, mockServer.handle)
-		assertEquals(64, mockServer.size)
-		assertEquals("", mockServer.name)
-		assertEquals(BMWRemoting.RHMIResourceType.DESCRIPTION, mockServer.type)
-		assertArrayEquals(dataArray, mockServer.resourceData)
+		Assert.assertEquals(40, mockServer.handle)
+		Assert.assertEquals(64, mockServer.size)
+		Assert.assertEquals("", mockServer.name)
+		Assert.assertEquals(BMWRemoting.RHMIResourceType.DESCRIPTION, mockServer.type)
+		Assert.assertArrayEquals(dataArray, mockServer.resourceData)
 	}
 	@Test
 	fun testRhmiCached() {
@@ -64,13 +29,14 @@ class TestUtils {
 		val dataArray = ByteArray(64)
 		val data = ByteArrayInputStream(dataArray)
 		mockServer.rhmi_setResourceCached(40, BMWRemoting.RHMIResourceType.DESCRIPTION, data)
-		assertEquals(40, mockServer.handle)
-		assertEquals(64, mockServer.size)
-		assertEquals("", mockServer.name)
-		assertEquals(BMWRemoting.RHMIResourceType.DESCRIPTION, mockServer.type)
-		assertEquals(null, mockServer.resourceData)
+		Assert.assertEquals(40, mockServer.handle)
+		Assert.assertEquals(64, mockServer.size)
+		Assert.assertEquals("", mockServer.name)
+		Assert.assertEquals(BMWRemoting.RHMIResourceType.DESCRIPTION, mockServer.type)
+		Assert.assertEquals(null, mockServer.resourceData)
 	}
 }
+
 
 class MockBMWRemoteServer: BaseBMWRemotingServer() {
 	var hash: ByteArray? = null

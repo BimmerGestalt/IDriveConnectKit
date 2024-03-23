@@ -111,7 +111,7 @@ abstract class RHMIModel private constructor(open val app: RHMIApplication, open
 			/**
 			 * Return the data at this row, or null if it doesn't exist
 			 */
-			abstract operator fun get(index: Int): Array<Any>
+			abstract operator fun get(index: Int): Array<Any>?
 
 			/**
 			 * Return the table index of the first row of this RHMIList

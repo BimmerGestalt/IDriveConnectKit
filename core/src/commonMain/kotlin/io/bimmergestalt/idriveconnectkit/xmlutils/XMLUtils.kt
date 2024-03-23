@@ -98,10 +98,10 @@ object XMLUtils {
 	}
 
 	private fun getGetterMethodName(name: String): String {
-		return "get" + name.substring(0, 1).toUpperCase() + name.substring(1)
+		return "get" + name.substring(0, 1).uppercase() + name.substring(1)
 	}
 	private fun getSetterMethodName(name: String): String {
-		return "set" + name.substring(0, 1).toUpperCase() + name.substring(1)
+		return "set" + name.substring(0, 1).uppercase() + name.substring(1)
 	}
 
 	fun unmarshalAttributes(obj: Any, attrs: Map<String, String>) {

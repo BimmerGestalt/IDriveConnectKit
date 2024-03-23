@@ -9,8 +9,6 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.w3c.dom.Node
 import java.lang.IndexOutOfBoundsException
-import kotlin.test.BeforeTest
-import kotlin.test.expect
 
 class TestXMLParsing {
 	val xml = this.javaClass.classLoader.getResourceAsStream("ui_layout.xml")!!.bufferedReader().use {
