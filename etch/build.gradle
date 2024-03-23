@@ -1,0 +1,94 @@
+import de.undercouch.gradle.tasks.download.Download
+import de.undercouch.gradle.tasks.download.Verify
+
+plugins {
+    id 'de.undercouch.download' version "5.6.0"
+}
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+
+
+dependencies {
+    api fileTree(include: ['*.jar'], dir: 'libs')
+}
+
+sourceSets {
+    main.java.srcDirs += 'build/generated'
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+def isRunningOnJitpack = System.getenv("JITPACK") == "true"
+tasks.register('downloadEtchCompiler', Download) {
+    if (isRunningOnJitpack)
+    // can't connect to archive.apache.org
+    // https://github.com/jitpack/jitpack.io/issues/4995
+        src 'https://bimmergestalt.s3.amazonaws.com/aaidrive/external/apache-etch-1.4.0-windows-x86-bin.zip'
+    else
+        src 'https://archive.apache.org/dist/etch/1.4.0/apache-etch-1.4.0-windows-x86-bin.zip'
+    dest file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip")
+    overwrite false
+    outputs.file "${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip"
+}
+tasks.register('verifyEtchCompiler', Verify) {
+    dependsOn downloadEtchCompiler
+    src file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip")
+    algorithm "SHA-512"
+    checksum "915128A2E6E6FA83F4A576EBAC4DA5A250EC6F3BEB11C76404664B5067CFD94703531219" +
+            "6CAB6BB6EF96EEB765E39A87E11E774A59257E7932F2D3761CAE0354"
+}
+tasks.register('extractEtchCompiler', Copy) {
+    dependsOn verifyEtchCompiler
+    from zipTree(file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip"))
+    into "${buildDir}/etch"
+    outputs.dir "${buildDir}/etch/apache-etch-1.4.0"
+}
+tasks.register('compileEtch', JavaExec) {
+    dependsOn extractEtchCompiler
+    main "org.apache.etch.compiler.EtchMain"
+    classpath files(
+            "${buildDir}/etch/apache-etch-1.4.0/lib/apache-etch-compiler-1.4.0.jar",
+            "${buildDir}/etch/apache-etch-1.4.0/lib/apache-etch-java-compiler-1.4.0.jar",
+            "${buildDir}/etch/apache-etch-1.4.0/lib/velocity-1.7-dep.jar"
+    )
+    workingDir "${rootDir}/etch"
+    args('--binding', 'java', '--output-dir', "${buildDir}/generated", 'BMWRemoting.etch')
+    inputs.file("${rootDir}/etch/BMWRemoting.etch")
+    outputs.dir "${buildDir}/generated"
+}
+tasks.register('enableEtchRuntime', Copy) {
+    dependsOn extractEtchCompiler
+    from "${buildDir}/etch/apache-etch-1.4.0/binding-java/lib"
+    include '*.jar'
+    into file("libs/")
+}
+tasks.register('extractEtchRuntime', Copy) {
+    dependsOn enableEtchRuntime
+    from zipTree(file("libs/apache-etch-java-runtime-1.4.0.jar"))
+    include '**/*.class'
+    includeEmptyDirs false
+    into "${buildDir}/classes/java/main"
+    outputs.dir "${buildDir}/classes/java/main/org/apache/etch"
+}
+
+compileJava.dependsOn extractEtchRuntime
+compileJava.mustRunAfter extractEtchRuntime
+compileJava.dependsOn compileEtch
+compileJava.dependsOn extractEtchRuntime
+compileJava.mustRunAfter compileEtch
+compileJava.mustRunAfter enableEtchRuntime
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            // publish to Jitpack
+            groupId 'io.bimmergestalt'
+            artifactId 'IDriveConnectKitEtch'
+            version '0.6'
+
+            from components.java
+        }
+    }
+}
