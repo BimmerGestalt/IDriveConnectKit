@@ -1,1 +1,3 @@
 include ':core', ':etch'
+project(':core').name = "IDriveConnectKit"
+project(':etch').name = "IDriveConnectKitEtch"
