@@ -10,9 +10,11 @@ kotlin {
     jvm {
 
     }
+    js {}
+    wasmJs {}
+
     sourceSets {
         commonMain {
-
         }
         commonTest {
             dependencies {
@@ -23,8 +25,12 @@ kotlin {
             dependencies {
                 implementation project(path: ':etch')
             }
-
         }
+
+        jsMain {}
+        jsTest {}
+        wasmJsMain {}
+        wasmJsTest {}
     }
 }
 sourceCompatibility = "1.8"
