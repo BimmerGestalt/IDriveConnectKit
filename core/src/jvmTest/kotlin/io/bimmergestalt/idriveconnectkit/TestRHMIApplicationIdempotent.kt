@@ -13,14 +13,14 @@ class TestRHMIApplicationIdempotent {
 
 	@Before
 	fun setUp() {
-		subject.models[1] = RHMIModel.RaDataModel(subject, 1)
-		subject.models[2] = RHMIModel.RaIntModel(subject, 2)
-		subject.models[3] = RHMIModel.RaGaugeModel(subject, 3)
-		subject.models[4] = RHMIModel.RaBoolModel(subject, 4)
-		subject.models[5] = RHMIModel.TextIdModel(subject, 5)
-		subject.models[6] = RHMIModel.ImageIdModel(subject, 6)
-		subject.models[7] = RHMIModel.RaImageModel(subject, 7)
-		subject.models[8] = RHMIModel.RaListModel(subject, 8)
+		subject.models[1] = RHMIModelLive.RaDataModel(subject, 1)
+		subject.models[2] = RHMIModelLive.RaIntModel(subject, 2)
+		subject.models[3] = RHMIModelLive.RaGaugeModel(subject, 3)
+		subject.models[4] = RHMIModelLive.RaBoolModel(subject, 4)
+		subject.models[5] = RHMIModelLive.TextIdModel(subject, 5)
+		subject.models[6] = RHMIModelLive.ImageIdModel(subject, 6)
+		subject.models[7] = RHMIModelLive.RaImageModel(subject, 7)
+		subject.models[8] = RHMIModelLive.RaListModel(subject, 8)
 
 		subject.components[10] = RHMIComponent.Label(subject, 10)
 	}

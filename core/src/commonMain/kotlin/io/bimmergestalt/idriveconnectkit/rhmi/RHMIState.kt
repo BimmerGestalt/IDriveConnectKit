@@ -1,14 +1,6 @@
 package io.bimmergestalt.idriveconnectkit.rhmi
 
-import io.bimmergestalt.idriveconnectkit.rhmi.mocking.RHMIApplicationMock
-import io.bimmergestalt.idriveconnectkit.xmlutils.XMLUtils
-import io.bimmergestalt.idriveconnectkit.xmlutils.getAttributesMap
-import io.bimmergestalt.idriveconnectkit.xmlutils.getChildElements
-import io.bimmergestalt.idriveconnectkit.xmlutils.getChildNamed
-import org.w3c.dom.Node
-import java.util.HashMap
-
-abstract class RHMIState private constructor(open val app: RHMIApplication, open val id: Int) {
+abstract class RHMIState protected constructor(open val app: RHMIApplication, open val id: Int) {
 	val components: MutableMap<Int, RHMIComponent> = HashMap()
 	val componentsList: MutableList<RHMIComponent> = ArrayList()
 	val optionComponentsList: MutableList<RHMIComponent> = ArrayList()
@@ -18,66 +10,7 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 		return app.models[textModel]
 	}
 
-	companion object {
-		fun loadFromXML(app: RHMIApplication, node: Node): RHMIState? {
-			val attrs = node.getAttributesMap()
-
-			val id = attrs["id"]?.toInt() ?: return null
-
-			val state = when (node.nodeName) {
-				"hmiState" -> PlainState(app, id)
-				"toolbarHmiState" -> ToolbarState(app, id)
-				"popupHmiState" -> PopupState(app, id)
-				"audioHmiState" -> AudioHmiState(app, id)
-				"calendarMonthHmiState" -> CalendarMonthState(app, id)
-				"calendarHmiState" -> CalendarState(app, id)
-				else -> null
-			}
-
-			if (state != null) {
-				XMLUtils.unmarshalAttributes(state, attrs)
-
-				node.getChildNamed("components").getChildElements().forEach { componentNode ->
-					val component = RHMIComponent.loadFromXML(app, componentNode)
-					if (component != null) {
-						state.components[component.id] = component
-						state.componentsList.add(component)
-					}
-				}
-
-				val propertyNodes = node.getChildNamed("properties")
-				if (propertyNodes != null) {
-					propertyNodes.getChildElements().filter { it.nodeName == "property" }.forEach {
-						val property = RHMIProperty.loadFromXML(app, state.id, it)
-						if (property != null)
-							state.properties[property.id] = property
-					}
-				}
-
-				if (state is ToolbarState) {
-					node.getChildNamed("toolbarComponents").getChildElements().forEach { componentNode ->
-						val component = RHMIComponent.loadFromXML(app, componentNode)
-						if (component is RHMIComponent.ToolbarButton) {
-							state.toolbarComponents[component.id] = component
-							state.toolbarComponentsList.add(component)
-						}
-					}
-				}
-
-				val optionComponents = node.getChildNamed("optionComponents")
-				if (optionComponents != null) {
-					optionComponents.getChildElements().forEach { optionComponentNode ->
-						val component = RHMIComponent.loadFromXML(app, optionComponentNode)
-						if (component != null) {
-							state.optionComponentsList.add(component)
-						}
-					}
-				}
-			}
-
-			return state
-		}
-	}
+	companion object { }
 
 	fun setProperty(property: RHMIProperty.PropertyId, value: Any) {
 		this.setProperty(property.id, value)
@@ -246,39 +179,6 @@ abstract class RHMIState private constructor(open val app: RHMIApplication, open
 		}
 	}
 	class CalendarState(override val app: RHMIApplication, override val id: Int): RHMIState(app, id)
-
-	class MockState(override val app: RHMIApplicationMock, override val id: Int): RHMIState(app, id) {
-		override fun asPlainState(): PlainState {
-			return app.states.computeIfWrongType(id) {
-				PlainState(app, id)
-			}
-		}
-		override fun asPopupState(): PopupState {
-			return app.states.computeIfWrongType(id) {
-				PopupState(app, id)
-			}
-		}
-		override fun asToolbarState(): ToolbarState {
-			return app.states.computeIfWrongType(id) {
-				ToolbarState(app, id)
-			}
-		}
-		override fun asAudioState(): AudioHmiState {
-			return app.states.computeIfWrongType(id) {
-				AudioHmiState(app, id)
-			}
-		}
-		override fun asCalendarMonthState(): CalendarMonthState {
-			return app.states.computeIfWrongType(id) {
-				CalendarMonthState(app, id)
-			}
-		}
-		override fun asCalendarState(): CalendarState {
-			return app.states.computeIfWrongType(id) {
-				CalendarState(app, id)
-			}
-		}
-	}
 
 	open fun asPlainState(): PlainState? {
 		return this as? PlainState

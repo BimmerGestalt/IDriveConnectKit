@@ -19,8 +19,8 @@ class TestRHMIApplicationSynchronized {
 
 	@Before
 	fun setUp() {
-		backing.models[0] = RHMIModel.RaDataModel(backing, 0)
-		subject.models[1] = RHMIModel.RaDataModel(subject, 1)
+		backing.models[0] = RHMIModelLive.RaDataModel(backing, 0)
+		subject.models[1] = RHMIModelLive.RaDataModel(subject, 1)
 		subject.components[10] = RHMIComponent.Label(subject, 10)
 	}
 

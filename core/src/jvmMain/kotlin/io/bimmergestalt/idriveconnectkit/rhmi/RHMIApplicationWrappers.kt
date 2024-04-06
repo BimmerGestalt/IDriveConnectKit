@@ -24,6 +24,7 @@ class RHMIApplicationIdempotent(val app: RHMIApplication): RHMIApplication(), RH
 		val previouslySent = sentData.containsKey(modelId)
 		val identical = when(model) {
 			is RHMIModel.RaIntModel -> model.value == value
+			is RHMIModel.RaGaugeModel -> model.value == value
 			is RHMIModel.RaDataModel -> model.value == value
 			is RHMIModel.RaBoolModel -> model.value == value
 			is RHMIModel.TextIdModel -> model.textId == (value as? RHMIResourceIdentifier)?.id
@@ -35,6 +36,7 @@ class RHMIApplicationIdempotent(val app: RHMIApplication): RHMIApplication(), RH
 		}
 		val saved = when(model) {
 			is RHMIModel.RaIntModel -> true
+			is RHMIModel.RaGaugeModel -> true
 			is RHMIModel.RaDataModel -> true
 			is RHMIModel.RaBoolModel -> true
 			is RHMIModel.TextIdModel -> true

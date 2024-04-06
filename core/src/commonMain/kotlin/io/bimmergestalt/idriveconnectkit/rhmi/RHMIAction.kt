@@ -1,46 +1,9 @@
 package io.bimmergestalt.idriveconnectkit.rhmi
 
-import io.bimmergestalt.idriveconnectkit.rhmi.mocking.RHMIApplicationMock
-import io.bimmergestalt.idriveconnectkit.xmlutils.XMLUtils
-import io.bimmergestalt.idriveconnectkit.xmlutils.getAttributesMap
-import io.bimmergestalt.idriveconnectkit.xmlutils.getChildElements
-import io.bimmergestalt.idriveconnectkit.xmlutils.getChildNamed
-import org.w3c.dom.Node
 
+abstract class RHMIAction protected constructor(open val app: RHMIApplication, open val id: Int) {
 
-abstract class RHMIAction private constructor(open val app: RHMIApplication, open val id: Int) {
-
-	companion object {
-		fun loadFromXML(app: RHMIApplication, node: Node): RHMIAction? {
-			val attrs = node.getAttributesMap()
-
-			val id = attrs["id"]?.toInt() ?: return null
-
-			if (node.nodeName == "combinedAction") {
-				val subactions = node.getChildNamed("actions").getChildElements().mapNotNull { subactionNode ->
-					loadFromXML(app, subactionNode)
-				}
-				val raAction = subactions.firstOrNull { it is RAAction } as RAAction?
-				val hmiAction = subactions.firstOrNull { it is HMIAction } as HMIAction?
-				val action = CombinedAction(app, id, raAction, hmiAction)
-				XMLUtils.unmarshalAttributes(action, attrs)
-				return action
-			}
-
-			val action = when (node.nodeName) {
-				"hmiAction" -> HMIAction(app, id)
-				"raAction" -> RAAction(app, id)
-				"linkAction" -> LinkAction(app, id)
-				else -> null
-			}
-
-			if (action != null) {
-				XMLUtils.unmarshalAttributes(action, attrs)
-			}
-			return action
-		}
-
-	}
+	companion object { }
 
 	class CombinedAction(override val app: RHMIApplication, override val id: Int, val raAction: RAAction?, val hmiAction: HMIAction?): RHMIAction(app, id) {
 		var sync: String = ""
@@ -84,32 +47,6 @@ abstract class RHMIAction private constructor(open val app: RHMIApplication, ope
 		var linkModel: Int = 0
 		fun getLinkModel(): RHMIModel? {
 			return app.models[linkModel]
-		}
-	}
-
-	class MockAction(override val app: RHMIApplicationMock, override val id: Int): RHMIAction(app, id) {
-		override fun asCombinedAction(): CombinedAction {
-			return app.actions.computeIfWrongType(id) {
-				CombinedAction(app, id, RAAction(app, id), HMIAction(app, id))
-			}
-		}
-
-		override fun asHMIAction(): HMIAction {
-			return app.actions.computeIfWrongType(id) {
-				HMIAction(app, id)
-			}
-		}
-
-		override fun asRAAction(): RAAction {
-			return app.actions.computeIfWrongType(id) {
-				RAAction(app, id)
-			}
-		}
-
-		override fun asLinkAction(): LinkAction {
-			return app.actions.computeIfWrongType(id) {
-				LinkAction(app, id)
-			}
 		}
 	}
 

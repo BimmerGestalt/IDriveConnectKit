@@ -3,6 +3,8 @@ package io.bimmergestalt.idriveconnectkit
 import junit.framework.TestCase.*
 import io.bimmergestalt.idriveconnectkit.rhmi.*
 import io.bimmergestalt.idriveconnectkit.rhmi.mocking.RHMIApplicationMock
+import io.bimmergestalt.idriveconnectkit.rhmi.mocking.RHMIModelMock
+import io.bimmergestalt.idriveconnectkit.rhmi.mocking.RHMIStateMock
 import org.junit.Test
 
 // Allow nested nullable access
@@ -12,7 +14,7 @@ class TestRHMIApplication {
 	@Test fun mockStates() {
 		val app = RHMIApplicationMock()
 		val state = app.states[10]
-		assertTrue(state is RHMIState.MockState)
+		assertTrue(state is RHMIStateMock)
 		assertEquals(10, state.id)
 
 		state.textModel = 12
@@ -32,7 +34,7 @@ class TestRHMIApplication {
 	@Test fun mockModels() {
 		val app = RHMIApplicationMock()
 		val model = app.models[10]
-		assertTrue(model is RHMIModel.MockModel)
+		assertTrue(model is RHMIModelMock)
 		assertEquals(10, model.id)
 		val imageModel = model.asImageIdModel() as RHMIModel.ImageIdModel
 		assertEquals(10, imageModel.id)

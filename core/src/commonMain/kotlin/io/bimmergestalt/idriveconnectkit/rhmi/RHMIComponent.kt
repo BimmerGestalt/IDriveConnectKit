@@ -1,58 +1,17 @@
 package io.bimmergestalt.idriveconnectkit.rhmi
 
 import io.bimmergestalt.idriveconnectkit.Utils.etchAsInt
-import io.bimmergestalt.idriveconnectkit.rhmi.mocking.RHMIApplicationMock
 import io.bimmergestalt.idriveconnectkit.withRealDefault
-import io.bimmergestalt.idriveconnectkit.xmlutils.XMLUtils
-import io.bimmergestalt.idriveconnectkit.xmlutils.getAttributesMap
-import io.bimmergestalt.idriveconnectkit.xmlutils.getChildElements
-import io.bimmergestalt.idriveconnectkit.xmlutils.getChildNamed
-import org.w3c.dom.Node
 
 
-abstract class RHMIComponent private constructor(open val app: RHMIApplication, open val id: Int) {
+abstract class RHMIComponent protected constructor(open val app: RHMIApplication, open val id: Int) {
 
 	val properties: MutableMap<Int, RHMIProperty> = HashMap<Int, RHMIProperty>().withRealDefault { propertyId ->
 		// look up from the app storage if the property wasn't loaded from xml
 		RHMIProperty.AppProperty(app, id, propertyId)
 	}
 
-	companion object {
-		fun loadFromXML(app: RHMIApplication, node: Node): RHMIComponent? {
-			val attrs = node.getAttributesMap()
-
-			val id = attrs["id"]?.toInt() ?: return null
-
-			val component = when (node.nodeName) {
-				"separator" -> Separator(app, id)
-				"image" -> Image(app, id)
-				"label" -> Label(app, id)
-				"list" -> List(app, id)
-				"entryButton" -> EntryButton(app, id)
-				"instrumentCluster" -> InstrumentCluster(app, id)
-				"button" -> if (attrs["model"] == null) ToolbarButton(app, id) else Button(app, id)
-				"checkbox" -> Checkbox(app, id)
-				"gauge" -> Gauge(app, id)
-				"input" -> Input(app, id)
-				"calendarDay" -> CalendarDay(app, id)
-				else -> null
-			}
-
-			if (component != null) {
-				XMLUtils.unmarshalAttributes(component, attrs)
-
-				val propertyNodes = node.getChildNamed("properties")
-				if (propertyNodes != null) {
-					propertyNodes.getChildElements().filter { it.nodeName == "property" }.forEach {
-						val property = RHMIProperty.loadFromXML(app, component.id, it)
-						if (property != null)
-							component.properties[property.id] = property
-					}
-				}
-			}
-			return component
-		}
-	}
+	companion object { }
 
 	fun setProperty(property: RHMIProperty.PropertyId, value: Any) {
 		this.setProperty(property.id, value)
@@ -339,69 +298,6 @@ abstract class RHMIComponent private constructor(open val app: RHMIApplication, 
 		var appointmentListModel: Int = 0
 		fun getAppointmentListModel(): RHMIModel? {
 			return app.models[appointmentListModel]
-		}
-	}
-
-	class MockComponent(override val app: RHMIApplicationMock, override val id: Int): RHMIComponent(app, id) {
-		override fun asSeparator(): Separator {
-			return app.components.computeIfWrongType(id) {
-				Separator(app, id)
-			}
-		}
-		override fun asImage(): Image {
-			return app.components.computeIfWrongType(id) {
-				Image(app, id)
-			}
-		}
-		override fun asLabel(): Label {
-			return app.components.computeIfWrongType(id) {
-				Label(app, id)
-			}
-		}
-		override fun asList(): List {
-			return app.components.computeIfWrongType(id) {
-				List(app, id)
-			}
-		}
-		override fun asEntryButton(): EntryButton {
-			return app.components.computeIfWrongType(id) {
-				EntryButton(app, id)
-			}
-		}
-		override fun asInstrumentCluster(): InstrumentCluster {
-			return app.components.computeIfWrongType(id) {
-				InstrumentCluster(app, id)
-			}
-		}
-		override fun asToolbarButton(): ToolbarButton {
-			return app.components.computeIfWrongType(id) {
-				ToolbarButton(app, id)
-			}
-		}
-		override fun asButton(): Button {
-			return app.components.computeIfWrongType(id) {
-				Button(app, id)
-			}
-		}
-		override fun asCheckbox(): Checkbox {
-			return app.components.computeIfWrongType(id) {
-				Checkbox(app, id)
-			}
-		}
-		override fun asGauge(): Gauge {
-			return app.components.computeIfWrongType(id) {
-				Gauge(app, id)
-			}
-		}
-		override fun asInput(): Input {
-			return app.components.computeIfWrongType(id) {
-				Input(app, id)
-			}
-		}
-		override fun asCalendarDay(): CalendarDay {
-			return app.components.computeIfWrongType(id) {
-				CalendarDay(app, id)
-			}
 		}
 	}
 

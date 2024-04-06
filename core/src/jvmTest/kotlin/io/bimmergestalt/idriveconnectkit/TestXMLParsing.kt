@@ -2,6 +2,7 @@ package io.bimmergestalt.idriveconnectkit
 
 import de.bmw.idrive.BMWRemoting
 import io.bimmergestalt.idriveconnectkit.rhmi.*
+import io.bimmergestalt.idriveconnectkit.rhmi.deserialization.loadFromXML
 import io.bimmergestalt.idriveconnectkit.rhmi.mocking.RHMIApplicationMock
 import io.bimmergestalt.idriveconnectkit.xmlutils.XMLUtils
 import io.bimmergestalt.idriveconnectkit.xmlutils.getChildNamed
