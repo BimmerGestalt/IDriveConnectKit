@@ -1,13 +1,15 @@
-name: build
-
 on:
   push:
-    branches: '*'
     tags: '*'
-  pull_request:
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version name"
+        required: true
 
 jobs:
-  unitTest:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the project
@@ -21,11 +23,12 @@ jobs:
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
 
+      - name: Set release name
+        run: sed -i "s/^\s+version '.*'/version '${{ github.event.inputs.version }}'/" build.gradle && cat build.gradle
+        if: ${{ github.event.inputs.version }}
       - name: Build the project
         run: ./gradlew build --stacktrace
-      - name: Run unit tests
-        run: ./gradlew check --stacktrace
-      - name: Upload coverage results
-        run: ./gradlew coverage coveralls --stacktrace
+      - name: Publish package to Github
+        run: ./gradlew publish
         env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
