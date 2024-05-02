@@ -79,16 +79,28 @@ compileJava.dependsOn extractEtchRuntime
 compileJava.mustRunAfter compileEtch
 compileJava.mustRunAfter enableEtchRuntime
 
+group = 'io.bimmergestalt'
+version = '0.6-etch-split'
 
 publishing {
     publications {
         maven(MavenPublication) {
-            // publish to Jitpack
+            // package names for Maven/Jitpack
             groupId 'io.bimmergestalt'
-            artifactId 'IDriveConnectKitEtch'
-            version '0.6'
+            artifactId 'idriveconnectkit-etch'
+            version '0.6-etch-split'
 
             from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/BimmerGestalt/IDriveConnectKit"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }

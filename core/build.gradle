@@ -23,7 +23,7 @@ kotlin {
         }
         jvmMain {
             dependencies {
-                implementation project(path: ':IDriveConnectKitEtch')
+                api project(path: ':idriveconnectkit-etch')
             }
         }
 
@@ -36,13 +36,18 @@ kotlin {
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
+group = 'io.bimmergestalt'
+version = '0.6-etch-split'
+
 publishing {
-    publications {
-        maven(MavenPublication) {
-            // publish to Jitpack
-            groupId 'io.bimmergestalt'
-            artifactId 'IDriveConnectKit'
-            version '0.6'
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/BimmerGestalt/IDriveConnectKit"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }
