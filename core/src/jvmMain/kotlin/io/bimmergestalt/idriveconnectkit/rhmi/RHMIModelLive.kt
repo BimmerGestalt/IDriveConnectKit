@@ -39,7 +39,12 @@ class RHMIModelLive {
 			get() = app.getModel(id) as? Int ?: 0
 			set(value) = app.setModel(id, value)
 	}
-	open class RaGaugeModel(app: RHMIApplication, id: Int): RHMIModel.RaGaugeModel(id, RaIntModel(app, id))
+	open class RaGaugeModel(val app: RHMIApplication, id: Int): RHMIModel.RaGaugeModel(id) {
+		override var value: Int
+			get() = app.getModel(id) as? Int ?: 0
+			set(value) = app.setModel(id, value)
+
+	}
 
 	open class FormatDataModel(app: RHMIApplication, id: Int, submodels: List<RHMIModel>): RHMIModel.FormatDataModel(id, submodels) {
 	}

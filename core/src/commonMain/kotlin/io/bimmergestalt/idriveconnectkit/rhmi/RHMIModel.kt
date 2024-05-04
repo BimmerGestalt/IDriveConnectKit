@@ -28,18 +28,13 @@ abstract class RHMIModel protected constructor(val id: Int) {
 		open var value: Int = 0
 	}
 
-	open class RaGaugeModel(id: Int, raIntModel: RaIntModel? = null): RHMIModel(id) {
+	open class RaGaugeModel(id: Int): RaIntModel(id) {
 		var modelType: String = ""
 		var min: Int = 0
 		var max: Int = 100
 		var increment: Int = 1
 
-		// has a value from RaIntModel
-		// so subclasses can pass in their own raIntModel to enable live functionality
-		private val raIntModel = raIntModel ?: RaIntModel(id)
-		var value: Int
-			get() = raIntModel.value
-			set(value) { raIntModel.value = value }
+		// inherits value from RaIntModel
 	}
 
 	open class FormatDataModel(id: Int, val submodels: List<RHMIModel>): RHMIModel(id) {

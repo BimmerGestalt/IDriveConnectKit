@@ -316,6 +316,7 @@ class TestXMLParsing {
 	@Test fun raGaugeModel() {
 		val model = RHMIModel.loadFromXML(app, models.getChildNamed("raGaugeModel") as Node)
 		assertNotNull(model)
+		assertTrue(model is RHMIModel.RaIntModel)   // subclass with the same value behavior
 		assertTrue(model is RHMIModel.RaGaugeModel)
 		assertEquals(null, app.modelData[model?.id])
 		assertEquals(8, model?.id)
