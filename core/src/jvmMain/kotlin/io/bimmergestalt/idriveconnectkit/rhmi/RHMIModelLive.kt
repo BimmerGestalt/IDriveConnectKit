@@ -65,7 +65,7 @@ class RHMIModelLive {
 			get() = _getValue()
 			set(value) {
 				if (value != null) {
-					setValue(value, value.startIndex, value.height, value.endIndex)
+					setValue(value, value.startIndex, value.endIndex - value.startIndex, value.height)
 				}
 			}
 

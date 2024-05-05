@@ -666,7 +666,7 @@ class TestXMLParsing {
 
 	@Test fun listPartial() {
 		val list = RHMIModel.RaListModel.RHMIListConcrete(3, 10)
-		assertEquals(0, list.height)
+		assertEquals(10, list.height)
 		assertEquals(10, list.startIndex)
 		assertEquals(10, list.endIndex)
 		val atTheEnd = list.getWindow(10, 5)
@@ -677,7 +677,7 @@ class TestXMLParsing {
 
 		// add a row at the end
 		list.addRow(arrayOf(10))
-		assertEquals(1, list.height)
+		assertEquals(11, list.height)
 		assertEquals(10, list.startIndex)
 		assertEquals(11, list.endIndex)
 		val atTheEnd2 = list.getWindow(10, 5)
@@ -695,7 +695,7 @@ class TestXMLParsing {
 
 		// set a row in the middle
 		list[8] = arrayOf(8)
-		assertEquals(3, list.height)  // (8, _, 10)
+		assertEquals(11, list.height)  // (8, _, 10)
 		assertEquals(8, list.startIndex)
 		assertEquals(11, list.endIndex)
 
@@ -704,7 +704,7 @@ class TestXMLParsing {
 		assertArrayEquals(arrayOf(emptyArray<Any>(), emptyArray<Any>(), arrayOf(8),
 			emptyArray<Any>(), arrayOf(10)), atTheEnd3)
 	}
-	@Test fun listModelPartial() {
+	@Test fun listModelPartialConcrete() {
 		val model = RHMIModel.loadFromXML(app, models.getChildNamed("raListModel") as Node) as RHMIModel.RaListModel
 
 		val list = RHMIModel.RaListModel.RHMIListConcrete(3, 10, 15)
@@ -713,14 +713,59 @@ class TestXMLParsing {
 
 		val sentList = app.modelData[7] as BMWRemoting.RHMIDataTable
 		assertEquals(10, sentList.fromRow)
-		assertEquals(1, sentList.numRows)
+		assertEquals(5, sentList.numRows)
 		assertEquals(15, sentList.totalRows)
-		assertArrayEquals(arrayOf(arrayOf(1)), sentList.data)
+		assertArrayEquals(arrayOf(arrayOf(1), emptyArray(), emptyArray(), emptyArray(), emptyArray()), sentList.data)
 
 		val retrievedList = model.value as RHMIModel.RaListModel.RHMIList
 		assertEquals(10, retrievedList.startIndex)
-		assertEquals(1, retrievedList.height)
+		assertEquals(15, retrievedList.height)
 		assertEquals(15, retrievedList.endIndex)
+	}
+	@Test fun listModelPartialHelper() {
+		val model = RHMIModel.loadFromXML(app, models.getChildNamed("raListModel") as Node) as RHMIModel.RaListModel
+		val list = RHMIModel.RaListModel.RHMIListConcrete(3, 0)
+		(1 .. 15).forEach { list.addRow(arrayOf(it)) }
+		model.value = list
+
+		{
+			val sentList = app.modelData[7] as BMWRemoting.RHMIDataTable
+			assertEquals(0, sentList.fromRow)
+			assertEquals(15, sentList.numRows)
+			assertEquals(15, sentList.totalRows)
+			assertArrayEquals(arrayOf(1), sentList.data[0])
+			assertArrayEquals(arrayOf(15), sentList.data[14])
+		}
+
+		val partialList = list.getWindowList(10, 3)
+		assertEquals(10, partialList.startIndex)
+		assertEquals(13, partialList.endIndex)
+		assertEquals(15, partialList.height)
+
+		model.value = partialList
+		{
+			val sentPartialList = app.modelData[7] as BMWRemoting.RHMIDataTable
+			assertEquals(10, sentPartialList.fromRow)
+			assertEquals(3, sentPartialList.numRows)
+			assertEquals(15, sentPartialList.totalRows)
+			assertArrayEquals(arrayOf(11), sentPartialList.data[0])
+			assertArrayEquals(arrayOf(13), sentPartialList.data[2])
+		}
+
+		val overflowList = list.getWindowList(12, 8)
+		assertEquals(12, overflowList.startIndex)
+		assertEquals(15, overflowList.endIndex)
+		assertEquals(15, overflowList.height)
+
+		model.value = overflowList
+		{
+			val sentPartialList = app.modelData[7] as BMWRemoting.RHMIDataTable
+			assertEquals(12, sentPartialList.fromRow)
+			assertEquals(3, sentPartialList.numRows)
+			assertEquals(15, sentPartialList.totalRows)
+			assertArrayEquals(arrayOf(13), sentPartialList.data[0])
+			assertArrayEquals(arrayOf(15), sentPartialList.data[2])
+		}
 	}
 
 	@Test fun checkbox() {

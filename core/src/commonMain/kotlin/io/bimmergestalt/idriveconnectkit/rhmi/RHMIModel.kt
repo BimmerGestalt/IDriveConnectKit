@@ -64,9 +64,13 @@ abstract class RHMIModel protected constructor(val id: Int) {
 			abstract val endIndex: Int
 
 			/**
-			 * Return the number of actual rows in this RHMList
+			 * Return the number of actual rows in this RHMIList
 			 */
 			abstract val height: Int
+
+			fun getWindowList(startIndex: Int, numRows: Int): RHMIList {
+				return RHMIListPartial(this, startIndex, startIndex + numRows)
+			}
 
 			fun getWindow(startIndex: Int, numRows: Int): Array<Array<Any>> {
 				val lastIndex = min(startIndex + numRows, endIndex)
@@ -74,6 +78,27 @@ abstract class RHMIModel protected constructor(val id: Int) {
 				return Array(actualNumRows) { index -> this[startIndex + index] ?: emptyArray() }
 			}
 		}
+
+		/**
+		 * An RHMIList that provides a smaller view into another RHMIList
+		 * to create partial updates
+		 */
+		class RHMIListPartial(val base: RHMIList, override var startIndex: Int = 0, endIndex: Int = 0): RHMIList(base.width) {
+			override val width: Int = base.width
+
+			private val desiredEndIndex = endIndex
+			override val endIndex: Int
+				get() = min(desiredEndIndex, base.endIndex)
+			override val height: Int
+				get() = base.height
+
+			override fun get(index: Int): Array<Any>? = base[index]
+		}
+
+		/**
+		 * An RHMIList that has a concrete storage, which can be added and set
+		 * A starting index can optionally be set, to create partial updates without materializing the entire list
+		 */
 		class RHMIListConcrete(override var width: Int, override var startIndex: Int = 0, endIndex: Int = 0): RHMIList(width) {
 			private var realData = ArrayList<Array<Any>>()
 			override fun get(index: Int): Array<Any> {
@@ -84,7 +109,7 @@ abstract class RHMIModel protected constructor(val id: Int) {
 			override val endIndex: Int
 				get() = max(forcedEndIndex, startIndex + realData.size)
 			override val height: Int
-				get() = realData.size
+				get() = endIndex
 
 			fun clear() {
 				realData.clear()
@@ -112,6 +137,10 @@ abstract class RHMIModel protected constructor(val id: Int) {
 				realData[index - startIndex] = row
 			}
 		}
+
+		/**
+		 * An RHMIList that wraps an existing List object, by default with toString() for each item
+		 */
 		open class RHMIListAdapter<T>(width: Int, val realData: List<T>) : RHMIModel.RaListModel.RHMIList(width) {
 			override val startIndex: Int = 0
 			override val endIndex: Int
