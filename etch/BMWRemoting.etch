@@ -141,8 +141,8 @@ service BMWRemoting {
 	// car data service
 	int cds_create () throws IllegalArgumentException, ServiceException, SecurityException;
 	VersionInfo cds_getVersion () throws IllegalArgumentException, ServiceException, SecurityException;
-	void cds_addPropertyChangedEventHandler (int handle, string propertyName, string ident, int intervalLimit) throws IllegalArgumentException, ServiceException, SecurityException;
-	void cds_removePropertyChangedEventHandler (int handle, string propertyName, string ident) throws IllegalArgumentException, ServiceException, SecurityException;
+	void cds_addPropertyChangedEventHandler (int handle, string ident, string propertyName, int intervalLimit) throws IllegalArgumentException, ServiceException, SecurityException;
+	void cds_removePropertyChangedEventHandler (int handle, string ident, string propertyName) throws IllegalArgumentException, ServiceException, SecurityException;
 	@AsyncReceiver(QUEUED)
 	void cds_getPropertyAsync (int handle, string ident, string propertyName) throws IllegalArgumentException, ServiceException, SecurityException;
 	@AsyncReceiver(QUEUED)
