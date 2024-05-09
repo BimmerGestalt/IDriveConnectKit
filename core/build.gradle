@@ -37,7 +37,7 @@ sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
 group = 'io.bimmergestalt'
-version = '0.6-etch-split'
+version = '0.7'
 
 publishing {
     repositories {

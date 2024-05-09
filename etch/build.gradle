@@ -80,7 +80,7 @@ compileJava.mustRunAfter compileEtch
 compileJava.mustRunAfter enableEtchRuntime
 
 group = 'io.bimmergestalt'
-version = '0.6-etch-split'
+version = '0.7'
 
 publishing {
     publications {
@@ -88,7 +88,7 @@ publishing {
             // package names for Maven/Jitpack
             groupId 'io.bimmergestalt'
             artifactId 'idriveconnectkit-etch'
-            version '0.6-etch-split'
+            version '0.7'
 
             from components.java
         }
