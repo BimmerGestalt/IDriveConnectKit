@@ -1,0 +1,69 @@
+import de.undercouch.gradle.tasks.download.Download
+import de.undercouch.gradle.tasks.download.Verify
+
+plugins {
+    id 'de.undercouch.download' version "5.6.0"
+    id 'java-library'
+    id 'maven-publish'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
+
+
+def isRunningOnJitpack = System.getenv("JITPACK") == "true"
+tasks.register('downloadEtch', Download) {
+    if (isRunningOnJitpack)
+    // can't connect to archive.apache.org
+    // https://github.com/jitpack/jitpack.io/issues/4995
+        src 'https://bimmergestalt.s3.amazonaws.com/aaidrive/external/apache-etch-1.4.0-windows-x86-bin.zip'
+    else
+        src 'https://archive.apache.org/dist/etch/1.4.0/apache-etch-1.4.0-windows-x86-bin.zip'
+    dest file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip")
+    overwrite false
+    outputs.file "${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip"
+}
+tasks.register('verifyEtch', Verify) {
+    dependsOn downloadEtch
+    src file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip")
+    algorithm "SHA-512"
+    checksum "915128A2E6E6FA83F4A576EBAC4DA5A250EC6F3BEB11C76404664B5067CFD94703531219" +
+            "6CAB6BB6EF96EEB765E39A87E11E774A59257E7932F2D3761CAE0354"
+}
+
+tasks.register('extractEtch', Copy) {
+    dependsOn verifyEtch
+    from zipTree(file("${buildDir}/etch/apache-etch-1.4.0-windows-x86-bin.zip"))
+    into "${buildDir}/etch"
+    outputs.dir "${buildDir}/etch/apache-etch-1.4.0"
+}
+tasks.register('extractEtchClasses', Copy) {
+    dependsOn extractEtch
+    from zipTree(file("${buildDir}/etch/apache-etch-1.4.0/binding-java/lib/apache-etch-java-runtime-1.4.0.jar"))
+    include '**/*.class'
+    includeEmptyDirs false
+    into "${buildDir}/classes/java/main"
+    outputs.dir "${buildDir}/classes/java/main/org/apache/etch"
+}
+
+compileJava.dependsOn extractEtchClasses
+compileJava.mustRunAfter extractEtchClasses
+
+
+group = 'org.apache.etch'
+version = '1.4.0'
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            // package names for Maven/Jitpack
+            groupId 'org.apache.etch'
+            artifactId 'etch'
+            version '1.4.0'
+
+            from components.java
+        }
+    }
+}

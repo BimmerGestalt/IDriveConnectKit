@@ -1,3 +1,4 @@
-include ':core', ':etch'
+include ':core', ':etch', ':etch-runtime'
 project(':core').name = "idriveconnectkit"
 project(':etch').name = "idriveconnectkit-etch"
+project(':etch-runtime').name = "etch"

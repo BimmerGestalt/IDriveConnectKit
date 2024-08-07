@@ -9,7 +9,7 @@ apply plugin: 'maven-publish'
 
 
 dependencies {
-    api fileTree(include: ['*.jar'], dir: 'libs')
+    api project(path: ':etch')
 }
 
 sourceSets {
@@ -57,27 +57,9 @@ tasks.register('compileEtch', JavaExec) {
     inputs.file("${rootDir}/etch/BMWRemoting.etch")
     outputs.dir "${buildDir}/generated"
 }
-tasks.register('enableEtchRuntime', Copy) {
-    dependsOn extractEtchCompiler
-    from "${buildDir}/etch/apache-etch-1.4.0/binding-java/lib"
-    include '*.jar'
-    into file("libs/")
-}
-tasks.register('extractEtchRuntime', Copy) {
-    dependsOn enableEtchRuntime
-    from zipTree(file("libs/apache-etch-java-runtime-1.4.0.jar"))
-    include '**/*.class'
-    includeEmptyDirs false
-    into "${buildDir}/classes/java/main"
-    outputs.dir "${buildDir}/classes/java/main/org/apache/etch"
-}
 
-compileJava.dependsOn extractEtchRuntime
-compileJava.mustRunAfter extractEtchRuntime
 compileJava.dependsOn compileEtch
-compileJava.dependsOn extractEtchRuntime
 compileJava.mustRunAfter compileEtch
-compileJava.mustRunAfter enableEtchRuntime
 
 group = 'io.bimmergestalt'
 version = '0.7'
