@@ -9,7 +9,7 @@ apply plugin: 'maven-publish'
 
 
 dependencies {
-    api fileTree(include: ['*.jar'], dir: 'libs')
+    api fileTree( dir: 'libs', include: ['apache-etch-java-runtime-1.4.0.jar'])
 }
 
 sourceSets {
