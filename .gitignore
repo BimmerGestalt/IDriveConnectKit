@@ -1,7 +1,5 @@
 /.gradle
-/build
 /core/build
-/etch/build
+/idriveconnectkit-etch/build
 *.iml
-/libs/apache-etch-java-runtime-1.4.0.jar
-/etch/libs/apache-etch-java-runtime-1.4.0.jar
+/etch-runtime/libs/apache-etch-java-runtime-1.4.0.jar

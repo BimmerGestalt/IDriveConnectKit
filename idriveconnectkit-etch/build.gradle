@@ -9,7 +9,7 @@ apply plugin: 'maven-publish'
 
 
 dependencies {
-    api project(path: ':etch')
+    api project(path: ':etch-runtime')
 }
 
 sourceSets {
