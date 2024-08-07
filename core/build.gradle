@@ -36,7 +36,7 @@ kotlin {
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
-group = 'io.bimmergestalt'
+group = 'io.bimmergestalt.idriveconnectkit'
 version = '0.7'
 
 publishing {
