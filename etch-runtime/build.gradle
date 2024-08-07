@@ -60,7 +60,7 @@ publishing {
         maven(MavenPublication) {
             // package names for Maven/Jitpack
             groupId 'org.apache.etch'
-            artifactId 'etch'
+            artifactId 'etch-runtime'
             version '1.4.0'
 
             from components.java

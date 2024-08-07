@@ -9,7 +9,7 @@ apply plugin: 'maven-publish'
 
 
 dependencies {
-    api project(path: ':etch')
+    api project(path: ':etch-runtime')
 }
 
 sourceSets {
@@ -52,9 +52,9 @@ tasks.register('compileEtch', JavaExec) {
             "${buildDir}/etch/apache-etch-1.4.0/lib/apache-etch-java-compiler-1.4.0.jar",
             "${buildDir}/etch/apache-etch-1.4.0/lib/velocity-1.7-dep.jar"
     )
-    workingDir "${rootDir}/etch"
+    workingDir "${rootDir}/idriveconnectkit-etch"
     args('--binding', 'java', '--output-dir', "${buildDir}/generated", 'BMWRemoting.etch')
-    inputs.file("${rootDir}/etch/BMWRemoting.etch")
+    inputs.file("${rootDir}/idriveconnectkit-etch/BMWRemoting.etch")
     outputs.dir "${buildDir}/generated"
 }
 
