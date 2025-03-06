@@ -111,7 +111,11 @@ enum class CDSProperty(val ident: Int, val propertyName: String) {
 	SENSORS_PDCRANGEREAR2(116, "sensors.PDCRangeRear2"),
 	CDS_APIREGISTRY(117, "cds.apiRegistry"),
 	API_CARCLOUD(118, "api.carcloud"),
-	API_STARTJSAPP(119, "api.startJSApp");
+	API_STARTJSAPP(119, "api.startJSApp"),
+
+	COMFORT_AMBIENTCOLOUR(1000, "comfort.ambientColour"),
+	ENTERTAINMENT_STATUSALLOWEDSOURCES(1100, "entertainment.statusAllowedSources"),
+	ATM_ATMSETTINGS(1200, "atm.atmSettings");
 
 	companion object {
 		fun fromIdent(ident: Int?): CDSProperty? {
