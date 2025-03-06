@@ -1,133 +1,158 @@
 package io.bimmergestalt.idriveconnectkit
 
+
 /**
  * The list of all known CDS Properties
  */
-enum class CDSProperty(val ident: Int, val propertyName: String) {
-	REPLAYING(0, "replaying"),
-	CLIMATE_ACCOMPRESSOR(1, "climate.ACCompressor"),
-	CLIMATE_ACMODE(3, "climate.ACMode"),
-	CLIMATE_ACSYSTEMTEMPERATURES(4, "climate.ACSystemTemperatures"),
-	CLIMATE_DRIVERSETTINGS(5, "climate.driverSettings"),
-	CLIMATE_PASSENGERSETTINGS(6, "climate.passengerSettings"),
-	CLIMATE_RESIDUALHEAT(7, "climate.residualHeat"),
-	CLIMATE_SEATHEATDRIVER(8, "climate.seatHeatDriver"),
-	CLIMATE_SEATHEATPASSENGER(9, "climate.seatHeatPassenger"),
-	COMMUNICATION_CURRENTCALLINFO(10, "communication.currentCallInfo"),
-	COMMUNICATION_LASTCALLINFO(11, "communication.lastCallInfo"),
-	CONTROLS_CONVERTIBLETOP(12, "controls.convertibleTop"),
-	CONTROLS_CRUISECONTROL(13, "controls.cruiseControl"),
-	CONTROLS_DEFROSTREAR(15, "controls.defrostRear"),
-	CONTROLS_HEADLIGHTS(16, "controls.headlights"),
-	CONTROLS_LIGHTS(18, "controls.lights"),
-	CONTROLS_STARTSTOPSTATUS(20, "controls.startStopStatus"),
-	CONTROLS_SUNROOF(21, "controls.sunroof"),
-	CONTROLS_TURNSIGNAL(22, "controls.turnSignal"),
-	CONTROLS_WINDOWDRIVERFRONT(23, "controls.windowDriverFront"),
-	CONTROLS_WINDOWDRIVERREAR(24, "controls.windowDriverRear"),
-	CONTROLS_WINDOWPASSENGERFRONT(25, "controls.windowPassengerFront"),
-	CONTROLS_WINDOWPASSENGERREAR(26, "controls.windowPassengerRear"),
-	CONTROLS_WINDSHIELDWIPER(27, "controls.windshieldWiper"),
-	DRIVING_ACCELERATION(28, "driving.acceleration"),
-	DRIVING_ACCELERATORPEDAL(29, "driving.acceleratorPedal"),
-	DRIVING_AVERAGECONSUMPTION(30, "driving.averageConsumption"),
-	DRIVING_AVERAGESPEED(31, "driving.averageSpeed"),
-	DRIVING_BRAKECONTACT(32, "driving.brakeContact"),
-	DRIVING_CLUTCHPEDAL(34, "driving.clutchPedal"),
-	DRIVING_DSCACTIVE(35, "driving.DSCActive"),
-	DRIVING_ECOTIP(36, "driving.ecoTip"),
-	DRIVING_GEAR(37, "driving.gear"),
-	DRIVING_KEYPOSITION(38, "driving.keyPosition"),
-	DRIVING_ODOMETER(39, "driving.odometer"),
-	DRIVING_PARKINGBRAKE(40, "driving.parkingBrake"),
-	DRIVING_SHIFTINDICATOR(41, "driving.shiftIndicator"),
-	DRIVING_SPEEDACTUAL(42, "driving.speedActual"),
-	DRIVING_SPEEDDISPLAYED(43, "driving.speedDisplayed"),
-	DRIVING_STEERINGWHEEL(44, "driving.steeringWheel"),
-	DRIVING_MODE(45, "driving.mode"),
-	ENGINE_CONSUMPTION(46, "engine.consumption"),
-	ENGINE_INFO(47, "engine.info"),
-	ENGINE_RPMSPEED(50, "engine.RPMSpeed"),
-	ENGINE_STATUS(51, "engine.status"),
-	ENGINE_TEMPERATURE(52, "engine.temperature"),
-	ENGINE_TORQUE(53, "engine.torque"),
-	ENTERTAINMENT_MULTIMEDIA(54, "entertainment.multimedia"),
-	ENTERTAINMENT_RADIOFREQUENCY(55, "entertainment.radioFrequency"),
-	ENTERTAINMENT_RADIOSTATION(56, "entertainment.radioStation"),
-	NAVIGATION_CURRENTPOSITIONDETAILEDINFO(57, "navigation.currentPositionDetailedInfo"),
-	NAVIGATION_FINALDESTINATION(59, "navigation.finalDestination"),
-	NAVIGATION_FINALDESTINATIONDETAILEDINFO(60, "navigation.finalDestinationDetailedInfo"),
-	NAVIGATION_GPSEXTENDEDINFO(61, "navigation.GPSExtendedInfo"),
-	NAVIGATION_GPSPOSITION(62, "navigation.GPSPosition"),
-	NAVIGATION_GUIDANCESTATUS(63, "navigation.guidanceStatus"),
-	NAVIGATION_INFOTONEXTDESTINATION(65, "navigation.infoToNextDestination"),
-	NAVIGATION_NEXTDESTINATION(66, "navigation.nextDestination"),
-	NAVIGATION_NEXTDESTINATIONDETAILEDINFO(67, "navigation.nextDestinationDetailedInfo"),
-	SENSORS_BATTERY(68, "sensors.battery"),
-	SENSORS_DOORS(70, "sensors.doors"),
-	SENSORS_FUEL(71, "sensors.fuel"),
-	SENSORS_PDCRANGEFRONT(72, "sensors.PDCRangeFront"),
-	SENSORS_PDCRANGEREAR(73, "sensors.PDCRangeRear"),
-	SENSORS_PDCSTATUS(74, "sensors.PDCStatus"),
-	SENSORS_SEATOCCUPIEDPASSENGER(76, "sensors.seatOccupiedPassenger"),
-	SENSORS_SEATBELT(77, "sensors.seatbelt"),
-	SENSORS_TEMPERATUREEXTERIOR(78, "sensors.temperatureExterior"),
-	SENSORS_TEMPERATUREINTERIOR(79, "sensors.temperatureInterior"),
-	SENSORS_TRUNK(81, "sensors.trunk"),
-	VEHICLE_COUNTRY(82, "vehicle.country"),
-	VEHICLE_LANGUAGE(83, "vehicle.language"),
-	VEHICLE_TYPE(84, "vehicle.type"),
-	VEHICLE_UNITSPEED(85, "vehicle.unitSpeed"),
-	VEHICLE_UNITS(86, "vehicle.units"),
-	VEHICLE_VIN(87, "vehicle.VIN"),
-	ENGINE_RANGECALC(88, "engine.rangeCalc"),
-	ENGINE_ELECTRICVEHICLEMODE(89, "engine.electricVehicleMode"),
-	DRIVING_SOCHOLDSTATE(90, "driving.SOCHoldState"),
-	DRIVING_ELECTRICALPOWERDISTRIBUTION(91, "driving.electricalPowerDistribution"),
-	DRIVING_DISPLAYRANGEELECTRICVEHICLE(92, "driving.displayRangeElectricVehicle"),
-	SENSORS_SOCBATTERYHYBRID(93, "sensors.SOCBatteryHybrid"),
-	SENSORS_BATTERYTEMP(94, "sensors.batteryTemp"),
-	HMI_IDRIVE(95, "hmi.iDrive"),
-	DRIVING_ECORANGEWON(96, "driving.ecoRangeWon"),
-	CLIMATE_AIRCONDITIONERCOMPRESSOR(97, "climate.airConditionerCompressor"),
-	CONTROLS_STARTSTOPLEDS(98, "controls.startStopLEDs"),
-	DRIVING_ECORANGE(99, "driving.ecoRange"),
-	DRIVING_FDRCONTROL(100, "driving.FDRControl"),
-	DRIVING_KEYNUMBER(101, "driving.keyNumber"),
-	NAVIGATION_INFOTOFINALDESTINATION(102, "navigation.infoToFinalDestination"),
-	NAVIGATION_UNITS(103, "navigation.units"),
-	SENSORS_LID(104, "sensors.lid"),
-	SENSORS_SEATOCCUPIEDDRIVER(105, "sensors.seatOccupiedDriver"),
-	SENSORS_SEATOCCUPIEDREARLEFT(106, "sensors.seatOccupiedRearLeft"),
-	SENSORS_SEATOCCUPIEDREARRIGHT(107, "sensors.seatOccupiedRearRight"),
-	VEHICLE_SYSTEMTIME(108, "vehicle.systemTime"),
-	VEHICLE_TIME(109, "vehicle.time"),
-	DRIVING_DRIVINGSTYLE(110, "driving.drivingStyle"),
-	DRIVING_DISPLAYRANGEELECTRICVEHICLE_ALT(111, "driving.displayRangeElectricVehicle"),
-	NAVIGATION_ROUTEELAPSEDINFO(112, "navigation.routeElapsedInfo"),
-	HMI_TTS(113, "hmi.tts"),
-	HMI_GRAPHICALCONTEXT(114, "hmi.graphicalContext"),
-	SENSORS_PDCRANGEFRONT2(115, "sensors.PDCRangeFront2"),
-	SENSORS_PDCRANGEREAR2(116, "sensors.PDCRangeRear2"),
-	CDS_APIREGISTRY(117, "cds.apiRegistry"),
-	API_CARCLOUD(118, "api.carcloud"),
-	API_STARTJSAPP(119, "api.startJSApp"),
-
-	COMFORT_AMBIENTCOLOUR(1000, "comfort.ambientColour"),
-	ENTERTAINMENT_STATUSALLOWEDSOURCES(1100, "entertainment.statusAllowedSources"),
-	ATM_ATMSETTINGS(1200, "atm.atmSettings");
-
+class CDSProperty private constructor(val ident: Int, val propertyName: String) {
 	companion object {
+		private val byId: MutableMap<Int, CDSProperty> = HashMap()
+		private val byName: MutableMap<String, CDSProperty> = HashMap()
+
+		val REPLAYING = CDSProperty(0, "replaying")
+		val CLIMATE_ACCOMPRESSOR = CDSProperty(1, "climate.ACCompressor")
+		val CLIMATE_ACMODE = CDSProperty(3, "climate.ACMode")
+		val CLIMATE_ACSYSTEMTEMPERATURES = CDSProperty(4, "climate.ACSystemTemperatures")
+		val CLIMATE_DRIVERSETTINGS = CDSProperty(5, "climate.driverSettings")
+		val CLIMATE_PASSENGERSETTINGS = CDSProperty(6, "climate.passengerSettings")
+		val CLIMATE_RESIDUALHEAT = CDSProperty(7, "climate.residualHeat")
+		val CLIMATE_SEATHEATDRIVER = CDSProperty(8, "climate.seatHeatDriver")
+		val CLIMATE_SEATHEATPASSENGER = CDSProperty(9, "climate.seatHeatPassenger")
+		val COMMUNICATION_CURRENTCALLINFO = CDSProperty(10, "communication.currentCallInfo")
+		val COMMUNICATION_LASTCALLINFO = CDSProperty(11, "communication.lastCallInfo")
+		val CONTROLS_CONVERTIBLETOP = CDSProperty(12, "controls.convertibleTop")
+		val CONTROLS_CRUISECONTROL = CDSProperty(13, "controls.cruiseControl")
+		val CONTROLS_DEFROSTREAR = CDSProperty(15, "controls.defrostRear")
+		val CONTROLS_HEADLIGHTS = CDSProperty(16, "controls.headlights")
+		val CONTROLS_LIGHTS = CDSProperty(18, "controls.lights")
+		val CONTROLS_STARTSTOPSTATUS = CDSProperty(20, "controls.startStopStatus")
+		val CONTROLS_SUNROOF = CDSProperty(21, "controls.sunroof")
+		val CONTROLS_TURNSIGNAL = CDSProperty(22, "controls.turnSignal")
+		val CONTROLS_WINDOWDRIVERFRONT = CDSProperty(23, "controls.windowDriverFront")
+		val CONTROLS_WINDOWDRIVERREAR = CDSProperty(24, "controls.windowDriverRear")
+		val CONTROLS_WINDOWPASSENGERFRONT = CDSProperty(25, "controls.windowPassengerFront")
+		val CONTROLS_WINDOWPASSENGERREAR = CDSProperty(26, "controls.windowPassengerRear")
+		val CONTROLS_WINDSHIELDWIPER = CDSProperty(27, "controls.windshieldWiper")
+		val DRIVING_ACCELERATION = CDSProperty(28, "driving.acceleration")
+		val DRIVING_ACCELERATORPEDAL = CDSProperty(29, "driving.acceleratorPedal")
+		val DRIVING_AVERAGECONSUMPTION = CDSProperty(30, "driving.averageConsumption")
+		val DRIVING_AVERAGESPEED = CDSProperty(31, "driving.averageSpeed")
+		val DRIVING_BRAKECONTACT = CDSProperty(32, "driving.brakeContact")
+		val DRIVING_CLUTCHPEDAL = CDSProperty(34, "driving.clutchPedal")
+		val DRIVING_DSCACTIVE = CDSProperty(35, "driving.DSCActive")
+		val DRIVING_ECOTIP = CDSProperty(36, "driving.ecoTip")
+		val DRIVING_GEAR = CDSProperty(37, "driving.gear")
+		val DRIVING_KEYPOSITION = CDSProperty(38, "driving.keyPosition")
+		val DRIVING_ODOMETER = CDSProperty(39, "driving.odometer")
+		val DRIVING_PARKINGBRAKE = CDSProperty(40, "driving.parkingBrake")
+		val DRIVING_SHIFTINDICATOR = CDSProperty(41, "driving.shiftIndicator")
+		val DRIVING_SPEEDACTUAL = CDSProperty(42, "driving.speedActual")
+		val DRIVING_SPEEDDISPLAYED = CDSProperty(43, "driving.speedDisplayed")
+		val DRIVING_STEERINGWHEEL = CDSProperty(44, "driving.steeringWheel")
+		val DRIVING_MODE = CDSProperty(45, "driving.mode")
+		val ENGINE_CONSUMPTION = CDSProperty(46, "engine.consumption")
+		val ENGINE_INFO = CDSProperty(47, "engine.info")
+		val ENGINE_RPMSPEED = CDSProperty(50, "engine.RPMSpeed")
+		val ENGINE_STATUS = CDSProperty(51, "engine.status")
+		val ENGINE_TEMPERATURE = CDSProperty(52, "engine.temperature")
+		val ENGINE_TORQUE = CDSProperty(53, "engine.torque")
+		val ENTERTAINMENT_MULTIMEDIA = CDSProperty(54, "entertainment.multimedia")
+		val ENTERTAINMENT_RADIOFREQUENCY = CDSProperty(55, "entertainment.radioFrequency")
+		val ENTERTAINMENT_RADIOSTATION = CDSProperty(56, "entertainment.radioStation")
+		val NAVIGATION_CURRENTPOSITIONDETAILEDINFO = CDSProperty(57, "navigation.currentPositionDetailedInfo")
+		val NAVIGATION_FINALDESTINATION = CDSProperty(59, "navigation.finalDestination")
+		val NAVIGATION_FINALDESTINATIONDETAILEDINFO = CDSProperty(60, "navigation.finalDestinationDetailedInfo")
+		val NAVIGATION_GPSEXTENDEDINFO = CDSProperty(61, "navigation.GPSExtendedInfo")
+		val NAVIGATION_GPSPOSITION = CDSProperty(62, "navigation.GPSPosition")
+		val NAVIGATION_GUIDANCESTATUS = CDSProperty(63, "navigation.guidanceStatus")
+		val NAVIGATION_INFOTONEXTDESTINATION = CDSProperty(65, "navigation.infoToNextDestination")
+		val NAVIGATION_NEXTDESTINATION = CDSProperty(66, "navigation.nextDestination")
+		val NAVIGATION_NEXTDESTINATIONDETAILEDINFO = CDSProperty(67, "navigation.nextDestinationDetailedInfo")
+		val SENSORS_BATTERY = CDSProperty(68, "sensors.battery")
+		val SENSORS_DOORS = CDSProperty(70, "sensors.doors")
+		val SENSORS_FUEL = CDSProperty(71, "sensors.fuel")
+		val SENSORS_PDCRANGEFRONT = CDSProperty(72, "sensors.PDCRangeFront")
+		val SENSORS_PDCRANGEREAR = CDSProperty(73, "sensors.PDCRangeRear")
+		val SENSORS_PDCSTATUS = CDSProperty(74, "sensors.PDCStatus")
+		val SENSORS_SEATOCCUPIEDPASSENGER = CDSProperty(76, "sensors.seatOccupiedPassenger")
+		val SENSORS_SEATBELT = CDSProperty(77, "sensors.seatbelt")
+		val SENSORS_TEMPERATUREEXTERIOR = CDSProperty(78, "sensors.temperatureExterior")
+		val SENSORS_TEMPERATUREINTERIOR = CDSProperty(79, "sensors.temperatureInterior")
+		val SENSORS_TRUNK = CDSProperty(81, "sensors.trunk")
+		val VEHICLE_COUNTRY = CDSProperty(82, "vehicle.country")
+		val VEHICLE_LANGUAGE = CDSProperty(83, "vehicle.language")
+		val VEHICLE_TYPE = CDSProperty(84, "vehicle.type")
+		val VEHICLE_UNITSPEED = CDSProperty(85, "vehicle.unitSpeed")
+		val VEHICLE_UNITS = CDSProperty(86, "vehicle.units")
+		val VEHICLE_VIN = CDSProperty(87, "vehicle.VIN")
+		val ENGINE_RANGECALC = CDSProperty(88, "engine.rangeCalc")
+		val ENGINE_ELECTRICVEHICLEMODE = CDSProperty(89, "engine.electricVehicleMode")
+		val DRIVING_SOCHOLDSTATE = CDSProperty(90, "driving.SOCHoldState")
+		val DRIVING_ELECTRICALPOWERDISTRIBUTION = CDSProperty(91, "driving.electricalPowerDistribution")
+		val DRIVING_DISPLAYRANGEELECTRICVEHICLE = CDSProperty(92, "driving.displayRangeElectricVehicle")
+		val SENSORS_SOCBATTERYHYBRID = CDSProperty(93, "sensors.SOCBatteryHybrid")
+		val SENSORS_BATTERYTEMP = CDSProperty(94, "sensors.batteryTemp")
+		val HMI_IDRIVE = CDSProperty(95, "hmi.iDrive")
+		val DRIVING_ECORANGEWON = CDSProperty(96, "driving.ecoRangeWon")
+		val CLIMATE_AIRCONDITIONERCOMPRESSOR = CDSProperty(97, "climate.airConditionerCompressor")
+		val CONTROLS_STARTSTOPLEDS = CDSProperty(98, "controls.startStopLEDs")
+		val DRIVING_ECORANGE = CDSProperty(99, "driving.ecoRange")
+		val DRIVING_FDRCONTROL = CDSProperty(100, "driving.FDRControl")
+		val DRIVING_KEYNUMBER = CDSProperty(101, "driving.keyNumber")
+		val NAVIGATION_INFOTOFINALDESTINATION = CDSProperty(102, "navigation.infoToFinalDestination")
+		val NAVIGATION_UNITS = CDSProperty(103, "navigation.units")
+		val SENSORS_LID = CDSProperty(104, "sensors.lid")
+		val SENSORS_SEATOCCUPIEDDRIVER = CDSProperty(105, "sensors.seatOccupiedDriver")
+		val SENSORS_SEATOCCUPIEDREARLEFT = CDSProperty(106, "sensors.seatOccupiedRearLeft")
+		val SENSORS_SEATOCCUPIEDREARRIGHT = CDSProperty(107, "sensors.seatOccupiedRearRight")
+		val VEHICLE_SYSTEMTIME = CDSProperty(108, "vehicle.systemTime")
+		val VEHICLE_TIME = CDSProperty(109, "vehicle.time")
+		val DRIVING_DRIVINGSTYLE = CDSProperty(110, "driving.drivingStyle")
+		val NAVIGATION_ROUTEELAPSEDINFO = CDSProperty(112, "navigation.routeElapsedInfo")
+		val HMI_TTS = CDSProperty(113, "hmi.tts")
+		val HMI_GRAPHICALCONTEXT = CDSProperty(114, "hmi.graphicalContext")
+		val SENSORS_PDCRANGEFRONT2 = CDSProperty(115, "sensors.PDCRangeFront2")
+		val SENSORS_PDCRANGEREAR2 = CDSProperty(116, "sensors.PDCRangeRear2")
+		val CDS_APIREGISTRY = CDSProperty(117, "cds.apiRegistry")
+		val API_CARCLOUD = CDSProperty(118, "api.carcloud")
+		val API_STARTJSAPP = CDSProperty(119, "api.startJSApp")
+
 		fun fromIdent(ident: Int?): CDSProperty? {
-			return values().firstOrNull {
-				it.ident == ident
-			}
+			return byId[ident]
 		}
 		fun fromIdent(ident: String?): CDSProperty? {
-			return values().firstOrNull {
-				it.ident == ident?.toIntOrNull()
-			}
+			return byId[ident?.toIntOrNull()]
 		}
+
+		/**
+		 * When creating custom CDSProperties, I think the car wants the ident to stay stable
+		 * So this function helps return the same CDSProperty for the same given propertyName
+		 */
+		fun forName(name: String, startingIdent: Int = 1000): CDSProperty {
+			val existing = byName[name]
+			if (existing != null) {
+				return existing
+			}
+			var ident = startingIdent
+			while (byId.containsKey(ident)) {
+				ident++
+			}
+			return CDSProperty(ident, name)
+		}
+	}
+
+	init {
+		val existingById = byId[ident]
+		if (existingById != null && existingById.propertyName != this.propertyName) {
+			throw IllegalArgumentException("Duplicate ident $ident")
+		}
+		byId[ident] = this
+
+		val existingByName = byName[propertyName]
+		if (existingByName != null && existingByName.ident != this.ident) {
+			throw IllegalArgumentException("Duplicate propertyName $propertyName")
+		}
+		byName[propertyName] = this
 	}
 }
 
