@@ -9,6 +9,10 @@ class CDSProperty private constructor(val ident: Int, val propertyName: String) 
 		private val byId: MutableMap<Int, CDSProperty> = HashMap()
 		private val byName: MutableMap<String, CDSProperty> = HashMap()
 
+		fun values(): List<CDSProperty> {
+			return byName.values.toList()
+		}
+
 		val REPLAYING = CDSProperty(0, "replaying")
 		val CLIMATE_ACCOMPRESSOR = CDSProperty(1, "climate.ACCompressor")
 		val CLIMATE_ACMODE = CDSProperty(3, "climate.ACMode")
